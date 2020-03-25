@@ -6,13 +6,13 @@ reset-files.bash
 *.tar.gz
 
 *.exe
-src/dash
-src/dashd
-src/dash-cli
-src/dash-tx
-src/test/test_dash
-src/qt/test/test_dash-qt
-src/bench/bench_dash
+src/pyrk
+src/pyrkd
+src/pyrk-cli
+src/pyrk-tx
+src/test/test_pyrk
+src/qt/test/test_pyrk-qt
+src/bench/bench_pyrk
 
 # autoreconf
 Makefile.in
@@ -80,12 +80,15 @@ libconftest.dylib*
 # Compilation and Qt preprocessor part
 *.qm
 Makefile
-dash-qt
-Dash-Qt.app
+pyrk-qt
+Pyrk-Qt.app
+
+# Qt Creator
+Makefile.am.user
 
 # Unit-tests
 Makefile.test
-dash-qt_test
+pyrk-qt_test
 src/test/buildenv.py
 
 # Resources cpp
@@ -99,7 +102,7 @@ build
 *.gcno
 *.gcda
 /*.info
-test_dash.coverage/
+test_pyrk.coverage/
 total.coverage/
 coverage_percent.txt
 
@@ -119,13 +122,13 @@ qa/cache/*
 
 libdashconsensus.pc
 contrib/devtools/split-debug.sh
-src/qt/dash-qt.bash
+src/qt/pyrk-qt.bash
 qa/pull-tester/tests-config.sh
 
 #development symlinks
-dash-cli
-dashd
-dash-qt
+pyrk-cli
+pyrkd
+pyrk-qt
 make
 
 /docker/bin
