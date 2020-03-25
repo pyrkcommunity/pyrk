@@ -123,6 +123,8 @@ int nWalletBackups = 10;
 const char * const BITCOIN_CONF_FILENAME = "dash.conf";
 const char * const BITCOIN_PID_FILENAME = "dashd.pid";
 
+int miningAlgo = 0;
+
 CCriticalSection cs_args;
 std::map<std::string, std::string> mapArgs;
 static std::map<std::string, std::vector<std::string> > _mapMultiArgs;
