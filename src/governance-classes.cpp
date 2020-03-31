@@ -515,7 +515,7 @@ CSuperblock(uint256& nHash)
 
 bool CSuperblock::IsValidBlockHeight(int nBlockHeight)
 {
-    // SUPERBLOCKS CAN HAPPEN ONLY after hardfork and only ONCE PER CYCLE
+    // SUPERBLOCKS CAN HAPPEN ONCE PER CYCLE
     return nBlockHeight >= Params().GetConsensus().nSuperblockStartBlock &&
             ((nBlockHeight % Params().GetConsensus().nSuperblockCycle) == 0);
 }
@@ -547,10 +547,8 @@ CAmount CSuperblock::GetPaymentsLimit(int nBlockHeight)
         return 0;
     }
 
-    // min subsidy for high diff networks and vice versa
-    int nBits = consensusParams.fPowAllowMinDifficultyBlocks ? UintToArith256(consensusParams.powLimit).GetCompact() : 1;
     // some part of all blocks issued during the cycle goes to superblock, see GetBlockSubsidy
-    CAmount nSuperblockPartOfSubsidy = GetBlockSubsidy(nBits, nBlockHeight - 1, consensusParams, true);
+    CAmount nSuperblockPartOfSubsidy = GetBlockSubsidy(nBlockHeight, true);
     CAmount nPaymentsLimit = nSuperblockPartOfSubsidy * consensusParams.nSuperblockCycle;
     LogPrint("gobject", "CSuperblock::GetPaymentsLimit -- Valid superblock height %d, payments max %lld\n", nBlockHeight, nPaymentsLimit);
 
