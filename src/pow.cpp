@@ -31,7 +31,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         {
             // Return the last non-special-min-difficulty-rules-block
             const CBlockIndex* pindex = pindexLast;
-            while (pindex->pprev && pindex->nHeight % params.DifficultyAdjustmentInterval() != 0 && pindex->nBits == npowWorkLimit)
+            while (pindex->pprev && pindex->nBits == npowWorkLimit)
                 pindex = pindex->pprev;
             return pindex->nBits;
         }
@@ -46,7 +46,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     }
 
     const CBlockIndex* pindexPrevAlgo = GetLastBlockIndexForAlgo(pindexLast, params, algo);
-    if (pindexPrevAlgo == nullptr || pindexFirst == nullptr)
+    if (pindexPrevAlgo == nullptr || pindexFirst == nullptr || params.fPowNoRetargeting)
     {
         return npowWorkLimit;
     }
