@@ -120,8 +120,8 @@ bool fLiteMode = false;
 */
 int nWalletBackups = 10;
 
-const char * const BITCOIN_CONF_FILENAME = "dash.conf";
-const char * const BITCOIN_PID_FILENAME = "dashd.pid";
+const char * const BITCOIN_CONF_FILENAME = "pyrk.conf";
+const char * const BITCOIN_PID_FILENAME = "pyrkd.pid";
 
 int miningAlgo = 0;
 
@@ -280,7 +280,7 @@ bool LogAcceptCategory(const char* category)
                 ptrCategory.reset(new std::set<std::string>(categories.begin(), categories.end()));
                 // thread_specific_ptr automatically deletes the set when the thread ends.
                 // "dash" is a composite category enabling all Dash-related debug output
-                if(ptrCategory->count(std::string("dash"))) {
+                if(ptrCategory->count(std::string("pyrk"))) {
                     ptrCategory->insert(std::string("privatesend"));
                     ptrCategory->insert(std::string("instantsend"));
                     ptrCategory->insert(std::string("masternode"));
@@ -537,7 +537,7 @@ static std::string FormatException(const std::exception* pex, const char* pszThr
     char pszModule[MAX_PATH] = "";
     GetModuleFileNameA(NULL, pszModule, sizeof(pszModule));
 #else
-    const char* pszModule = "dash";
+    const char* pszModule = "pyrk";
 #endif
     if (pex)
         return strprintf(
@@ -563,7 +563,7 @@ boost::filesystem::path GetDefaultDataDir()
     // Unix: ~/.dashcore
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "DashCore";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "Pyrk";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -573,10 +573,10 @@ boost::filesystem::path GetDefaultDataDir()
         pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
-    return pathRet / "Library/Application Support/DashCore";
+    return pathRet / "Library/Application Support/Pyrk";
 #else
     // Unix
-    return pathRet / ".dashcore";
+    return pathRet / ".pyrk";
 #endif
 #endif
 }

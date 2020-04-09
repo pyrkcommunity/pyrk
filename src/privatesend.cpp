@@ -521,7 +521,7 @@ void ThreadCheckPrivateSend(CConnman& connman)
     fOneThread = true;
 
     // Make this thread recognisable as the PrivateSend thread
-    RenameThread("dash-ps");
+    RenameThread("pyrk-ps");
 
     unsigned int nTick = 0;
 
