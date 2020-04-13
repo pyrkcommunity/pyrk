@@ -125,6 +125,7 @@ public:
         consensus.nGovernanceMinQuorum = 10;
         consensus.nGovernanceFilterElements = 20000;
         consensus.nMasternodeMinimumConfirmations = 15;
+        consensus.nCollateralChangeHeight = 100000;
         consensus.BIP34Height = 16;
         consensus.BIP34Hash = uint256();
         consensus.BIP65Height = 1;
@@ -231,6 +232,7 @@ public:
         consensus.nGovernanceMinQuorum = 1;
         consensus.nGovernanceFilterElements = 500;
         consensus.nMasternodeMinimumConfirmations = 1;
+        consensus.nCollateralChangeHeight = 100000;
         consensus.BIP34Height = 76;
         consensus.BIP34Hash = uint256();
         consensus.BIP65Height = 1;
@@ -331,6 +333,7 @@ public:
         consensus.nGovernanceMinQuorum = 1;
         consensus.nGovernanceFilterElements = 500;
         consensus.nMasternodeMinimumConfirmations = 1;
+        consensus.nCollateralChangeHeight = 100000;
         consensus.BIP34Height = 1; // BIP34 activated immediately on devnet
         consensus.BIP65Height = 1; // BIP65 activated immediately on devnet
         consensus.BIP66Height = 1; // BIP66 activated immediately on devnet
@@ -433,6 +436,7 @@ public:
         consensus.nGovernanceMinQuorum = 1;
         consensus.nGovernanceFilterElements = 100;
         consensus.nMasternodeMinimumConfirmations = 1;
+        consensus.nCollateralChangeHeight = 1000;
         consensus.BIP34Height = 100000000; // BIP34 has not activated on regtest (far in the future so block v1 are not rejected in tests)
         consensus.BIP34Hash = uint256();
         consensus.BIP65Height = 1351; // BIP65 activated on regtest (Used in rpc activation tests)

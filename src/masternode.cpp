@@ -116,7 +116,11 @@ CMasternode::CollateralStatus CMasternode::CheckCollateral(const COutPoint& outp
         return COLLATERAL_UTXO_NOT_FOUND;
     }
 
-    if(coin.out.nValue != 1000 * COIN) {
+    int masternode_collateral = 1000;
+    if (chainActive.Height() >= Params().GetConsensus().nCollateralChangeHeight)
+        masternode_collateral = 2500;
+
+    if(coin.out.nValue != masternode_collateral * COIN) {
         return COLLATERAL_INVALID_AMOUNT;
     }
 
@@ -554,7 +558,11 @@ bool CMasternodeBroadcast::CheckOutpoint(int& nDos)
     }
 
     if (err == COLLATERAL_INVALID_AMOUNT) {
-        LogPrint("masternode", "CMasternodeBroadcast::CheckOutpoint -- Masternode UTXO should have 1000 PYRK, masternode=%s\n", outpoint.ToStringShort());
+        if (chainActive.Height() < Params().GetConsensus().nCollateralChangeHeight) {
+            LogPrint("masternode", "CMasternodeBroadcast::CheckOutpoint -- Masternode UTXO should have 1000 PYRK, masternode=%s\n", outpoint.ToStringShort());
+        } else {
+            LogPrint("masternode", "CMasternodeBroadcast::CheckOutpoint -- Masternode UTXO should have 2500 PYRK, masternode=%s\n", outpoint.ToStringShort());
+        }
         nDos = 33;
         return false;
     }
