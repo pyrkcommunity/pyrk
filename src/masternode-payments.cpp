@@ -143,11 +143,6 @@ bool IsBlockPayeeValid(const CTransaction& txNew, int nBlockHeight, CAmount bloc
         return true;
     }
 
-    if(sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) {
-        LogPrintf("IsBlockPayeeValid -- ERROR: Invalid masternode payment detected at height %d: %s", nBlockHeight, txNew.ToString());
-        return false;
-    }
-
     LogPrintf("IsBlockPayeeValid -- WARNING: Masternode payment enforcement is disabled, accepting any payee\n");
     return true;
 }
@@ -251,9 +246,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
 }
 
 int CMasternodePayments::GetMinMasternodePaymentsProto() const {
-    return sporkManager.IsSporkActive(SPORK_10_MASTERNODE_PAY_UPDATED_NODES)
-            ? MIN_MASTERNODE_PAYMENT_PROTO_VERSION_2
-            : MIN_MASTERNODE_PAYMENT_PROTO_VERSION_1;
+    return MIN_MASTERNODE_PAYMENT_PROTO_VERSION_2;
 }
 
 void CMasternodePayments::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman)
@@ -671,7 +664,6 @@ bool CMasternodePaymentVote::IsValid(CNode* pnode, int nValidationHeight, std::s
 
     int nMinRequiredProtocol;
     if(nBlockHeight >= nValidationHeight) {
-        // new votes must comply SPORK_10_MASTERNODE_PAY_UPDATED_NODES rules
         nMinRequiredProtocol = mnpayments.GetMinMasternodePaymentsProto();
     } else {
         // allow non-updated masternodes for old blocks

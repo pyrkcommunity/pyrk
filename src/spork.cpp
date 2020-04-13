@@ -21,10 +21,7 @@ std::map<int, int64_t> mapSporkDefaults = {
     {SPORK_3_INSTANTSEND_BLOCK_FILTERING,    0},             // ON
     {SPORK_5_INSTANTSEND_MAX_VALUE,          1000},          // 1000 Dash
     {SPORK_6_NEW_SIGS,                       4070908800ULL}, // OFF
-    {SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT, 4070908800ULL}, // OFF
-    {SPORK_9_SUPERBLOCKS_ENABLED,            4070908800ULL}, // OFF
-    {SPORK_10_MASTERNODE_PAY_UPDATED_NODES,  4070908800ULL}, // OFF
-    {SPORK_12_RECONSIDER_BLOCKS,             0},             // 0 BLOCKS
+    {SPORK_9_SUPERBLOCKS_ENABLED,            0}, // ON
     {SPORK_14_REQUIRE_SENTINEL_FLAG,         4070908800ULL}, // OFF
 };
 
@@ -69,9 +66,6 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
         mapSporksActive[spork.nSporkID] = spork;
         spork.Relay(connman);
 
-        //does a task if needed
-        ExecuteSpork(spork.nSporkID, spork.nValue);
-
     } else if (strCommand == NetMsgType::GETSPORKS) {
 
         std::map<int, CSporkMessage>::iterator it = mapSporksActive.begin();
@@ -82,35 +76,6 @@ void CSporkManager::ProcessSpork(CNode* pfrom, const std::string& strCommand, CD
         }
     }
 
-}
-
-void CSporkManager::ExecuteSpork(int nSporkID, int nValue)
-{
-    //correct fork via spork technology
-    if(nSporkID == SPORK_12_RECONSIDER_BLOCKS && nValue > 0) {
-        // allow to reprocess 24h of blocks max, which should be enough to resolve any issues
-        int64_t nMaxBlocks = 576;
-        // this potentially can be a heavy operation, so only allow this to be executed once per 10 minutes
-        int64_t nTimeout = 10 * 60;
-
-        static int64_t nTimeExecuted = 0; // i.e. it was never executed before
-
-        if(GetTime() - nTimeExecuted < nTimeout) {
-            LogPrint("spork", "CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider blocks, too soon - %d/%d\n", GetTime() - nTimeExecuted, nTimeout);
-            return;
-        }
-
-        if(nValue > nMaxBlocks) {
-            LogPrintf("CSporkManager::ExecuteSpork -- ERROR: Trying to reconsider too many blocks %d/%d\n", nValue, nMaxBlocks);
-            return;
-        }
-
-
-        LogPrintf("CSporkManager::ExecuteSpork -- Reconsider Last %d Blocks\n", nValue);
-
-        ReprocessBlocks(nValue);
-        nTimeExecuted = GetTime();
-    }
 }
 
 bool CSporkManager::UpdateSpork(int nSporkID, int64_t nValue, CConnman& connman)
@@ -165,10 +130,7 @@ int CSporkManager::GetSporkIDByName(const std::string& strName)
     if (strName == "SPORK_3_INSTANTSEND_BLOCK_FILTERING")       return SPORK_3_INSTANTSEND_BLOCK_FILTERING;
     if (strName == "SPORK_5_INSTANTSEND_MAX_VALUE")             return SPORK_5_INSTANTSEND_MAX_VALUE;
     if (strName == "SPORK_6_NEW_SIGS")                          return SPORK_6_NEW_SIGS;
-    if (strName == "SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT")    return SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT;
     if (strName == "SPORK_9_SUPERBLOCKS_ENABLED")               return SPORK_9_SUPERBLOCKS_ENABLED;
-    if (strName == "SPORK_10_MASTERNODE_PAY_UPDATED_NODES")     return SPORK_10_MASTERNODE_PAY_UPDATED_NODES;
-    if (strName == "SPORK_12_RECONSIDER_BLOCKS")                return SPORK_12_RECONSIDER_BLOCKS;
     if (strName == "SPORK_14_REQUIRE_SENTINEL_FLAG")            return SPORK_14_REQUIRE_SENTINEL_FLAG;
 
     LogPrint("spork", "CSporkManager::GetSporkIDByName -- Unknown Spork name '%s'\n", strName);
@@ -182,10 +144,7 @@ std::string CSporkManager::GetSporkNameByID(int nSporkID)
         case SPORK_3_INSTANTSEND_BLOCK_FILTERING:       return "SPORK_3_INSTANTSEND_BLOCK_FILTERING";
         case SPORK_5_INSTANTSEND_MAX_VALUE:             return "SPORK_5_INSTANTSEND_MAX_VALUE";
         case SPORK_6_NEW_SIGS:                          return "SPORK_6_NEW_SIGS";
-        case SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT:    return "SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT";
         case SPORK_9_SUPERBLOCKS_ENABLED:               return "SPORK_9_SUPERBLOCKS_ENABLED";
-        case SPORK_10_MASTERNODE_PAY_UPDATED_NODES:     return "SPORK_10_MASTERNODE_PAY_UPDATED_NODES";
-        case SPORK_12_RECONSIDER_BLOCKS:                return "SPORK_12_RECONSIDER_BLOCKS";
         case SPORK_14_REQUIRE_SENTINEL_FLAG:            return "SPORK_14_REQUIRE_SENTINEL_FLAG";
         default:
             LogPrint("spork", "CSporkManager::GetSporkNameByID -- Unknown Spork ID %d\n", nSporkID);
