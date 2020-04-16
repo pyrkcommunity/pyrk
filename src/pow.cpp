@@ -20,23 +20,6 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     if (pindexLast == nullptr)
         return npowWorkLimit;
 
-    if (params.fPowAllowMinDifficultyBlocks)
-    {
-        // Special difficulty rule for testnet:
-        // If the new block's timestamp is more than 6* 1.5 minutes
-        // then allow mining of a min-difficulty block.
-        if (pblock->nTime > pindexLast->nTime + params.nPowTargetSpacing*6)
-            return npowWorkLimit;
-        else
-        {
-            // Return the last non-special-min-difficulty-rules-block
-            const CBlockIndex* pindex = pindexLast;
-            while (pindex->pprev && pindex->nBits == npowWorkLimit)
-                pindex = pindex->pprev;
-            return pindex->nBits;
-        }
-    }
-
     // find first block in averaging interval
     // Go back by what we want to be nAveragingInterval blocks per algo
     const CBlockIndex* pindexFirst = pindexLast;
