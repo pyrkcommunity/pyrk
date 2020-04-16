@@ -1307,7 +1307,7 @@ CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
 {
     CAmount ret = 0;
 
-    if (nHeight >= 10100 && nHeight < Params().GetConsensus().nSuperblockStartBlock)
+    if (nHeight >= Params().GetConsensus().nMasternodePaymentsStartBlock && nHeight < Params().GetConsensus().nSuperblockStartBlock)
     {
         ret = blockValue / 5; // 20%
     }
