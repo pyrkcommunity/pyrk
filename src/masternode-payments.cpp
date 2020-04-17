@@ -246,7 +246,7 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int nBlockH
 }
 
 int CMasternodePayments::GetMinMasternodePaymentsProto() const {
-    return MIN_MASTERNODE_PAYMENT_PROTO_VERSION_2;
+    return MIN_MASTERNODE_PAYMENT_PROTO_VERSION_1;
 }
 
 void CMasternodePayments::ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStream& vRecv, CConnman& connman)
@@ -266,12 +266,6 @@ void CMasternodePayments::ProcessMessage(CNode* pfrom, const std::string& strCom
         // We could start processing this after masternode list is synced
         // but this is a heavy one so it's better to finish sync first.
         if (!masternodeSync.IsSynced()) return;
-
-        // DEPRECATED, should be removed on next protocol bump
-        if(pfrom->nVersion == 70208) {
-            int nCountNeeded;
-            vRecv >> nCountNeeded;
-        }
 
         if(netfulfilledman.HasFulfilledRequest(pfrom->addr, NetMsgType::MASTERNODEPAYMENTSYNC)) {
             LOCK(cs_main);
