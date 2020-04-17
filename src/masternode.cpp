@@ -237,7 +237,7 @@ void CMasternode::Check(bool fForce)
 
     // We require MNs to be in PRE_ENABLED until they either start to expire or receive a ping and go into ENABLED state
     // Works on mainnet/testnet only and not the case on regtest/devnet.
-    if (Params().NetworkIDString() != CBaseChainParams::REGTEST && Params().NetworkIDString() != CBaseChainParams::DEVNET) {
+    if (GetArg("mnbootstrap", 0) == 0 && Params().NetworkIDString() != CBaseChainParams::TESTNET && Params().NetworkIDString() != CBaseChainParams::REGTEST && Params().NetworkIDString() != CBaseChainParams::DEVNET) {
         if (lastPing.sigTime - sigTime < MASTERNODE_MIN_MNP_SECONDS) {
             nActiveState = MASTERNODE_PRE_ENABLED;
             if (nActiveStatePrev != nActiveState) {
