@@ -175,12 +175,6 @@ void CMasternodeSync::ProcessTick(CConnman& connman)
     {
         CNetMsgMaker msgMaker(pnode->GetSendVersion());
 
-        // Don't try to sync any data from outbound "masternode" connections -
-        // they are temporary and should be considered unreliable for a sync process.
-        // Inbound connection this early is most likely a "masternode" connection
-        // initiated from another node, so skip it too.
-        if(pnode->fMasternode || (fMasternodeMode && pnode->fInbound)) continue;
-
         // QUICK MODE (REGTEST ONLY!)
         if(Params().NetworkIDString() == CBaseChainParams::REGTEST)
         {
@@ -206,14 +200,6 @@ void CMasternodeSync::ProcessTick(CConnman& connman)
 
         // NORMAL NETWORK MODE - TESTNET/MAINNET
         {
-            if(netfulfilledman.HasFulfilledRequest(pnode->addr, "full-sync")) {
-                // We already fully synced from this node recently,
-                // disconnect to free this connection slot for another peer.
-                pnode->fDisconnect = true;
-                LogPrintf("CMasternodeSync::ProcessTick -- disconnecting from recently synced peer=%d\n", pnode->id);
-                continue;
-            }
-
             // SPORK : ALWAYS ASK FOR SPORKS AS WE SYNC
 
             if(!netfulfilledman.HasFulfilledRequest(pnode->addr, "spork-sync")) {
