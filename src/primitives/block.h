@@ -12,6 +12,7 @@
 
 enum
 {
+    ALGO_UNKNOWN = -1,
     ALGO_SHA256D = 0,
     ALGO_SCRYPT	 = 1,
     ALGO_X11     = 2,

@@ -29,7 +29,7 @@ int CBlockHeader::GetAlgo() const
             return ALGO_X11;
 
     }
-    return ALGO_SCRYPT;
+    return ALGO_UNKNOWN;
 }
 
 uint256 CBlockHeader::GetPoWAlgoHash() const
@@ -46,6 +46,8 @@ uint256 CBlockHeader::GetPoWAlgoHash() const
         }
         case ALGO_X11:
             return HashX11(BEGIN(nVersion), END(nNonce));
+        case ALGO_UNKNOWN:
+            return ArithToUint256(~arith_uint256(0));
     }
     return GetHash();
 }
