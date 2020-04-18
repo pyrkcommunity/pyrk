@@ -71,9 +71,7 @@ public:
             nDaemonVersion = DEFAULT_DAEMON_VERSION;
             return;
         }
-        if (!(s.GetType() & SER_NETWORK)) {
-            READWRITE(nDaemonVersion);
-        }
+        READWRITE(nDaemonVersion);
     }
 
     uint256 GetHash() const;
