@@ -159,7 +159,7 @@ void CActiveMasternode::ManageStateInitial(CConnman& connman)
         }
     }
 
-    if(!fFoundLocal) {
+    if(!fFoundLocal && Params().NetworkIDString() == CBaseChainParams::MAIN) {
         nState = ACTIVE_MASTERNODE_NOT_CAPABLE;
         strNotCapableReason = "Can't detect valid external address. Please consider using the externalip configuration option if problem persists. Make sure to use IPv4 address only.";
         LogPrintf("CActiveMasternode::ManageStateInitial -- %s: %s\n", GetStateString(), strNotCapableReason);
@@ -214,7 +214,7 @@ void CActiveMasternode::ManageStateRemote()
             LogPrintf("CActiveMasternode::ManageStateRemote -- %s: %s\n", GetStateString(), strNotCapableReason);
             return;
         }
-        if(service != infoMn.addr) {
+        if(Params().NetworkIDString() == CBaseChainParams::MAIN && service != infoMn.addr) {
             nState = ACTIVE_MASTERNODE_NOT_CAPABLE;
             strNotCapableReason = "Broadcasted IP doesn't match our external address. Make sure you issued a new broadcast if IP of this masternode changed recently.";
             LogPrintf("CActiveMasternode::ManageStateRemote -- %s: %s\n", GetStateString(), strNotCapableReason);
