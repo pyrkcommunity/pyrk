@@ -1101,13 +1101,6 @@ void CConnman::AcceptConnection(const ListenSocket& hListenSocket) {
         }
     }
 
-    // don't accept incoming connections until fully synced
-    if(fMasternodeMode && !masternodeSync.IsSynced()) {
-        LogPrintf("AcceptConnection -- masternode is not synced yet, skipping inbound connection attempt\n");
-        CloseSocket(hSocket);
-        return;
-    }
-
     NodeId id = GetNewNodeId();
     uint64_t nonce = GetDeterministicRandomizer(RANDOMIZER_ID_LOCALHOSTNONCE).Write(id).Finalize();
 
