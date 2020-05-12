@@ -1944,6 +1944,7 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
     switch (algo)
     {
         case ALGO_SCRYPT:
+        nVersion |= BLOCK_VERSION_SCRYPT;
         break;
         case ALGO_SHA256D:
         nVersion |= BLOCK_VERSION_SHA256D;
