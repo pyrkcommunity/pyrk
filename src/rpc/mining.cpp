@@ -324,7 +324,7 @@ std::string gbt_vb_name(const Consensus::DeploymentPos pos) {
 
 UniValue getblocktemplate(const JSONRPCRequest& request)
 {
-    if (request.fHelp || request.params.size() > 1)
+    if (request.fHelp || request.params.size() > 2)
         throw std::runtime_error(
             "getblocktemplate ( TemplateRequest )\n"
             "\nIf the request parameters include a 'mode' key, that is used to explicitly select between the default 'template' request or a 'proposal'.\n"
