@@ -484,6 +484,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     int algo = miningAlgo;
     if (!request.params[1].isNull()) {
         std::string strAlgo = request.params[1].get_str();
+        transform(strAlgo.begin(),strAlgo.end(),strAlgo.begin(),::tolower);
         if (strAlgo == "sha" || strAlgo == "sha256" || strAlgo == "sha256d")
             algo = ALGO_SHA256D;
         else if (strAlgo == "scrypt")
