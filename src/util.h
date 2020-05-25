@@ -230,6 +230,8 @@ std::string HelpMessageOpt(const std::string& option, const std::string& message
  */
 int GetNumCores();
 
+int64_t GetStartupTime();
+
 void RenameThread(const char* name);
 std::string GetThreadName();
 

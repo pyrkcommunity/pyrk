@@ -919,7 +919,7 @@ void CMasternodeMan::SyncSingle(CNode* pnode, const COutPoint& outpoint, CConnma
     auto it = mapMasternodes.find(outpoint);
 
     if(it != mapMasternodes.end()) {
-        if (Params().NetworkIDString() == CBaseChainParams::MAIN && it->second.addr.IsRFC1918() || it->second.addr.IsLocal()) return; // do not send local network masternode
+        if ((Params().NetworkIDString() == CBaseChainParams::MAIN && it->second.addr.IsRFC1918()) || it->second.addr.IsLocal()) return; // do not send local network masternode
         // NOTE: send masternode regardless of its current state, the other node will need it to verify old votes.
         LogPrint("masternode", "CMasternodeMan::%s -- Sending Masternode entry: masternode=%s  addr=%s\n", __func__, outpoint.ToStringShort(), it->second.addr.ToString());
         PushDsegInvs(pnode, it->second);

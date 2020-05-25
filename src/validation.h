@@ -322,6 +322,8 @@ void PruneOneBlockFile(const int fileNumber);
  */
 void UnlinkPrunedFiles(const std::set<int>& setFilesToPrune);
 
+uint64_t CalculateCurrentUsage();
+
 /** Create a new block index entry for a given block hash */
 CBlockIndex * InsertBlockIndex(uint256 hash);
 /** Flush all state, indexes and buffers to disk. */
@@ -578,5 +580,11 @@ void DumpMempool();
 
 /** Load the mempool from disk. */
 bool LoadMempool();
+
+//! Check whether the block associated with this index entry is pruned or not.
+inline bool IsBlockPruned(const CBlockIndex* pblockindex)
+{
+    return (fHavePruned && !(pblockindex->nStatus & BLOCK_HAVE_DATA) && pblockindex->nTx > 0);
+}
 
 #endif // BITCOIN_VALIDATION_H

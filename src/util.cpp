@@ -120,6 +120,8 @@ bool fLiteMode = false;
 */
 int nWalletBackups = 10;
 
+const int64_t nStartupTime = GetTime();
+
 const char * const BITCOIN_CONF_FILENAME = "pyrk.conf";
 const char * const BITCOIN_PID_FILENAME = "pyrkd.pid";
 
@@ -955,6 +957,12 @@ int GetNumCores()
 #else // Must fall back to hardware_concurrency, which unfortunately counts virtual cores
     return boost::thread::hardware_concurrency();
 #endif
+}
+
+// Obtain the application startup time (used for uptime calculation)
+int64_t GetStartupTime()
+{
+    return nStartupTime;
 }
 
 std::string CopyrightHolders(const std::string& strPrefix, unsigned int nStartYear, unsigned int nEndYear)
