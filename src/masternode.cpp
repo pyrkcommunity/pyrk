@@ -120,8 +120,21 @@ CMasternode::CollateralStatus CMasternode::CheckCollateral(const COutPoint& outp
     if (chainActive.Height() >= Params().GetConsensus().nCollateralChangeHeight)
         masternode_collateral = 2500;
 
-    if(coin.out.nValue != masternode_collateral * COIN) {
-        return COLLATERAL_INVALID_AMOUNT;
+    if (chainActive.Height() >= (Params().GetConsensus().nCollateralChangeHeight - 1000))
+    {
+        int masternode_collateral_v1 = 1000;
+        int masternode_collateral_v2 = 2500;
+        
+        // Grace Period
+        if(coin.out.nValue != masternode_collateral_v1 * COIN && coin.out.nValue != masternode_collateral_v2 * COIN) {
+            return COLLATERAL_INVALID_AMOUNT;
+        }
+    }
+    else
+    {
+        if(coin.out.nValue != masternode_collateral * COIN) {
+            return COLLATERAL_INVALID_AMOUNT;
+        }
     }
 
     if(pubkey == CPubKey() || coin.out.scriptPubKey != GetScriptForDestination(pubkey.GetID())) {
