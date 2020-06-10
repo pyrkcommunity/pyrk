@@ -116,7 +116,7 @@ class CMainParams : public CChainParams {
 public:
     CMainParams() {
         strNetworkID = "main";
-        consensus.nSubsidyHalvingInterval = 200000;
+        consensus.nSubsidyHalvingInterval = 100000;
         consensus.nMasternodePaymentsStartBlock = 10100;
         consensus.nInstantSendConfirmationsRequired = 6;
         consensus.nInstantSendKeepLock = 24;
@@ -140,8 +140,13 @@ public:
         consensus.nAveragingTargetTimespan = consensus.nAveragingInterval * consensus.multiAlgoTargetSpacing; // 10 * NUM_ALGOS * 90
         consensus.nMaxAdjustDown = 16; // 16% adjustment down
         consensus.nMaxAdjustUp = 8; // 8% adjustment up
+        consensus.nMaxAdjustDownV2 = 12; // 12% adjustment down -- lower a little slower
+        consensus.nMaxAdjustUpV2 = 10; // 10% adjustment up  -- rise a little faster
         consensus.nMinActualTimespan = consensus.nAveragingTargetTimespan * (100 - consensus.nMaxAdjustUp) / 100;
         consensus.nMaxActualTimespan = consensus.nAveragingTargetTimespan * (100 + consensus.nMaxAdjustDown) / 100;
+        consensus.nMinActualTimespanV2 = consensus.nAveragingTargetTimespan * (100 - consensus.nMaxAdjustUpV2) / 100;
+        consensus.nMaxActualTimespanV2 = consensus.nAveragingTargetTimespan * (100 + consensus.nMaxAdjustDownV2) / 100;
+        consensus.v2DiffChangeHeight = 100000;
         consensus.nLocalTargetAdjustment = 4; //target adjustment per algo
         consensus.nLocalDifficultyAdjustment = 4; //difficulty adjustment per algo
         consensus.fPowAllowMinDifficultyBlocks = false;
@@ -248,8 +253,13 @@ public:
         consensus.nAveragingTargetTimespan = consensus.nAveragingInterval * consensus.multiAlgoTargetSpacing; // 10 * NUM_ALGOS * 90
         consensus.nMaxAdjustDown = 16; // 16% adjustment down
         consensus.nMaxAdjustUp = 8; // 8% adjustment up
+        consensus.nMaxAdjustDownV2 = 12; // 12% adjustment down -- lower a little slower
+        consensus.nMaxAdjustUpV2 = 10; // 10% adjustment up  -- rise a little faster
         consensus.nMinActualTimespan = consensus.nAveragingTargetTimespan * (100 - consensus.nMaxAdjustUp) / 100;
         consensus.nMaxActualTimespan = consensus.nAveragingTargetTimespan * (100 + consensus.nMaxAdjustDown) / 100;
+        consensus.nMinActualTimespanV2 = consensus.nAveragingTargetTimespan * (100 - consensus.nMaxAdjustUpV2) / 100;
+        consensus.nMaxActualTimespanV2 = consensus.nAveragingTargetTimespan * (100 + consensus.nMaxAdjustDownV2) / 100;
+        consensus.v2DiffChangeHeight = 100000;
         consensus.nLocalTargetAdjustment = 4; //target adjustment per algo
         consensus.nLocalDifficultyAdjustment = 4; //difficulty adjustment per algo
         consensus.fPowAllowMinDifficultyBlocks = true;
@@ -348,8 +358,13 @@ public:
         consensus.nAveragingTargetTimespan = consensus.nAveragingInterval * consensus.multiAlgoTargetSpacing; // 10 * NUM_ALGOS * 90
         consensus.nMaxAdjustDown = 16; // 16% adjustment down
         consensus.nMaxAdjustUp = 8; // 8% adjustment up
+        consensus.nMaxAdjustDownV2 = 12; // 12% adjustment down -- lower a little slower
+        consensus.nMaxAdjustUpV2 = 10; // 10% adjustment up  -- rise a little faster
         consensus.nMinActualTimespan = consensus.nAveragingTargetTimespan * (100 - consensus.nMaxAdjustUp) / 100;
         consensus.nMaxActualTimespan = consensus.nAveragingTargetTimespan * (100 + consensus.nMaxAdjustDown) / 100;
+        consensus.nMinActualTimespanV2 = consensus.nAveragingTargetTimespan * (100 - consensus.nMaxAdjustUpV2) / 100;
+        consensus.nMaxActualTimespanV2 = consensus.nAveragingTargetTimespan * (100 + consensus.nMaxAdjustDownV2) / 100;
+        consensus.v2DiffChangeHeight = 100000;
         consensus.nLocalTargetAdjustment = 4; //target adjustment per algo
         consensus.nLocalDifficultyAdjustment = 4; //difficulty adjustment per algo
         consensus.fPowAllowMinDifficultyBlocks = true;

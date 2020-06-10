@@ -16,6 +16,10 @@ class uint256;
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params&, int algo);
 
+unsigned int GetNextWorkRequiredV1(const CBlockIndex* pindexLast, const Consensus::Params&, int algo);
+
+unsigned int GetNextWorkRequiredV2(const CBlockIndex* pindexLast, const Consensus::Params&, int algo);
+
 /** Check whether a block hash satisfies the proof-of-work requirement specified by nBits */
 bool CheckProofOfWork(uint256 hash, unsigned int nBits, const Consensus::Params&);
 

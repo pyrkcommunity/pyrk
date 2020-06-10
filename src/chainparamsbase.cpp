@@ -35,6 +35,7 @@ public:
     CBaseMainParams()
     {
         nRPCPort = 8117;
+        strTokenApi = std::string(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/"));
     }
 };
 static CBaseMainParams mainParams;
@@ -49,6 +50,7 @@ public:
     {
         nRPCPort = 18117;
         strDataDir = "testnet3";
+        strTokenApi = std::string(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/"));
     }
 };
 static CBaseTestNetParams testNetParams;
@@ -63,6 +65,7 @@ public:
     {
         nRPCPort = 18117;
         strDataDir = dataDir;
+        strTokenApi = std::string(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/"));
     }
 };
 static CBaseDevNetParams *devNetParams;
@@ -77,6 +80,7 @@ public:
     {
         nRPCPort = 18332;
         strDataDir = "regtest";
+        strTokenApi = std::string(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/"));
     }
 };
 static CBaseRegTestParams regTestParams;

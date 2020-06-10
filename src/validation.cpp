@@ -1284,10 +1284,27 @@ CAmount GetBlockSubsidy(int nHeight, bool fSuperblockPartOnly)
 
     CAmount nSubsidy = 100 * COIN;
 
+	double reductionPercent = 1.0000;
+	double multiplyValue = 1.0000;
+	
     for(int i = 0; i < halvings; ++i)
     {
+
+    	reductionPercent = reductionPercent * 0.5;
+    	
+    	// We halve the previous reduction percent each time until we reach the minimum of 0.0375
+    	if (reductionPercent < 0.0375)
+    	{
+    		reductionPercent = 0.0375;
+    	}
+    	
+    	multiplyValue = 1 - reductionPercent;
+    	
+    	nSubsidy = nSubsidy * multiplyValue;
+    
         // Reduce by 20%
-        nSubsidy = (nSubsidy * 4) / 5;
+        //nSubsidy = (nSubsidy * 4) / 5;
+
     }
 
     // Superblock payment

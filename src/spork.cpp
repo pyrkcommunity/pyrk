@@ -19,7 +19,7 @@ std::map<uint256, CSporkMessage> mapSporks;
 std::map<int, int64_t> mapSporkDefaults = {
     {SPORK_2_INSTANTSEND_ENABLED,            0},             // ON
     {SPORK_3_INSTANTSEND_BLOCK_FILTERING,    0},             // ON
-    {SPORK_5_INSTANTSEND_MAX_VALUE,          1000},          // 1000 Dash
+    {SPORK_5_INSTANTSEND_MAX_VALUE,          1000},          // 1000 Pyrk
     {SPORK_6_NEW_SIGS,                       4070908800ULL}, // OFF
     {SPORK_9_SUPERBLOCKS_ENABLED,            0}, // ON
     {SPORK_14_REQUIRE_SENTINEL_FLAG,         4070908800ULL}, // OFF

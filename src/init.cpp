@@ -601,6 +601,9 @@ std::string HelpMessage(HelpMessageMode mode)
         strUsage += HelpMessageOpt("-rpcservertimeout=<n>", strprintf("Timeout during HTTP requests (default: %d)", DEFAULT_HTTP_SERVER_TIMEOUT));
     }
 
+    strUsage += HelpMessageOpt("-tokenapiurl=<n>", strprintf(_("The token API server to use (default: %d)"), "https://tokenapi.pyrk.org/api/"));
+
+
     return strUsage;
 }
 
@@ -1927,6 +1930,8 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         if(!flatdb4.Load(netfulfilledman)) {
             return InitError(_("Failed to load fulfilled requests cache from") + "\n" + (pathDB / strDBName).string());
         }
+        
+        
     }
 
 

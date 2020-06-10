@@ -91,10 +91,15 @@ struct Params {
     int64_t nAveragingTargetTimespan;
     int64_t nMaxAdjustDown;
     int64_t nMaxAdjustUp;
+    int64_t nMaxAdjustDownV2;
+    int64_t nMaxAdjustUpV2;
     int64_t nMinActualTimespan;
     int64_t nMaxActualTimespan;
+    int64_t nMinActualTimespanV2;
+    int64_t nMaxActualTimespanV2;
     int64_t nLocalTargetAdjustment;
     int64_t nLocalDifficultyAdjustment;
+    int v2DiffChangeHeight;
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
 };

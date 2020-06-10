@@ -10,8 +10,8 @@
  * network protocol versioning
  */
 
-
-static const int PROTOCOL_VERSION = 70210;
+// Current Protocol Version 70211 enforced at block 100k
+static const int PROTOCOL_VERSION = 70211;
 
 //! initial proto version, to be increased after version/verack negotiation
 static const int INIT_PROTO_VERSION = 209;
