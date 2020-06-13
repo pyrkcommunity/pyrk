@@ -35,6 +35,7 @@ unsigned int GetNextWorkRequiredV1(const CBlockIndex* pindexLast, const Consensu
     // find first block in averaging interval
     // Go back by what we want to be nAveragingInterval blocks per algo
     const CBlockIndex* pindexFirst = pindexLast;
+    
     for (int i = 0; pindexFirst && i < NUM_ALGOS * params.nAveragingInterval; i++)
     {
         pindexFirst = pindexFirst->pprev;
@@ -100,7 +101,7 @@ unsigned int GetNextWorkRequiredV2(const CBlockIndex* pindexLast, const Consensu
     // find first block in averaging interval
     // Go back by what we want to be nAveragingInterval blocks per algo
     const CBlockIndex* pindexFirst = pindexLast;
-    for (int i = 0; pindexFirst && i < NUM_ALGOS * params.nAveragingInterval; i++)
+    for (int i = 0; pindexFirst && i < NUM_ALGOSV2 * params.nAveragingInterval; i++)
     {
         pindexFirst = pindexFirst->pprev;
     }
@@ -114,7 +115,7 @@ unsigned int GetNextWorkRequiredV2(const CBlockIndex* pindexLast, const Consensu
     // Limit adjustment step
     // Use medians to prevent time-warp attacks
     int64_t nActualTimespan = pindexLast->GetMedianTimePast() - pindexFirst->GetMedianTimePast();
-    nActualTimespan = params.nAveragingTargetTimespan + (nActualTimespan - params.nAveragingTargetTimespan)/4;
+    nActualTimespan = params.nAveragingTargetTimespanV2 + (nActualTimespan - params.nAveragingTargetTimespanV2)/4;
 
     if (nActualTimespan < params.nMinActualTimespanV2)
         nActualTimespan = params.nMinActualTimespanV2;
@@ -126,10 +127,10 @@ unsigned int GetNextWorkRequiredV2(const CBlockIndex* pindexLast, const Consensu
     bnNew.SetCompact(pindexPrevAlgo->nBits);
 
     bnNew *= nActualTimespan;
-    bnNew /= params.nAveragingTargetTimespan;
+    bnNew /= params.nAveragingTargetTimespanV2;
 
     //Per-algo retarget
-    int nAdjustments = pindexPrevAlgo->nHeight + NUM_ALGOS - 1 - pindexLast->nHeight;
+    int nAdjustments = pindexPrevAlgo->nHeight + NUM_ALGOSV2 - 1 - pindexLast->nHeight;
     if (nAdjustments > 0)
     {
         for (int i = 0; i < nAdjustments; i++)

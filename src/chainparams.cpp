@@ -229,7 +229,7 @@ class CTestNetParams : public CChainParams {
 public:
     CTestNetParams() {
         strNetworkID = "test";
-        consensus.nSubsidyHalvingInterval = 200000;
+        consensus.nSubsidyHalvingInterval = 100000;
         consensus.nMasternodePaymentsStartBlock = 4010;
         consensus.nInstantSendConfirmationsRequired = 2;
         consensus.nInstantSendKeepLock = 6;
@@ -249,8 +249,10 @@ public:
         consensus.powLimit = uint256S("00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // ~uint256(0) >> 20
         consensus.nPowTargetSpacing = 90; // 1.5 minutes
         consensus.nAveragingInterval = 10; // 10 blocks
-        consensus.multiAlgoTargetSpacing = 90 * 3; // NUM_ALGOS * 90 seconds
+        consensus.multiAlgoTargetSpacing = 90 * 4; //3; // NUM_ALGOS * 90 seconds
+        consensus.multiAlgoTargetSpacingV2 = 90 * 4; // add yespower
         consensus.nAveragingTargetTimespan = consensus.nAveragingInterval * consensus.multiAlgoTargetSpacing; // 10 * NUM_ALGOS * 90
+        consensus.nAveragingTargetTimespanV2 = consensus.nAveragingInterval * consensus.multiAlgoTargetSpacingV2; // 10 * NUM_ALGOS * 90
         consensus.nMaxAdjustDown = 16; // 16% adjustment down
         consensus.nMaxAdjustUp = 8; // 8% adjustment up
         consensus.nMaxAdjustDownV2 = 12; // 12% adjustment down -- lower a little slower
@@ -259,7 +261,7 @@ public:
         consensus.nMaxActualTimespan = consensus.nAveragingTargetTimespan * (100 + consensus.nMaxAdjustDown) / 100;
         consensus.nMinActualTimespanV2 = consensus.nAveragingTargetTimespan * (100 - consensus.nMaxAdjustUpV2) / 100;
         consensus.nMaxActualTimespanV2 = consensus.nAveragingTargetTimespan * (100 + consensus.nMaxAdjustDownV2) / 100;
-        consensus.v2DiffChangeHeight = 100000;
+        consensus.v2DiffChangeHeight = 11; // 100000
         consensus.nLocalTargetAdjustment = 4; //target adjustment per algo
         consensus.nLocalDifficultyAdjustment = 4; //difficulty adjustment per algo
         consensus.fPowAllowMinDifficultyBlocks = true;
@@ -269,7 +271,7 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 1199145601; // January 1, 2008
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 1230767999; // December 31, 2008
-
+        
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");
 
@@ -354,8 +356,10 @@ public:
         consensus.powLimit = uint256S("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"); // ~uint256(0) >> 1
         consensus.nPowTargetSpacing = 90; // 1.5 minutes
         consensus.nAveragingInterval = 10; // 10 blocks
-        consensus.multiAlgoTargetSpacing = 90 * 3; // NUM_ALGOS * 90 seconds
+        consensus.multiAlgoTargetSpacing = 90 * 3; //3; // NUM_ALGOS * 90 seconds
+        consensus.multiAlgoTargetSpacingV2 = 90 * 4; // add yespower
         consensus.nAveragingTargetTimespan = consensus.nAveragingInterval * consensus.multiAlgoTargetSpacing; // 10 * NUM_ALGOS * 90
+        consensus.nAveragingTargetTimespanV2 = consensus.nAveragingInterval * consensus.multiAlgoTargetSpacingV2; // 10 * NUM_ALGOS * 90
         consensus.nMaxAdjustDown = 16; // 16% adjustment down
         consensus.nMaxAdjustUp = 8; // 8% adjustment up
         consensus.nMaxAdjustDownV2 = 12; // 12% adjustment down -- lower a little slower
@@ -478,6 +482,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = 0;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = 999999999999ULL;
+        
+
 
         // The best chain should have at least this much work.
         consensus.nMinimumChainWork = uint256S("0x00");

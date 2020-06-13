@@ -88,7 +88,9 @@ struct Params {
     int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
     int64_t nAveragingInterval;
     int64_t multiAlgoTargetSpacing;
+    int64_t multiAlgoTargetSpacingV2;
     int64_t nAveragingTargetTimespan;
+    int64_t nAveragingTargetTimespanV2;
     int64_t nMaxAdjustDown;
     int64_t nMaxAdjustUp;
     int64_t nMaxAdjustDownV2;

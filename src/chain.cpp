@@ -124,8 +124,19 @@ arith_uint256 GetBlockProof(const CBlockIndex& block)
     const Consensus::Params& params = Params().GetConsensus();
     // Compute the geometric mean of the block targets for each individual algorithm.
     arith_uint256 bnAvgTarget(1);
-
-    for (int i = 0; i < NUM_ALGOS; i++)
+    
+    int CURRENT_ALGOS;
+    
+    if (block.nHeight >= 100000)
+    {
+    	CURRENT_ALGOS = NUM_ALGOS_NEW;
+    }
+    else
+    {
+		CURRENT_ALGOS = NUM_ALGOS_NEW;
+	}
+	
+    for (int i = 0; i < CURRENT_ALGOS; i++)
     {
         unsigned int nBits = GetNextWorkRequired(block.pprev, &header, params, i);
         arith_uint256 bnTarget;
@@ -137,7 +148,7 @@ arith_uint256 GetBlockProof(const CBlockIndex& block)
         // Instead of multiplying them all together and then taking the
         // nth root at the end, take the roots individually then multiply so
         // that all intermediate values fit in 256-bit integers.
-        bnAvgTarget *= bnTarget.ApproxNthRoot(NUM_ALGOS);
+        bnAvgTarget *= bnTarget.ApproxNthRoot(CURRENT_ALGOS);
     }
 
     arith_uint256 bnRes = (~bnAvgTarget / (bnAvgTarget + 1)) + 1;

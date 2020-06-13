@@ -1969,6 +1969,12 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
         case ALGO_X11:
         nVersion |= BLOCK_VERSION_X11;
         break;
+        case ALGO_YESPOWER:
+        if (pindexPrev->nHeight < params.v2DiffChangeHeight)
+            nVersion |= BLOCK_VERSION_SCRYPT;
+        else
+            nVersion |= BLOCK_VERSION_YESPOWER;
+        break;
         default:
         break;
     }
@@ -1987,7 +1993,7 @@ bool GetBlockHash(uint256& hashRet, int nBlockHeight)
 }
 
 bool isMultiAlgoVersion(int nVersion){
-     if((nVersion & 0xfffU) == 514 || (nVersion & 0xfffU) == 1026 || (nVersion & 0xfffU) == 1538) {
+     if((nVersion & 0xfffU) == 514 || (nVersion & 0xfffU) == 1026 || (nVersion & 0xfffU) == 1538 || (nVersion & 0xfffU) == 2052) {
          return true;
      }
      return false;
@@ -3421,6 +3427,10 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
             return state.Invalid(false, REJECT_OBSOLETE, strprintf("bad-version(0x%08x)", block.nVersion),
                                  strprintf("rejected nVersion=0x%08x block", block.nVersion));
 
+    // check of algo 3 is active
+    if (block.GetAlgo() == 3 && nHeight < consensusParams.v2DiffChangeHeight)
+        return state.Invalid(false, REJECT_INVALID, "invalid-algo", "this algorithm is not active");
+        
     return true;
 }
 

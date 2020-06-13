@@ -1490,6 +1490,8 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         miningAlgo = ALGO_SCRYPT;
     else if (strAlgo == "x11")
         miningAlgo = ALGO_X11;
+    else if (strAlgo == "yespower")
+        miningAlgo = ALGO_YESPOWER;
     else
         miningAlgo = ALGO_SCRYPT;
 

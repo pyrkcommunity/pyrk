@@ -105,6 +105,7 @@ UniValue getinfo(const JSONRPCRequest& request)
     obj.pushKV("difficulty_sha256d", (double)GetDifficulty(nullptr, ALGO_SHA256D));
     obj.pushKV("difficulty_scrypt",  (double)GetDifficulty(nullptr, ALGO_SCRYPT));
     obj.pushKV("difficulty_x11",     (double)GetDifficulty(nullptr, ALGO_X11));
+    obj.pushKV("difficulty_yespower",(double)GetDifficulty(nullptr, ALGO_YESPOWER));
     obj.push_back(Pair("testnet",       Params().NetworkIDString() == CBaseChainParams::TESTNET));
 #ifdef ENABLE_WALLET
     if (pwalletMain) {

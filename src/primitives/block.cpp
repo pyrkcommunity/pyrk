@@ -11,6 +11,7 @@
 #include "utilstrencodings.h"
 #include "crypto/common.h"
 #include "crypto/scrypt.h"
+#include "crypto/algos/yespower/yespower.h"
 
 uint256 CBlockHeader::GetHash() const
 {
@@ -27,7 +28,9 @@ int CBlockHeader::GetAlgo() const
             return ALGO_SHA256D;
         case BLOCK_VERSION_X11:
             return ALGO_X11;
-
+        case BLOCK_VERSION_YESPOWER:
+            return ALGO_YESPOWER;
+            
     }
     return ALGO_UNKNOWN;
 }
@@ -37,7 +40,9 @@ uint256 CBlockHeader::GetPoWAlgoHash() const
     switch (GetAlgo())
     {
         case ALGO_SHA256D:
+        {
             return GetHash();
+        }
         case ALGO_SCRYPT:
         {
             uint256 thash;
@@ -45,7 +50,15 @@ uint256 CBlockHeader::GetPoWAlgoHash() const
             return thash;
         }
         case ALGO_X11:
+        {
             return HashX11(BEGIN(nVersion), END(nNonce));
+        }
+        case ALGO_YESPOWER:
+        {
+            uint256 thash;
+            yespower_hash(BEGIN(nVersion), BEGIN(thash));
+            return thash;
+        }
         case ALGO_UNKNOWN:
             return ArithToUint256(~arith_uint256(0));
     }
@@ -81,6 +94,8 @@ std::string GetAlgoName(int Algo)
             return std::string("scrypt");
         case ALGO_X11:
             return std::string("x11");
+        case ALGO_YESPOWER:
+            return std::string("yespower");
     }
     return std::string("unknown");
 }
