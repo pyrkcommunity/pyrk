@@ -133,8 +133,8 @@ arith_uint256 GetBlockProof(const CBlockIndex& block)
     }
     else
     {
-		CURRENT_ALGOS = NUM_ALGOS_NEW;
-	}
+        CURRENT_ALGOS = NUM_ALGOS;
+    }
 	
     for (int i = 0; i < CURRENT_ALGOS; i++)
     {
