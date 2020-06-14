@@ -137,7 +137,9 @@ public:
         consensus.nPowTargetSpacing = 90; // 1.5 minutes
         consensus.nAveragingInterval = 10; // 10 blocks
         consensus.multiAlgoTargetSpacing = 90 * 3; // NUM_ALGOS * 90 seconds
+        consensus.multiAlgoTargetSpacingV2 = 90 * 4; // add yespower
         consensus.nAveragingTargetTimespan = consensus.nAveragingInterval * consensus.multiAlgoTargetSpacing; // 10 * NUM_ALGOS * 90
+        consensus.nAveragingTargetTimespanV2 = consensus.nAveragingInterval * consensus.multiAlgoTargetSpacingV2; // 10 * NUM_ALGOS * 90
         consensus.nMaxAdjustDown = 16; // 16% adjustment down
         consensus.nMaxAdjustUp = 8; // 8% adjustment up
         consensus.nMaxAdjustDownV2 = 12; // 12% adjustment down -- lower a little slower
