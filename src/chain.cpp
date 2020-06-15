@@ -129,7 +129,7 @@ arith_uint256 GetBlockProof(const CBlockIndex& block)
     
     if (block.nHeight >= 100000)
     {
-    	CURRENT_ALGOS = NUM_ALGOS_NEW;
+        CURRENT_ALGOS = NUM_ALGOSV2;
     }
     else
     {
