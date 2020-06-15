@@ -21,6 +21,7 @@ static const int SPORK_2_INSTANTSEND_ENABLED                            = 10001;
 static const int SPORK_3_INSTANTSEND_BLOCK_FILTERING                    = 10002;
 static const int SPORK_5_INSTANTSEND_MAX_VALUE                          = 10004;
 static const int SPORK_6_NEW_SIGS                                       = 10005;
+static const int SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT                 = 10007;
 static const int SPORK_9_SUPERBLOCKS_ENABLED                            = 10008;
 static const int SPORK_14_REQUIRE_SENTINEL_FLAG                         = 10013;
 

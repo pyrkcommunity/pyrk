@@ -21,6 +21,7 @@ std::map<int, int64_t> mapSporkDefaults = {
     {SPORK_3_INSTANTSEND_BLOCK_FILTERING,    0},             // ON
     {SPORK_5_INSTANTSEND_MAX_VALUE,          1000},          // 1000 Pyrk
     {SPORK_6_NEW_SIGS,                       4070908800ULL}, // OFF
+    {SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT, 4070908800ULL}, // OFF
     {SPORK_9_SUPERBLOCKS_ENABLED,            0}, // ON
     {SPORK_14_REQUIRE_SENTINEL_FLAG,         4070908800ULL}, // OFF
 };
@@ -130,6 +131,7 @@ int CSporkManager::GetSporkIDByName(const std::string& strName)
     if (strName == "SPORK_3_INSTANTSEND_BLOCK_FILTERING")       return SPORK_3_INSTANTSEND_BLOCK_FILTERING;
     if (strName == "SPORK_5_INSTANTSEND_MAX_VALUE")             return SPORK_5_INSTANTSEND_MAX_VALUE;
     if (strName == "SPORK_6_NEW_SIGS")                          return SPORK_6_NEW_SIGS;
+    if (strName == "SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT")    return SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT;
     if (strName == "SPORK_9_SUPERBLOCKS_ENABLED")               return SPORK_9_SUPERBLOCKS_ENABLED;
     if (strName == "SPORK_14_REQUIRE_SENTINEL_FLAG")            return SPORK_14_REQUIRE_SENTINEL_FLAG;
 
@@ -144,6 +146,7 @@ std::string CSporkManager::GetSporkNameByID(int nSporkID)
         case SPORK_3_INSTANTSEND_BLOCK_FILTERING:       return "SPORK_3_INSTANTSEND_BLOCK_FILTERING";
         case SPORK_5_INSTANTSEND_MAX_VALUE:             return "SPORK_5_INSTANTSEND_MAX_VALUE";
         case SPORK_6_NEW_SIGS:                          return "SPORK_6_NEW_SIGS";
+        case SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT:    return "SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT";
         case SPORK_9_SUPERBLOCKS_ENABLED:               return "SPORK_9_SUPERBLOCKS_ENABLED";
         case SPORK_14_REQUIRE_SENTINEL_FLAG:            return "SPORK_14_REQUIRE_SENTINEL_FLAG";
         default:
