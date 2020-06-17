@@ -120,7 +120,7 @@ CMasternode::CollateralStatus CMasternode::CheckCollateral(const COutPoint& outp
     if (chainActive.Height() >= Params().GetConsensus().nCollateralChangeHeight)
         masternode_collateral = 2500;
 
-    if (chainActive.Height() >= (Params().GetConsensus().nCollateralChangeHeight - 1000))
+    if (chainActive.Height() >= (Params().GetConsensus().nCollateralChangeHeight - 20000))
     {
         int masternode_collateral_v1 = 1000;
         int masternode_collateral_v2 = 2500;
