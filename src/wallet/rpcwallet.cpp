@@ -3038,7 +3038,7 @@ UniValue token_getbalance(const JSONRPCRequest &request)
 
     std::ostringstream oss;
     std::string json;
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "balance/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "balance/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
     {
 		// Web page successfully written to string
         json = oss.str();
@@ -3105,7 +3105,7 @@ UniValue token_getbalances(const JSONRPCRequest &request)
     std::string jsonstring;
     UniValue ret(UniValue::VARR);
     
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "address/" + currenttokenaddress, oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "address/" + currenttokenaddress, oss))
     {
 		// Get API results 
         jsonstring = oss.str();
@@ -3676,7 +3676,7 @@ UniValue token_send(const JSONRPCRequest &request)
     std::ostringstream oss;
     std::string jsonstring;
     
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "tokenaddress/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "tokenaddress/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
     {
 
 		// Get API results 
@@ -4101,7 +4101,7 @@ UniValue token_addmeta(const JSONRPCRequest &request)
     std::ostringstream oss;
     std::string jsonstring;
     
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "ismetaauth/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "ismetaauth/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
     {
 
 		// Get API results 
@@ -4514,7 +4514,7 @@ UniValue token_burn(const JSONRPCRequest &request)
     std::ostringstream oss;
     std::string jsonstring;
     
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "tokenaddress/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "tokenaddress/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
     {
 
 		// Get API results 
@@ -4922,7 +4922,7 @@ UniValue token_pause(const JSONRPCRequest &request)
     std::ostringstream oss;
     std::string jsonstring;
     
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "tokenaddress/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "tokenaddress/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
     {
 
 		// Get API results 
@@ -5317,7 +5317,7 @@ UniValue token_resume(const JSONRPCRequest &request)
     std::ostringstream oss;
     std::string jsonstring;
     
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "tokenaddress/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "tokenaddress/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
     {
 
 		// Get API results 
@@ -5724,7 +5724,7 @@ UniValue token_newowner(const JSONRPCRequest &request)
     std::ostringstream oss;
     std::string jsonstring;
     
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "tokenaddress/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "tokenaddress/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
     {
 
 		// Get API results 
@@ -6139,7 +6139,7 @@ UniValue token_authmeta(const JSONRPCRequest &request)
     std::ostringstream oss;
     std::string jsonstring;
     
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "tokenaddress/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "tokenaddress/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
     {
 
 		// Get API results 
@@ -6556,7 +6556,7 @@ UniValue token_revokemeta(const JSONRPCRequest &request)
     std::ostringstream oss;
     std::string jsonstring;
     
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "tokenaddress/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "tokenaddress/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
     {
 
 		// Get API results 
@@ -6943,7 +6943,7 @@ UniValue token_gettransaction(const JSONRPCRequest &request)
     std::string jsonstring;
     UniValue ret(UniValue::VARR);
     
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "transaction/" + currenttokenaddress + "/" + request.params[0].get_str(), oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "transaction/" + currenttokenaddress + "/" + request.params[0].get_str(), oss))
     {
 		// Get API results 
         jsonstring = oss.str();
@@ -7015,7 +7015,7 @@ UniValue token_listtransactions(const JSONRPCRequest &request)
     std::string jsonstring;
     UniValue ret(UniValue::VARR);
         
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "transactionsbyaddress/" + request.params[0].get_str() + "/" + currenttokenaddress + "?limit=" + limit + "&page=" + page, oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "transactionsbyaddress/" + request.params[0].get_str() + "/" + currenttokenaddress + "?limit=" + limit + "&page=" + page, oss))
     {
 		// Get API results 
         jsonstring = oss.str();
@@ -7086,7 +7086,7 @@ UniValue token_listalltransactions(const JSONRPCRequest &request)
     std::string jsonstring;
     UniValue ret(UniValue::VARR);
         
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "addresstransactions/" + currenttokenaddress + "?limit=" + limit + "&page=" + page, oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "addresstransactions/" + currenttokenaddress + "?limit=" + limit + "&page=" + page, oss))
     {
 		// Get API results 
         jsonstring = oss.str();
@@ -7124,7 +7124,7 @@ UniValue token_getinfo(const JSONRPCRequest &request)
     std::string jsonstring;
     UniValue ret(UniValue::VARR);
     
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "token/" + request.params[0].get_str(), oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "token/" + request.params[0].get_str(), oss))
     {
 		// Get API results 
         jsonstring = oss.str();
@@ -7172,7 +7172,7 @@ UniValue token_getallmeta(const JSONRPCRequest &request)
     std::string jsonstring;
     UniValue ret(UniValue::VARR);
     
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "metadata/" + request.params[0].get_str() + "?limit=" + limit + "&page=" + page, oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "metadata/" + request.params[0].get_str() + "?limit=" + limit + "&page=" + page, oss))
     {
 		// Get API results 
         jsonstring = oss.str();
@@ -7221,7 +7221,7 @@ UniValue token_getmetabycode(const JSONRPCRequest &request)
     std::string jsonstring;
     UniValue ret(UniValue::VARR);
     
-    if(CURLE_OK == curl_read(BaseParams().TokenApi() + "metadatabycode/" + request.params[0].get_str() + "/" + request.params[1].get_str() + "?limit=" + limit + "&page=" + page, oss))
+    if(CURLE_OK == curl_read(GetArg("-tokenapiurl", "https://tokenapi.pyrk.org/api/") + "metadatabycode/" + request.params[0].get_str() + "/" + request.params[1].get_str() + "?limit=" + limit + "&page=" + page, oss))
     {
 		// Get API results 
         jsonstring = oss.str();
