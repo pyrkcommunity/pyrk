@@ -3035,10 +3035,7 @@ UniValue token_getbalance(const JSONRPCRequest &request)
 		throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
     
     }
-    
-    //
 
-    curl_global_init(CURL_GLOBAL_ALL);
     std::ostringstream oss;
     std::string json;
     if(CURLE_OK == curl_read(BaseParams().TokenApi() + "balance/" + request.params[0].get_str() + "/" + currenttokenaddress, oss))
@@ -3049,13 +3046,8 @@ UniValue token_getbalance(const JSONRPCRequest &request)
         return json;
 		
     }
-    else
-    {
-        return "0";
-    }
-	
-	curl_global_cleanup();
-	     
+
+    return "0";
 }
 
 UniValue token_getbalances(const JSONRPCRequest &request)
@@ -3108,10 +3100,7 @@ UniValue token_getbalances(const JSONRPCRequest &request)
 		throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
     
     }
-    
-    //
-    
-    curl_global_init(CURL_GLOBAL_ALL);
+
     std::ostringstream oss;
     std::string jsonstring;
     UniValue ret(UniValue::VARR);
@@ -3126,13 +3115,8 @@ UniValue token_getbalances(const JSONRPCRequest &request)
 		// Pretty print
         return json.dump(4);;
     }
-    else
-    {
-        return "[]";
-    }
-	
-	curl_global_cleanup();
-	     
+
+    return "[]";
 }
 
 std::string string_to_hex(const std::string& in) {
@@ -3689,9 +3673,6 @@ UniValue token_send(const JSONRPCRequest &request)
     }
 
     // Check Token Balance
-
-
-    curl_global_init(CURL_GLOBAL_ALL);
     std::ostringstream oss;
     std::string jsonstring;
     
@@ -4113,13 +4094,10 @@ UniValue token_addmeta(const JSONRPCRequest &request)
 		throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
     
     }
-    
+
     //
-    
+
     // Check if metaauth
-
-
-    curl_global_init(CURL_GLOBAL_ALL);
     std::ostringstream oss;
     std::string jsonstring;
     
@@ -4529,13 +4507,10 @@ UniValue token_burn(const JSONRPCRequest &request)
 		throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
     
     }
-    
+
     //
-    
+
     // Check if owner
-
-
-    curl_global_init(CURL_GLOBAL_ALL);
     std::ostringstream oss;
     std::string jsonstring;
     
@@ -4940,13 +4915,10 @@ UniValue token_pause(const JSONRPCRequest &request)
 		throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
     
     }
-    
+
     //
-    
+
     // Check if owner
-
-
-    curl_global_init(CURL_GLOBAL_ALL);
     std::ostringstream oss;
     std::string jsonstring;
     
@@ -5338,13 +5310,10 @@ UniValue token_resume(const JSONRPCRequest &request)
 		throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
     
     }
-    
+
     //
-    
+
     // Check if owner
-
-
-    curl_global_init(CURL_GLOBAL_ALL);
     std::ostringstream oss;
     std::string jsonstring;
     
@@ -5750,11 +5719,8 @@ UniValue token_newowner(const JSONRPCRequest &request)
     }
     
     //
-    
+
     // Check if owner
-
-
-    curl_global_init(CURL_GLOBAL_ALL);
     std::ostringstream oss;
     std::string jsonstring;
     
@@ -6166,13 +6132,10 @@ UniValue token_authmeta(const JSONRPCRequest &request)
 		throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
     
     }
-    
+
     //
-    
+
     // Check if owner
-
-
-    curl_global_init(CURL_GLOBAL_ALL);
     std::ostringstream oss;
     std::string jsonstring;
     
@@ -6585,13 +6548,11 @@ UniValue token_revokemeta(const JSONRPCRequest &request)
 		throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
     
     }
-    
+
     //
-    
+
     // Check if owner
 
-
-    curl_global_init(CURL_GLOBAL_ALL);
     std::ostringstream oss;
     std::string jsonstring;
     
@@ -6977,10 +6938,7 @@ UniValue token_gettransaction(const JSONRPCRequest &request)
 		throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
     
     }
-    
-    //
 
-    curl_global_init(CURL_GLOBAL_ALL);
     std::ostringstream oss;
     std::string jsonstring;
     UniValue ret(UniValue::VARR);
@@ -6995,13 +6953,8 @@ UniValue token_gettransaction(const JSONRPCRequest &request)
 		// Pretty print
         return json.dump(4);
     }
-    else
-    {
-        return "[]";
-    }
-	
-	curl_global_cleanup();
-	     
+
+    return "[]";
 }
 
 UniValue token_listtransactions(const JSONRPCRequest &request)
@@ -7057,9 +7010,7 @@ UniValue token_listtransactions(const JSONRPCRequest &request)
 		throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
     
     }
-    
-    //
-    curl_global_init(CURL_GLOBAL_ALL);
+
     std::ostringstream oss;
     std::string jsonstring;
     UniValue ret(UniValue::VARR);
@@ -7074,13 +7025,8 @@ UniValue token_listtransactions(const JSONRPCRequest &request)
 		// Pretty print
         return json.dump(4);;
     }
-    else
-    {
-        return "[]";
-    }
-	
-	curl_global_cleanup();
-	     
+
+    return "[]";
 }
 
 UniValue token_listalltransactions(const JSONRPCRequest &request)
@@ -7135,10 +7081,7 @@ UniValue token_listalltransactions(const JSONRPCRequest &request)
 		throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
     
     }
-    
-    //
 
-    curl_global_init(CURL_GLOBAL_ALL);
     std::ostringstream oss;
     std::string jsonstring;
     UniValue ret(UniValue::VARR);
@@ -7153,13 +7096,9 @@ UniValue token_listalltransactions(const JSONRPCRequest &request)
 		// Pretty print
         return json.dump(4);;
     }
-    else
-    {
-        return "[]";
-    }
-	
-	curl_global_cleanup();
-	     
+
+    return "[]";
+
 }
 
 UniValue token_getinfo(const JSONRPCRequest &request)
@@ -7181,7 +7120,6 @@ UniValue token_getinfo(const JSONRPCRequest &request)
             + HelpExampleRpc("token_getinfo", "\"504a0f265ed85d6d5770ab\"")
         );
     
-    curl_global_init(CURL_GLOBAL_ALL);
     std::ostringstream oss;
     std::string jsonstring;
     UniValue ret(UniValue::VARR);
@@ -7196,13 +7134,8 @@ UniValue token_getinfo(const JSONRPCRequest &request)
 		// Pretty print
         return json.dump(4);;
     }
-    else
-    {
-        return "[]";
-    }
-	
-	curl_global_cleanup();
-	     
+
+    return "[]";
 }
 
 UniValue token_getallmeta(const JSONRPCRequest &request)
@@ -7235,7 +7168,6 @@ UniValue token_getallmeta(const JSONRPCRequest &request)
     if (request.params.size() > 2)
     	page = request.params[2].get_str();
 
-    curl_global_init(CURL_GLOBAL_ALL);
     std::ostringstream oss;
     std::string jsonstring;
     UniValue ret(UniValue::VARR);
@@ -7250,13 +7182,8 @@ UniValue token_getallmeta(const JSONRPCRequest &request)
 		// Pretty print
         return json.dump(4);;
     }
-    else
-    {
-        return "[]";
-    }
-	
-	curl_global_cleanup();
-	     
+
+    return "[]";
 }
 
 UniValue token_getmetabycode(const JSONRPCRequest &request)
@@ -7290,7 +7217,6 @@ UniValue token_getmetabycode(const JSONRPCRequest &request)
     if (request.params.size() > 3)
     	page = request.params[3].get_str();
 
-    curl_global_init(CURL_GLOBAL_ALL);
     std::ostringstream oss;
     std::string jsonstring;
     UniValue ret(UniValue::VARR);
@@ -7305,13 +7231,8 @@ UniValue token_getmetabycode(const JSONRPCRequest &request)
 		// Pretty print
         return json.dump(4);;
     }
-    else
-    {
-        return "[]";
-    }
-	
-	curl_global_cleanup();
-	     
+
+    return "[]";
 }
 
 // End Tokens

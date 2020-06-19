@@ -869,6 +869,12 @@ save_CXXFLAGS="${CXXFLAGS}"
 save_LIBS="${LIBS}"
 CXXFLAGS="${CXXFLAGS} ${CRYPTO_CFLAGS} ${SSL_CFLAGS}"
 LIBS="${LIBS} ${SSL_LIBS} ${CURL_LIBS} ${CRYPTO_LIBS}"
+case $host in
+  *mingw*)
+    LIBS="${LIBS} -lgdi32"
+  ;;
+esac
+
 AC_CHECK_DECLS([EVP_MD_CTX_new],,,[AC_INCLUDES_DEFAULT
 #include <openssl/x509_vfy.h>
 ])
