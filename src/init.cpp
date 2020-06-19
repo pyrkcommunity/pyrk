@@ -66,6 +66,8 @@
 #include "spork.h"
 #include "warnings.h"
 
+#include <curl/curl.h>
+
 #include <stdint.h>
 #include <stdio.h>
 #include <memory>
@@ -332,6 +334,7 @@ void Shutdown()
 #endif
     globalVerifyHandle.reset();
     ECC_Stop();
+    curl_global_cleanup();
     LogPrintf("%s: done\n", __func__);
 }
 
@@ -1985,6 +1988,9 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
 
     if (!connman.Start(scheduler, strNodeError, connOptions))
         return InitError(strNodeError);
+
+    // Set up curl environment
+    curl_global_init(CURL_GLOBAL_ALL);
 
     // ********************************************************* Step 13: finished
 

@@ -2,8 +2,8 @@ dnl require autoconf 2.60 (AS_ECHO/AS_ECHO_N)
 AC_PREREQ([2.60])
 define(_CLIENT_VERSION_MAJOR, 0)
 define(_CLIENT_VERSION_MINOR, 12)
-define(_CLIENT_VERSION_REVISION, 3)
-define(_CLIENT_VERSION_BUILD, 4)
+define(_CLIENT_VERSION_REVISION, 4)
+define(_CLIENT_VERSION_BUILD, 1)
 define(_CLIENT_VERSION_IS_RELEASE, true)
 define(_COPYRIGHT_YEAR, 2020)
 define(_COPYRIGHT_HOLDERS,[The %s developers])
@@ -869,6 +869,12 @@ save_CXXFLAGS="${CXXFLAGS}"
 save_LIBS="${LIBS}"
 CXXFLAGS="${CXXFLAGS} ${CRYPTO_CFLAGS} ${SSL_CFLAGS}"
 LIBS="${LIBS} ${SSL_LIBS} ${CURL_LIBS} ${CRYPTO_LIBS}"
+case $host in
+  *mingw*)
+    LIBS="${LIBS} -lgdi32"
+  ;;
+esac
+
 AC_CHECK_DECLS([EVP_MD_CTX_new],,,[AC_INCLUDES_DEFAULT
 #include <openssl/x509_vfy.h>
 ])

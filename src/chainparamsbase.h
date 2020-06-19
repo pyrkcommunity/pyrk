@@ -23,14 +23,12 @@ public:
 
     const std::string& DataDir() const { return strDataDir; }
     int RPCPort() const { return nRPCPort; }
-    const std::string& TokenApi() const { return strTokenApi; }
 
 protected:
     CBaseChainParams() {}
 
     int nRPCPort;
     std::string strDataDir;
-    std::string strTokenApi;
 };
 
 /**
