@@ -3651,24 +3651,24 @@ UniValue token_send(const JSONRPCRequest &request)
     UniValue ret(UniValue::VSTR);
 
     // Token address    
-	std::string currenttokenaddress;
-	boost::filesystem::path tokenaddresspath = GetDataDir() / "tokenaddress.txt";
-	std::string tokenaddressfile = tokenaddresspath.string().c_str();
-	std::fstream newfile;
+    std::string currenttokenaddress;
+    boost::filesystem::path tokenaddresspath = GetDataDir() / "tokenaddress.txt";
+    std::string tokenaddressfile = tokenaddresspath.string().c_str();
+    std::fstream newfile;
     newfile.open(tokenaddressfile,std::ios::in);
     if (newfile.is_open()){
-        getline(newfile, currenttokenaddress);
-        newfile.close(); 
+	getline(newfile, currenttokenaddress);
+	newfile.close(); 
     }
     else
     {
-		throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
+	throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
     }
     
-	if (currenttokenaddress.empty())
-	{
+    if (currenttokenaddress.empty())
+    {
 
-		throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
+        throw JSONRPCError(RPC_TRANSACTION_ERROR, "Token Address not assigned.  Try token_getaddress or token_setaddress");	
     
     }
 
@@ -3721,7 +3721,7 @@ UniValue token_send(const JSONRPCRequest &request)
 			if (setAddress.size() && (!fValidAddress || !setAddress.count(address)))
 				continue;
 			
-			if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00001)
+			if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.000045)
 				continue;
 
 			UniValue entry(UniValue::VOBJ);
@@ -3761,8 +3761,8 @@ UniValue token_send(const JSONRPCRequest &request)
 		int inputvout = results[0]["vout"].get_int();
 	
 		double inputvalue = results[0]["amount"].get_real();
-		double valueoutdust = 0.00001; // 1000 sat dust trx
-		double valueoutraw = inputvalue - valueoutdust - 0.00001; // 1000 sat fee
+		double valueoutdust = 0.000015; // 1500 sat dust trx
+		double valueoutraw = inputvalue - valueoutdust - 0.000015; // 1500 sat fee
 
 	
 		std::stringstream tmp;
@@ -4140,7 +4140,7 @@ UniValue token_addmeta(const JSONRPCRequest &request)
 				if (setAddress.size() && (!fValidAddress || !setAddress.count(address)))
 					continue;
 			
-				if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00001)
+				if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00003)
 					continue;
 
 				UniValue entry(UniValue::VOBJ);
@@ -4180,7 +4180,7 @@ UniValue token_addmeta(const JSONRPCRequest &request)
 			int inputvout = results[0]["vout"].get_int();
 	
 			double inputvalue = results[0]["amount"].get_real();
-			double valueoutraw = inputvalue - 0.00001; // 1000 sat fee
+			double valueoutraw = inputvalue - 0.000015; // 1500 sat fee
 	
 			std::stringstream tmp;
 			tmp << std::setprecision(8) << std::fixed << valueoutraw;
@@ -4566,7 +4566,7 @@ UniValue token_burn(const JSONRPCRequest &request)
 				if (setAddress.size() && (!fValidAddress || !setAddress.count(address)))
 					continue;
 			
-				if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00001)
+				if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00003)
 					continue;
 
 				UniValue entry(UniValue::VOBJ);
@@ -4606,7 +4606,7 @@ UniValue token_burn(const JSONRPCRequest &request)
 			int inputvout = results[0]["vout"].get_int();
 	
 			double inputvalue = results[0]["amount"].get_real();
-			double valueoutraw = inputvalue - 0.00001; // 1000 sat fee
+			double valueoutraw = inputvalue - 0.000015; // 1500 sat fee
 	
 			std::stringstream tmp;
 			tmp << std::setprecision(8) << std::fixed << valueoutraw;
@@ -4961,7 +4961,7 @@ UniValue token_pause(const JSONRPCRequest &request)
 				if (setAddress.size() && (!fValidAddress || !setAddress.count(address)))
 					continue;
 			
-				if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00001)
+				if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00003)
 					continue;
 
 				UniValue entry(UniValue::VOBJ);
@@ -5001,7 +5001,7 @@ UniValue token_pause(const JSONRPCRequest &request)
 			int inputvout = results[0]["vout"].get_int();
 	
 			double inputvalue = results[0]["amount"].get_real();
-			double valueoutraw = inputvalue - 0.00001; // 1000 sat fee
+			double valueoutraw = inputvalue - 0.000015; // 1000 sat fee
 	
 			std::stringstream tmp;
 			tmp << std::setprecision(8) << std::fixed << valueoutraw;
@@ -5356,7 +5356,7 @@ UniValue token_resume(const JSONRPCRequest &request)
 				if (setAddress.size() && (!fValidAddress || !setAddress.count(address)))
 					continue;
 			
-				if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00001)
+				if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00003)
 					continue;
 
 				UniValue entry(UniValue::VOBJ);
@@ -5396,7 +5396,7 @@ UniValue token_resume(const JSONRPCRequest &request)
 			int inputvout = results[0]["vout"].get_int();
 	
 			double inputvalue = results[0]["amount"].get_real();
-			double valueoutraw = inputvalue - 0.00001; // 1000 sat fee
+			double valueoutraw = inputvalue - 0.000015; // 1500 sat fee
 	
 			std::stringstream tmp;
 			tmp << std::setprecision(8) << std::fixed << valueoutraw;
@@ -5763,7 +5763,7 @@ UniValue token_newowner(const JSONRPCRequest &request)
 				if (setAddress.size() && (!fValidAddress || !setAddress.count(address)))
 					continue;
 			
-				if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00001)
+				if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00003)
 					continue;
 
 				UniValue entry(UniValue::VOBJ);
@@ -5804,7 +5804,7 @@ UniValue token_newowner(const JSONRPCRequest &request)
 	
 			double inputvalue = results[0]["amount"].get_real();
 			double valueoutdust = 0.00001;
-			double valueoutraw = inputvalue - valueoutdust - 0.00001; // 1000 sat fee
+			double valueoutraw = inputvalue - valueoutdust - 0.000015; // 1500 sat fee
 	
 			std::stringstream tmp;
 			tmp << std::setprecision(8) << std::fixed << valueoutraw;
@@ -6178,7 +6178,7 @@ UniValue token_authmeta(const JSONRPCRequest &request)
 				if (setAddress.size() && (!fValidAddress || !setAddress.count(address)))
 					continue;
 			
-				if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00001)
+				if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00003)
 					continue;
 
 				UniValue entry(UniValue::VOBJ);
@@ -6219,7 +6219,7 @@ UniValue token_authmeta(const JSONRPCRequest &request)
 	
 			double inputvalue = results[0]["amount"].get_real();
 			double valueoutdust = 0.00001; // dust trx to recipient
-			double valueoutraw = inputvalue - valueoutdust - 0.00001; // 1000 sat fee
+			double valueoutraw = inputvalue - valueoutdust - 0.000015; // 1500 sat fee
 	
 			std::stringstream tmp;
 			tmp << std::setprecision(8) << std::fixed << valueoutraw;
@@ -6595,7 +6595,7 @@ UniValue token_revokemeta(const JSONRPCRequest &request)
 				if (setAddress.size() && (!fValidAddress || !setAddress.count(address)))
 					continue;
 			
-				if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00001)
+				if (ValueFromAmount(out.tx->tx->vout[out.i].nValue).get_real() < 0.00003)
 					continue;
 
 				UniValue entry(UniValue::VOBJ);
@@ -6636,7 +6636,7 @@ UniValue token_revokemeta(const JSONRPCRequest &request)
 	
 			double inputvalue = results[0]["amount"].get_real();
 			double valueoutdust = 0.00001; // dust trx to reciplient
-			double valueoutraw = inputvalue - 0.00001; // 1000 sat fee
+			double valueoutraw = inputvalue - 0.000015; // 1500 sat fee
 	
 			std::stringstream tmp;
 			tmp << std::setprecision(8) << std::fixed << valueoutraw;
