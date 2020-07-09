@@ -7194,8 +7194,8 @@ UniValue token_getmetabycode(const JSONRPCRequest &request)
 
     if (request.fHelp || request.params.size() > 4 || request.params.size() < 2)
         throw std::runtime_error(
-            "token_getinfo tokenid\n"
-            "\nGet the information about a token.\n"
+            "token_getmetabycode tokenid\n"
+            "\nGet token meta list array.\n"
             "\nArguments:\n"
             "1. tokenid         (string, required)  The TokenID\n"
             "2. metacode        (number, required)  1 - 4294967295\n"
