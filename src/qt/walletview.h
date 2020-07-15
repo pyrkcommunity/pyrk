@@ -6,14 +6,15 @@
 #define BITCOIN_QT_WALLETVIEW_H
 
 #include "amount.h"
-#include "masternodelist.h"
 
 #include <QStackedWidget>
 
 class BitcoinGUI;
 class ClientModel;
+class MasternodeList;
 class OverviewPage;
 class PlatformStyle;
+class PyrkTokens;
 class ReceiveCoinsDialog;
 class SendCoinsDialog;
 class SendCoinsRecipient;
@@ -67,6 +68,7 @@ private:
     AddressBookPage *usedSendingAddressesPage;
     AddressBookPage *usedReceivingAddressesPage;
     MasternodeList *masternodeListPage;
+    PyrkTokens *pyrkTokensPage;
 
     TransactionView *transactionView;
 
@@ -81,6 +83,8 @@ public Q_SLOTS:
     void gotoHistoryPage();
     /** Switch to masternode page */
     void gotoMasternodePage();
+    /** Switch to Pyrk token page */
+    void gotoPyrkTokenPage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */

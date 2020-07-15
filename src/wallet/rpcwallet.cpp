@@ -31,7 +31,6 @@
 
 #include <univalue.h>
 
-#include <curl/curl.h>
 #include <nlohmann/json.hpp>
 #include <boost/filesystem.hpp>
 #include <iostream>
@@ -156,7 +155,7 @@ UniValue getnewaddress(const JSONRPCRequest& request)
 }
 
 
-CBitcoinAddress GetAccountAddress(std::string strAccount, bool bForceNew=false)
+CBitcoinAddress GetAccountAddress(std::string strAccount, bool bForceNew)
 {
     CPubKey pubKey;
     if (!pwalletMain->GetAccountPubkey(pubKey, strAccount, bForceNew)) {
@@ -2974,7 +2973,7 @@ static size_t data_write(void* buf, size_t size, size_t nmemb, void* userp)
 /**
  * timeout is in seconds
  **/
-CURLcode curl_read(const std::string& url, std::ostream& os, long timeout = 30)
+CURLcode curl_read(const std::string& url, std::ostream& os, long timeout)
 {
 	CURLcode code(CURLE_FAILED_INIT);
 	CURL* curl = curl_easy_init();
@@ -3146,7 +3145,7 @@ std::string llint_to_hex(uint64_t intValue) {
     return hexStr;
 }
 
-void padTo(std::string &str, const size_t num, const char paddingChar = '0')
+void padTo(std::string &str, const size_t num, const char paddingChar)
 {
     if(num > str.size())
         str.insert(0, num - str.size(), paddingChar);
