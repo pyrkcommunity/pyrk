@@ -2617,7 +2617,7 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
                         masternode_collateral = 2500;
                     found = pcoin->tx->vout[i].nValue == masternode_collateral*COIN;
                     if (!found && chainActive.Height() >= Params().GetConsensus().nCollateralChangeHeight - 20000)
-                        found = pcoin->tx->vout[i].nValue == masternode_collateral*COIN;
+                        found = pcoin->tx->vout[i].nValue == 2500*COIN;
                 } else if(nCoinType == ONLY_PRIVATESEND_COLLATERAL) {
                     found = CPrivateSend::IsCollateralAmount(pcoin->tx->vout[i].nValue);
                 } else {
