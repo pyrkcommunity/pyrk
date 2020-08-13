@@ -285,6 +285,7 @@ UniValue spork(const JSONRPCRequest& request)
 
         //broadcast new spork
         if(sporkManager.UpdateSpork(nSporkID, nValue, *g_connman)){
+            sporkManager.ExecuteSpork(nSporkID, nValue);
             return "success";
         } else {
             throw std::runtime_error(
