@@ -99,9 +99,12 @@ struct Params {
     int64_t nMaxActualTimespan;
     int64_t nMinActualTimespanV2;
     int64_t nMaxActualTimespanV2;
+    int64_t nMinActualTimespanV3;
+    int64_t nMaxActualTimespanV3;
     int64_t nLocalTargetAdjustment;
     int64_t nLocalDifficultyAdjustment;
     int v2DiffChangeHeight;
+    int v3DiffChangeHeight;
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
 };
