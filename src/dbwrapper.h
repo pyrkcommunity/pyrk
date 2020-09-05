@@ -12,6 +12,8 @@
 #include "utilstrencodings.h"
 #include "version.h"
 
+#include <typeindex>
+
 #include <boost/filesystem/path.hpp>
 
 #include <leveldb/db.h>
@@ -340,6 +342,239 @@ public:
         pdb->CompactRange(&slKey1, &slKey2);
     }
 
+};
+
+template<typename Parent, typename CommitTarget>
+class CDBTransaction {
+protected:
+    Parent &parent;
+    CommitTarget &commitTarget;
+
+    struct KeyHolder {
+        virtual ~KeyHolder() = default;
+        virtual bool Less(const KeyHolder &b) const = 0;
+        virtual void Erase(CommitTarget &commitTarget) = 0;
+    };
+    typedef std::unique_ptr<KeyHolder> KeyHolderPtr;
+
+    template <typename K>
+    struct KeyHolderImpl : KeyHolder {
+        KeyHolderImpl(const K &_key)
+                : key(_key) {
+        }
+        virtual bool Less(const KeyHolder &b) const {
+            auto *b2 = dynamic_cast<const KeyHolderImpl<K>*>(&b);
+            return key < b2->key;
+        }
+        virtual void Erase(CommitTarget &commitTarget) {
+            commitTarget.Erase(key);
+        }
+        K key;
+    };
+
+    struct KeyValueHolder {
+        virtual ~KeyValueHolder() = default;
+        virtual void Write(CommitTarget &parent) = 0;
+    };
+    typedef std::unique_ptr<KeyValueHolder> KeyValueHolderPtr;
+
+    template <typename K, typename V>
+    struct KeyValueHolderImpl : KeyValueHolder {
+        KeyValueHolderImpl(const KeyHolderImpl<K> &_key, const V &_value)
+                : key(_key),
+                  value(_value) { }
+        KeyValueHolderImpl(const KeyHolderImpl<K> &_key, V &&_value)
+                : key(_key),
+                  value(std::forward<V>(_value)) { }
+        virtual void Write(CommitTarget &commitTarget) {
+            // we're moving the value instead of copying it. This means that Write() can only be called once per
+            // KeyValueHolderImpl instance. Commit() clears the write maps, so this ok.
+            commitTarget.Write(key.key, std::move(value));
+        }
+        const KeyHolderImpl<K> &key;
+        V value;
+    };
+
+    struct keyCmp {
+        bool operator()(const KeyHolderPtr &a, const KeyHolderPtr &b) const {
+            return a->Less(*b);
+        }
+    };
+
+    typedef std::map<KeyHolderPtr, KeyValueHolderPtr, keyCmp> KeyValueMap;
+    typedef std::map<std::type_index, KeyValueMap> TypeKeyValueMap;
+
+    TypeKeyValueMap writes;
+    TypeKeyValueMap deletes;
+
+    template <typename K>
+    KeyValueMap *getMapForType(TypeKeyValueMap &m, bool create) {
+        auto it = m.find(typeid(K));
+        if (it != m.end()) {
+            return &it->second;
+        }
+        if (!create)
+            return nullptr;
+        auto it2 = m.emplace(typeid(K), KeyValueMap());
+        return &it2.first->second;
+    }
+
+    template <typename K>
+    KeyValueMap *getWritesMap(bool create) {
+        return getMapForType<K>(writes, create);
+    }
+
+    template <typename K>
+    KeyValueMap *getDeletesMap(bool create) {
+        return getMapForType<K>(deletes, create);
+    }
+
+    template <typename K, typename KV>
+    void writeImpl(KeyHolderImpl<K>* k, KV&& kv) {
+        auto k2 = KeyHolderPtr(k);
+
+        KeyValueMap *ds = getDeletesMap<K>(false);
+        if (ds)
+            ds->erase(k2);
+
+        KeyValueMap *ws = getWritesMap<K>(true);
+        ws->erase(k2);
+        ws->emplace(std::make_pair(std::move(k2), std::forward<KV>(kv)));
+    }
+
+public:
+    CDBTransaction(Parent &_parent, CommitTarget &_commitTarget) : parent(_parent), commitTarget(_commitTarget) {}
+
+    template <typename K, typename V>
+    void Write(const K& key, const V& v) {
+        auto k = new KeyHolderImpl<K>(key);
+        auto kv = std::make_unique<KeyValueHolderImpl<K, V>>(*k, v);
+        writeImpl(k, std::move(kv));
+    }
+
+    template <typename K, typename V>
+    void Write(const K& key, V&& v) {
+        auto k = new KeyHolderImpl<K>(key);
+        auto kv = std::make_unique<KeyValueHolderImpl<K, typename std::remove_reference<V>::type>>(*k, std::forward<V>(v));
+        writeImpl(k, std::move(kv));
+    }
+
+    template <typename K, typename V>
+    bool Read(const K& key, V& value) {
+        KeyHolderPtr k(new KeyHolderImpl<K>(key));
+
+        KeyValueMap *ds = getDeletesMap<K>(false);
+        if (ds && ds->count(k))
+            return false;
+
+        KeyValueMap *ws = getWritesMap<K>(false);
+        if (ws) {
+            auto it = ws->find(k);
+            if (it != ws->end()) {
+                auto *impl = dynamic_cast<KeyValueHolderImpl<K, V> *>(it->second.get());
+                if (!impl)
+                    return false;
+                value = impl->value;
+                return true;
+            }
+        }
+
+        return parent.Read(key, value);
+    }
+
+    template <typename K>
+    bool Exists(const K& key) {
+        KeyHolderPtr k(new KeyHolderImpl<K>(key));
+
+        KeyValueMap *ds = getDeletesMap<K>(false);
+        if (ds && ds->count(k))
+            return false;
+
+        KeyValueMap *ws = getWritesMap<K>(false);
+        if (ws && ws->count(k))
+            return true;
+
+        return parent.Exists(key);
+    }
+
+    template <typename K>
+    void Erase(const K& key) {
+        KeyHolderPtr k(new KeyHolderImpl<K>(key));
+
+        KeyValueMap *ws = getWritesMap<K>(false);
+        if (ws)
+            ws->erase(k);
+        KeyValueMap *ds = getDeletesMap<K>(true);
+        ds->emplace(std::move(k), nullptr);
+    }
+
+    void Clear() {
+        writes.clear();
+        deletes.clear();
+    }
+
+    void Commit() {
+        for (auto &p : deletes) {
+            for (auto &p2 : p.second) {
+                p2.first->Erase(commitTarget);
+            }
+        }
+        for (auto &p : writes) {
+            for (auto &p2 : p.second) {
+                p2.second->Write(commitTarget);
+            }
+        }
+        Clear();
+    }
+
+    bool IsClean() {
+        return writes.empty() && deletes.empty();
+    }
+};
+
+template<typename Parent, typename CommitTarget>
+class CScopedDBTransaction {
+public:
+    typedef CDBTransaction<Parent, CommitTarget> Transaction;
+
+private:
+    Transaction &dbTransaction;
+    std::function<void ()> commitHandler;
+    std::function<void ()> rollbackHandler;
+    bool didCommitOrRollback{};
+
+public:
+    CScopedDBTransaction(Transaction &dbTx) : dbTransaction(dbTx) {}
+    ~CScopedDBTransaction() {
+        if (!didCommitOrRollback)
+            Rollback();
+    }
+    void Commit() {
+        assert(!didCommitOrRollback);
+        didCommitOrRollback = true;
+        dbTransaction.Commit();
+        if (commitHandler)
+            commitHandler();
+    }
+    void Rollback() {
+        assert(!didCommitOrRollback);
+        didCommitOrRollback = true;
+        dbTransaction.Clear();
+        if (rollbackHandler)
+            rollbackHandler();
+    }
+
+    static std::unique_ptr<CScopedDBTransaction<Parent, CommitTarget>> Begin(Transaction &dbTx) {
+        assert(dbTx.IsClean());
+        return std::make_unique<CScopedDBTransaction<Parent, CommitTarget>>(dbTx);
+    }
+
+    void SetCommitHandler(const std::function<void ()> &h) {
+        commitHandler = h;
+    }
+    void SetRollbackHandler(const std::function<void ()> &h) {
+        rollbackHandler = h;
+    }
 };
 
 #endif // BITCOIN_DBWRAPPER_H
