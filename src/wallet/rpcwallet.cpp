@@ -3567,7 +3567,6 @@ UniValue token_create(const JSONRPCRequest &request)
     CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
     const uint256& hashTx = tx->GetHash();
 
-    CAmount nMaxRawTxFee = 0;
     bool fInstantSend = false;
     bool fBypassLimits = true;
 
@@ -3585,7 +3584,7 @@ UniValue token_create(const JSONRPCRequest &request)
         }
         CValidationState state;
         bool fMissingInputs;
-        if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs, NULL, false, nMaxRawTxFee)) {
+        if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs, false)) {
             if (state.IsInvalid()) {
                 throw JSONRPCError(RPC_TRANSACTION_REJECTED, strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()));
             } else {
@@ -4004,7 +4003,6 @@ UniValue token_send(const JSONRPCRequest &request)
 		CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
 		const uint256& hashTx = tx->GetHash();
 
-		CAmount nMaxRawTxFee = 0;
 		bool fInstantSend = false;
 		bool fBypassLimits = true;
 
@@ -4022,7 +4020,7 @@ UniValue token_send(const JSONRPCRequest &request)
 			}
 			CValidationState state;
 			bool fMissingInputs;
-			if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs, NULL, false, nMaxRawTxFee)) {
+            if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs)) {
 				if (state.IsInvalid()) {
 					throw JSONRPCError(RPC_TRANSACTION_REJECTED, strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()));
 				} else {
@@ -4415,7 +4413,6 @@ UniValue token_addmeta(const JSONRPCRequest &request)
 			CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
 			const uint256& hashTx = tx->GetHash();
 
-			CAmount nMaxRawTxFee = 0;
 			bool fInstantSend = false;
 			bool fBypassLimits = true;
 
@@ -4433,7 +4430,7 @@ UniValue token_addmeta(const JSONRPCRequest &request)
 				}
 				CValidationState state;
 				bool fMissingInputs;
-				if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs, NULL, false, nMaxRawTxFee)) {
+                if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs)) {
 					if (state.IsInvalid()) {
 						throw JSONRPCError(RPC_TRANSACTION_REJECTED, strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()));
 					} else {
@@ -4841,7 +4838,6 @@ UniValue token_burn(const JSONRPCRequest &request)
 			CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
 			const uint256& hashTx = tx->GetHash();
 
-			CAmount nMaxRawTxFee = 0;
 			bool fInstantSend = false;
 			bool fBypassLimits = true;
 
@@ -4859,7 +4855,7 @@ UniValue token_burn(const JSONRPCRequest &request)
 				}
 				CValidationState state;
 				bool fMissingInputs;
-				if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs, NULL, false, nMaxRawTxFee)) {
+                if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs)) {
 					if (state.IsInvalid()) {
 						throw JSONRPCError(RPC_TRANSACTION_REJECTED, strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()));
 					} else {
@@ -5236,7 +5232,6 @@ UniValue token_pause(const JSONRPCRequest &request)
 			CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
 			const uint256& hashTx = tx->GetHash();
 
-			CAmount nMaxRawTxFee = 0;
 			bool fInstantSend = false;
 			bool fBypassLimits = true;
 
@@ -5254,7 +5249,7 @@ UniValue token_pause(const JSONRPCRequest &request)
 				}
 				CValidationState state;
 				bool fMissingInputs;
-				if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs, NULL, false, nMaxRawTxFee)) {
+                if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs)) {
 					if (state.IsInvalid()) {
 						throw JSONRPCError(RPC_TRANSACTION_REJECTED, strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()));
 					} else {
@@ -5631,7 +5626,6 @@ UniValue token_resume(const JSONRPCRequest &request)
 			CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
 			const uint256& hashTx = tx->GetHash();
 
-			CAmount nMaxRawTxFee = 0;
 			bool fInstantSend = false;
 			bool fBypassLimits = true;
 
@@ -5649,7 +5643,7 @@ UniValue token_resume(const JSONRPCRequest &request)
 				}
 				CValidationState state;
 				bool fMissingInputs;
-				if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs, NULL, false, nMaxRawTxFee)) {
+                if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs)) {
 					if (state.IsInvalid()) {
 						throw JSONRPCError(RPC_TRANSACTION_REJECTED, strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()));
 					} else {
@@ -6046,7 +6040,6 @@ UniValue token_newowner(const JSONRPCRequest &request)
 			CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
 			const uint256& hashTx = tx->GetHash();
 
-			CAmount nMaxRawTxFee = 0;
 			bool fInstantSend = false;
 			bool fBypassLimits = true;
 
@@ -6064,7 +6057,7 @@ UniValue token_newowner(const JSONRPCRequest &request)
 				}
 				CValidationState state;
 				bool fMissingInputs;
-				if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs, NULL, false, nMaxRawTxFee)) {
+                if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs)) {
 					if (state.IsInvalid()) {
 						throw JSONRPCError(RPC_TRANSACTION_REJECTED, strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()));
 					} else {
@@ -6462,7 +6455,6 @@ UniValue token_authmeta(const JSONRPCRequest &request)
 			CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
 			const uint256& hashTx = tx->GetHash();
 
-			CAmount nMaxRawTxFee = 0;
 			bool fInstantSend = false;
 			bool fBypassLimits = true;
 
@@ -6480,7 +6472,7 @@ UniValue token_authmeta(const JSONRPCRequest &request)
 				}
 				CValidationState state;
 				bool fMissingInputs;
-				if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs, NULL, false, nMaxRawTxFee)) {
+                if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs)) {
 					if (state.IsInvalid()) {
 						throw JSONRPCError(RPC_TRANSACTION_REJECTED, strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()));
 					} else {
@@ -6877,7 +6869,6 @@ UniValue token_revokemeta(const JSONRPCRequest &request)
 			CTransactionRef tx(MakeTransactionRef(std::move(mtx)));
 			const uint256& hashTx = tx->GetHash();
 
-			CAmount nMaxRawTxFee = 0;
 			bool fInstantSend = false;
 			bool fBypassLimits = true;
 
@@ -6895,7 +6886,7 @@ UniValue token_revokemeta(const JSONRPCRequest &request)
 				}
 				CValidationState state;
 				bool fMissingInputs;
-				if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs, NULL, false, nMaxRawTxFee)) {
+                if (!AcceptToMemoryPool(mempool, state, std::move(tx), !fBypassLimits, &fMissingInputs)) {
 					if (state.IsInvalid()) {
 						throw JSONRPCError(RPC_TRANSACTION_REJECTED, strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()));
 					} else {
