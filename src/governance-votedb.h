@@ -30,7 +30,7 @@ public: // Types
 
     typedef vote_l_t::const_iterator vote_l_cit;
 
-    typedef std::map<uint256,vote_l_it> vote_m_t;
+    typedef std::map<uint256, vote_l_it> vote_m_t;
 
     typedef vote_m_t::iterator vote_m_it;
 
@@ -65,13 +65,18 @@ public:
      */
     bool SerializeVoteToStream(const uint256& nHash, CDataStream& ss) const;
 
-    int GetVoteCount() {
+    int GetVoteCount()
+    {
         return nMemoryVotes;
     }
 
     std::vector<CGovernanceVote> GetVotes() const;
 
     void RemoveVotesFromMasternode(const COutPoint& outpointMasternode);
+    std::set<uint256> RemoveInvalidProposalVotes(const COutPoint& outpointMasternode);
+
+    // TODO can be removed after full DIP3 deployment
+    std::vector<uint256> RemoveOldVotes(unsigned int nMinTime);
 
     ADD_SERIALIZE_METHODS;
 
@@ -80,7 +85,7 @@ public:
     {
         READWRITE(nMemoryVotes);
         READWRITE(listVotes);
-        if(ser_action.ForRead()) {
+        if (ser_action.ForRead()) {
             RebuildIndex();
         }
     }

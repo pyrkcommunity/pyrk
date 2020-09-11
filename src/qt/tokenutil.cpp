@@ -102,7 +102,7 @@ bool sendTokenTransaction(CMutableTransaction& rawTx)
 
         CValidationState state;
         bool fMissingInputs;
-        if (!AcceptToMemoryPool(mempool, state, tx, !fBypassLimits, &fMissingInputs, nullptr, false, nMaxRawTxFee)) {
+        if (!AcceptToMemoryPool(mempool, state, tx, !fBypassLimits, &fMissingInputs, false, nMaxRawTxFee)) {
             if (state.IsInvalid()) {
                 QMessageBox::critical(nullptr, QMessageBox::tr("Error"),
                     QMessageBox::tr("%1").arg(QString::fromStdString(strprintf("%i: %s", state.GetRejectCode(), state.GetRejectReason()))));

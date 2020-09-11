@@ -1,4 +1,4 @@
-packages:=boost libcurl openssl libevent zeromq
+packages:=boost libcurl openssl libevent zeromq gmp chia_bls
 native_packages := native_ccache
 
 qt_native_packages = native_protobuf
