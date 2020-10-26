@@ -10,6 +10,10 @@
     <height>380</height>
    </rect>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(173, 191, 222);
+color: rgb(0, 0, 0);</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QLabel" name="labelExplanation">
@@ -28,6 +32,9 @@
      </property>
      <property name="toolTip">
       <string>Right-click to edit address or label</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
      </property>
      <property name="tabKeyNavigation">
       <bool>false</bool>

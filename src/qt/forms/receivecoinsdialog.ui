@@ -7,8 +7,12 @@
     <x>0</x>
     <y>0</y>
     <width>776</width>
-    <height>387</height>
+    <height>399</height>
    </rect>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(173, 191, 222);
+color: rgb(0, 0, 0);</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1">
    <item>

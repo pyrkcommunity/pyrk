@@ -1,9 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <author/>
- <comment/>
- <exportmacro/>
  <class>TokenFormEntry</class>
- <widget name="TokenFormEntry" class="QWidget">
+ <widget class="QWidget" name="TokenFormEntry">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -15,7 +13,12 @@
   <property name="windowTitle">
    <string>Token form entry</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-image: url(:/images/light/drkblue_walletFrame_bg2);</string>
+  </property>
  </widget>
- <pixmapfunction/>
+ <resources>
+  <include location="../dash.qrc"/>
+ </resources>
  <connections/>
 </ui>

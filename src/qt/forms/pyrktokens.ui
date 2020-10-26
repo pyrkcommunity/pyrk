@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(173, 191, 222);</string>
+  </property>
   <layout class="QVBoxLayout" name="pyrk_token_layout">
    <property name="leftMargin">
     <number>0</number>
@@ -278,7 +281,7 @@
           <item>
            <widget class="QFrame" name="frame_token_interface">
             <property name="styleSheet">
-             <string notr="true">.QFrame{border: 1px solid grey; border-radius: 10px;}</string>
+             <string notr="true">background-color: rgb(86, 148, 255);</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::Box</enum>
@@ -725,7 +728,8 @@
                         <item>
                          <widget class="QPushButton" name="button_view_on_explorer">
                           <property name="styleSheet">
-                           <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;</string>
+                           <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;
+background-color: rgb(50, 122, 246);</string>
                           </property>
                           <property name="text">
                            <string>View on Explorer</string>
@@ -762,7 +766,8 @@
                  <item>
                   <widget class="QPushButton" name="button_send">
                    <property name="styleSheet">
-                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;</string>
+                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;
+background-color: rgb(50, 122, 246);</string>
                    </property>
                    <property name="text">
                     <string>Send</string>
@@ -772,7 +777,8 @@
                  <item>
                   <widget class="QPushButton" name="button_add_meta">
                    <property name="styleSheet">
-                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;</string>
+                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;
+background-color: rgb(50, 122, 246);</string>
                    </property>
                    <property name="text">
                     <string>Add Meta</string>
@@ -782,7 +788,8 @@
                  <item>
                   <widget class="QPushButton" name="button_burn">
                    <property name="styleSheet">
-                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;</string>
+                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;
+background-color: rgb(50, 122, 246);</string>
                    </property>
                    <property name="text">
                     <string>Burn</string>
@@ -792,7 +799,8 @@
                  <item>
                   <widget class="QPushButton" name="button_auth_meta">
                    <property name="styleSheet">
-                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;</string>
+                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;
+background-color: rgb(50, 122, 246);</string>
                    </property>
                    <property name="text">
                     <string>Auth Meta</string>
@@ -802,7 +810,8 @@
                  <item>
                   <widget class="QPushButton" name="button_revoke_meta">
                    <property name="styleSheet">
-                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;</string>
+                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;
+background-color: rgb(50, 122, 246);</string>
                    </property>
                    <property name="text">
                     <string>Revoke Meta</string>
@@ -812,7 +821,8 @@
                  <item>
                   <widget class="QPushButton" name="button_pause">
                    <property name="styleSheet">
-                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;</string>
+                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;
+background-color: rgb(50, 122, 246);</string>
                    </property>
                    <property name="text">
                     <string>Pause</string>
@@ -822,7 +832,8 @@
                  <item>
                   <widget class="QPushButton" name="button_resume">
                    <property name="styleSheet">
-                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;</string>
+                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;
+background-color: rgb(50, 122, 246);</string>
                    </property>
                    <property name="text">
                     <string>Resume</string>
@@ -832,7 +843,8 @@
                  <item>
                   <widget class="QPushButton" name="button_new_owner">
                    <property name="styleSheet">
-                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;</string>
+                    <string notr="true">padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;
+background-color: rgb(50, 122, 246);</string>
                    </property>
                    <property name="text">
                     <string>New Owner</string>
@@ -895,7 +907,7 @@
         <enum>Qt::CustomContextMenu</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true"/>
+        <string notr="true">background-color: rgb(86, 148, 255);</string>
        </property>
        <property name="sizeAdjustPolicy">
         <enum>QAbstractScrollArea::AdjustIgnored</enum>
@@ -906,11 +918,11 @@
        <property name="rowCount">
         <number>0</number>
        </property>
-       <attribute name="horizontalHeaderMinimumSectionSize">
-        <number>0</number>
-       </attribute>
        <attribute name="horizontalHeaderDefaultSectionSize">
         <number>120</number>
+       </attribute>
+       <attribute name="horizontalHeaderMinimumSectionSize">
+        <number>0</number>
        </attribute>
        <attribute name="horizontalHeaderStretchLastSection">
         <bool>true</bool>

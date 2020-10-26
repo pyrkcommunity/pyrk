@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Select address</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-image: url(:/images/light/drkblue_walletFrame_bg2);</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTableWidget" name="token_address_list">
@@ -47,6 +50,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../dash.qrc"/>
+ </resources>
  <connections/>
 </ui>

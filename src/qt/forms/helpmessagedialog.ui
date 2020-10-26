@@ -6,15 +6,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>780</width>
-    <height>500</height>
+    <width>920</width>
+    <height>620</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>920</width>
+    <height>620</height>
+   </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>16777215</width>
-    <height>500</height>
+    <width>920</width>
+    <height>620</height>
    </size>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(50, 122, 246);</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <property name="spacing">
@@ -89,6 +98,9 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QTextEdit" name="helpMessage">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);</string>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -110,8 +122,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>630</width>
-          <height>201</height>
+          <width>782</width>
+          <height>273</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
