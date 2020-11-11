@@ -74,6 +74,10 @@ font-size:12px;
 color:#333333;
 }
 
+QToolTip {
+color:#000000;
+}
+
 .QCheckBox { /* Checkbox Labels */
 color:#333333;
 background-color:transparent;
@@ -104,7 +108,7 @@ background-color:#f2f2f2;
 
 QPushButton { /* Global Button Style */
 background-color:#2568dc;
-border:0;
+border:1px solid #d2d2d2;
 border-radius:3px;
 color:#ffffff;
 font-size:12px;
