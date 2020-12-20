@@ -928,7 +928,7 @@ QString getThemeName()
     if(!theme.isEmpty()){
         return theme;
     }
-    return QString("light");
+    return QString("drkblue");
 }
 
 // Open CSS when configured
@@ -944,7 +944,7 @@ QString loadStyleSheet()
     }
     else {
         cssName = QString(":/css/light");
-        settings.setValue("theme", "light");
+        settings.setValue("theme", "drkblue");
     }
 
     QFile qFile(cssName);
@@ -1026,6 +1026,9 @@ QString formatServicesStr(quint64 mask)
                 break;
             case NODE_XTHIN:
                 strList.append("XTHIN");
+                break;
+            case SMSG_RELAY:
+                strList.append("SMSG");
                 break;
             default:
                 strList.append(QString("%1[%2]").arg("UNKNOWN").arg(check));

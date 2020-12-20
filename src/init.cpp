@@ -33,6 +33,7 @@
 #include "script/standard.h"
 #include "script/sigcache.h"
 #include "scheduler.h"
+#include "smessage.h"
 #include "timedata.h"
 #include "txdb.h"
 #include "txmempool.h"
@@ -238,7 +239,9 @@ void PrepareShutdown()
     StopREST();
     StopRPC();
     StopHTTPServer();
-
+#ifdef ENABLE_SMESSAGE
+    SecureMsgShutdown();
+#endif
     // fRPCInWarmup should be `false` if we completed the loading sequence
     // before a shutdown request was received
     std::string statusmessage;
@@ -651,6 +654,9 @@ std::string HelpMessage(HelpMessageMode mode)
 
     strUsage += HelpMessageOpt("-tokenapiurl=<n>", strprintf(_("The token API server to use (default: %d)"), "https://tokenapi.pyrk.org/api/"));
 
+    strUsage += HelpMessageGroup(_("Secure messaging options:"));
+    strUsage += HelpMessageOpt("-nosmsg", _("Disable secure messaging."));
+    strUsage += HelpMessageOpt("-debugsmsg", _("Log extra debug messages."));
 
     return strUsage;
 }
@@ -1917,6 +1923,10 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         }
     }
 
+    fNoSmsg = GetBoolArg("-nosmsg", false);
+    if (!fNoSmsg)
+        nLocalServices = ServiceFlags(nLocalServices | SMSG_RELAY);
+
     // ********************************************************* Step 10: import blocks
 
     if (!CheckDiskSpace())
@@ -2156,6 +2166,10 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
 
     if (!connman.Start(scheduler, strNodeError, connOptions))
         return InitError(strNodeError);
+
+#ifdef ENABLE_SMESSAGE
+    SecureMsgStart(fNoSmsg, GetBoolArg("-smsgscanchain", false));
+#endif
 
     // Set up curl environment
     curl_global_init(CURL_GLOBAL_ALL);

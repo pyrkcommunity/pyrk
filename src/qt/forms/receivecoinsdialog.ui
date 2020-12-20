@@ -11,8 +11,8 @@
    </rect>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(255, 255, 255);
-color: rgb(0, 0, 0);</string>
+   <string notr="true">background-color: transparent;
+color: rgb(255, 255, 255);</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1">
    <item>

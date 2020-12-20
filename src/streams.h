@@ -95,6 +95,39 @@ private:
     size_t nPos;
 };
 
+template<typename Stream>
+class OverrideStream
+{
+    Stream* stream;
+public:
+    const int nType;
+    const int nVersion;
+
+    OverrideStream(Stream* stream_, int nType_, int nVersion_) : stream(stream_), nType(nType_), nVersion(nVersion_) {}
+
+    template<typename T>
+    OverrideStream<Stream>& operator<<(const T& obj)
+    {
+        // Serialize to this stream
+        ::Serialize(*this->stream, obj, nType, nVersion);
+        return (*this);
+    }
+
+    template<typename T>
+    OverrideStream<Stream>& operator>>(T& obj)
+    {
+        // Unserialize from this stream
+        ::Unserialize(*this->stream, obj, nType, nVersion);
+        return (*this);
+    }
+};
+
+template<typename S>
+OverrideStream<S> WithOrVersion(S* s, int nVersionFlag)
+{
+    return OverrideStream<S>(s, s->GetType(), s->GetVersion() | nVersionFlag);
+}
+
 /** Double ended buffer combining vector and stream-like interfaces.
  *
  * >> and << read and write unformatted data using the above serialization templates.
@@ -106,7 +139,6 @@ protected:
     typedef CSerializeData vector_type;
     vector_type vch;
     unsigned int nReadPos;
-
     int nType;
     int nVersion;
 public:
@@ -151,12 +183,19 @@ public:
         Init(nTypeIn, nVersionIn);
     }
 
+    CDataStream()
+    {
+
+    }
+
     template <typename... Args>
     CDataStream(int nTypeIn, int nVersionIn, Args&&... args)
     {
         Init(nTypeIn, nVersionIn);
         ::SerializeMany(*this, std::forward<Args>(args)...);
     }
+
+
 
     void Init(int nTypeIn, int nVersionIn)
     {

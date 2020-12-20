@@ -22,6 +22,7 @@
 #include "transactiontablemodel.h"
 #include "transactionview.h"
 #include "walletmodel.h"
+#include "trezarmessage.h"
 
 #include "ui_interface.h"
 
@@ -95,6 +96,11 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
     addWidget(pyrkTokensPage);
 #endif // ENABLE_WALLET
 
+#ifdef ENABLE_SMESSAGE
+    trezarMessagePage = new TrezarMessage(platformStyle);
+    addWidget(trezarMessagePage);
+#endif // ENABLE_SMESSAGE
+
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
     connect(overviewPage, SIGNAL(outOfSyncWarningClicked()), this, SLOT(requestedSyncWarningInfo()));
@@ -164,6 +170,7 @@ void WalletView::setWalletModel(WalletModel *_walletModel)
         masternodeListPage->setWalletModel(_walletModel);
     }
     pyrkTokensPage->setWalletModel(_walletModel);
+    trezarMessagePage->setWalletModel(_walletModel);
     receiveCoinsPage->setModel(_walletModel);
     sendCoinsPage->setModel(_walletModel);
     usedReceivingAddressesPage->setModel(_walletModel->getAddressTableModel());
@@ -245,6 +252,11 @@ void WalletView::gotoPyrkTokenPage()
 #ifdef ENABLE_WALLET
     setCurrentWidget(pyrkTokensPage);
 #endif // ENABLE_WALLET
+}
+
+void WalletView::gotoTrezarMessage()
+{
+    setCurrentWidget(trezarMessagePage);
 }
 
 void WalletView::gotoReceiveCoinsPage()

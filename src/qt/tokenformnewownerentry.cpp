@@ -52,6 +52,8 @@ void TokenFormNewOwnerEntry::addNewOwnerEntry()
     QPushButton* newOwnerButton = new QPushButton(this);
     newOwnerButton->setText("Reassign Ownership");
 
+    newOwnerButton->setStyleSheet(QString::fromUtf8("QPushButton{border:1px solid rgb(255,255,255); border-radius:4px;}"));
+
     QSpacerItem *newOwnerSpacer = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     baseLayout->addWidget(labelNewOwner);

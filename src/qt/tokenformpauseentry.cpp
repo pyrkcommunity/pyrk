@@ -42,6 +42,8 @@ void TokenFormPauseEntry::addPauseEntry()
     QPushButton* pauseButton = new QPushButton(this);
     pauseButton->setText("Pause");
 
+    pauseButton->setStyleSheet(QString::fromUtf8("QPushButton{border:1px solid rgb(255,255,255); border-radius:4px;}"));
+
     QSpacerItem* pauseSpacer = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     baseLayout->addWidget(pauseButton);

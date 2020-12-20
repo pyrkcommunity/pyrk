@@ -31,7 +31,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
 {
 
     // transparent background
-    setAttribute(Qt::WA_TranslucentBackground);
+    //setAttribute(Qt::WA_TranslucentBackground);
     setStyleSheet("background:transparent;");
 
     // no window decorations

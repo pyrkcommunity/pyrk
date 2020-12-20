@@ -381,7 +381,7 @@ void OverviewPage::updatePrivateSendProgress()
                                           .arg(strPrivateSendAmount)
                                           .arg(strMaxToAnonymize));
         strMaxToAnonymize = strMaxToAnonymize.remove(strMaxToAnonymize.indexOf("."), BitcoinUnits::decimals(nDisplayUnit) + 1);
-        strAmountAndRounds = "<span style='color:red;'>" +
+        strAmountAndRounds = "<span style='color:#FA8072'>" +
                 QString(BitcoinUnits::factor(nDisplayUnit) == 1 ? "" : "~") + strMaxToAnonymize +
                 " / " + tr("%n Rounds", "", privateSendClient.nPrivateSendRounds) + "</span>";
     }
@@ -666,7 +666,7 @@ void OverviewPage::DisablePrivateSendCompletely() {
     ui->privateSendReset->setText("(" + tr("Disabled") + ")");
     ui->framePrivateSend->setEnabled(false);
     if (nWalletBackups <= 0) {
-        ui->labelPrivateSendEnabled->setText("<span style='color:red;'>(" + tr("Disabled") + ")</span>");
+        ui->labelPrivateSendEnabled->setText("<span style='color:#FA8072'>(" + tr("Disabled") + ")</span>");
     }
     privateSendClient.fEnablePrivateSend = false;
 }

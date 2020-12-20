@@ -95,6 +95,7 @@ void TokenFormSendEntry::addSendEntry() {
 
     QPushButton* sendButton = new QPushButton(this);
     sendButton->setText("Send");
+    sendButton->setStyleSheet(QString::fromUtf8("QPushButton{border:1px solid rgb(255,255,255); border-radius:4px;}"));
 
     amountLayout->addWidget(editPaymentID);
     amountLayout->addSpacerItem(sendSpacer);

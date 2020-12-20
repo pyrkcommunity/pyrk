@@ -55,6 +55,8 @@ void TokenFormBurnEntry::addCreateEntry()
     QPushButton* burnButton = new QPushButton(this);
     burnButton->setText("Burn Tokens");
 
+    burnButton->setStyleSheet(QString::fromUtf8("QPushButton{border:1px solid rgb(255,255,255); border-radius:4px;}"));
+
     baseLayout->addWidget(labelBurn);
     baseLayout->addWidget(burnAmount);
     baseLayout->addWidget(burnButton);

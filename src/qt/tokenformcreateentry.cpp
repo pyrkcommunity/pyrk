@@ -67,7 +67,7 @@ void TokenFormCreateEntry::addCreateEntry()
     editTicker->setObjectName("edit_create_ticker");
     editTicker->setMaxLength(5);
     editTicker->setFixedWidth(60);
-    editTicker->setStyleSheet("QLineEdit { background : white; }");
+    //editTicker->setStyleSheet("QLineEdit { background : white; }");
 
     QLabel *labelName = new QLabel(this);
     labelName->setText("Name");
@@ -76,7 +76,7 @@ void TokenFormCreateEntry::addCreateEntry()
     editName->setObjectName("edit_create_name");
     editName->setMaxLength(20);
     editName->setFixedWidth(240);
-    editName->setStyleSheet("QLineEdit { background : white; }");
+    //editName->setStyleSheet("QLineEdit { background : white; }");
 
     nameLayout->addWidget(editTicker);
     nameLayout->addWidget(labelName);
@@ -94,7 +94,7 @@ void TokenFormCreateEntry::addCreateEntry()
     QDoubleValidator* validator = new QDoubleValidator(0, 184000000000, 0, this);
     validator->setNotation(QDoubleValidator::StandardNotation);
     editAmount->setCheckValidator(validator);
-    editAmount->setStyleSheet("QLineEdit { background : white; }");
+    //editAmount->setStyleSheet("QLineEdit { background : white; }");
 
     QLabel *labelDocURI = new QLabel(this);
     labelDocURI->setText("Document URI");
@@ -102,7 +102,7 @@ void TokenFormCreateEntry::addCreateEntry()
     QLineEdit* editDocURI = new QLineEdit(this);
     editDocURI->setObjectName("edit_create_doc_uri");
     editDocURI->setMaxLength(32);
-    editDocURI->setStyleSheet("QLineEdit { background : white; }");
+    //editDocURI->setStyleSheet("QLineEdit { background : white; }");
 
     amountLayout->addWidget(editAmount);
     amountLayout->addWidget(labelDocURI);
@@ -114,13 +114,12 @@ void TokenFormCreateEntry::addCreateEntry()
     QLineEdit* editLogoURI = new QLineEdit(this);
     editLogoURI->setObjectName("edit_create_logo_uri");
     editLogoURI->setMaxLength(80);
-    editLogoURI->setStyleSheet("QLineEdit { background : white; }");
+    //editLogoURI->setStyleSheet("QLineEdit { background : white; }");
 
     QPushButton* createButton = new QPushButton(this);
     createButton->setText("Create Token");
 
-    createButton->setStyleSheet(QLatin1String("padding-left: 3px; padding-right: 3px; padding-top: 0px; padding-bottom: 0px;\n"
-"background: rgb(50, 122, 246);"));
+    createButton->setStyleSheet(QString::fromUtf8("QPushButton{border:1px solid rgb(255,255,255); border-radius:4px;}"));
 
     logoLayout->addWidget(editLogoURI);
     logoLayout->addWidget(createButton);

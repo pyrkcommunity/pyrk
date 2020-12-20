@@ -14,7 +14,6 @@
    <string>Select address</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-image: url(:/images/light/drkblue_walletFrame_bg2);</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

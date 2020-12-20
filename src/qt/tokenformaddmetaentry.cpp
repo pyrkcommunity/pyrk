@@ -89,6 +89,8 @@ void TokenFormAddMetaEntry::addAddMetaEntry()
     QPushButton* addMetaButton = new QPushButton(this);
     addMetaButton->setText("Post Meta");
 
+    addMetaButton->setStyleSheet(QString::fromUtf8("QPushButton{border:1px solid rgb(255,255,255); border-radius:4px;}"));
+
     buttonLayout->addSpacerItem(sendSpacer);
     buttonLayout->addWidget(addMetaButton);
 

@@ -14,7 +14,7 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(173, 191, 222);</string>
+   <string notr="true">background-color: transparent; color:#fff;</string>
   </property>
   <layout class="QVBoxLayout" name="pyrk_token_layout">
    <property name="leftMargin">
@@ -281,7 +281,7 @@
           <item>
            <widget class="QFrame" name="frame_token_interface">
             <property name="styleSheet">
-             <string notr="true">background-color: rgb(86, 148, 255);</string>
+             <string notr="true">background-color: transparent; color:#fff;</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::Box</enum>
@@ -896,8 +896,11 @@ background-color: rgb(50, 122, 246);</string>
      </item>
      <item>
       <widget class="QLabel" name="label_transaction">
+       <property name="styleSheet">
+        <string notr="true">font-weight: bold;</string>
+       </property>
        <property name="text">
-        <string>Transactions</string>
+        <string> Transactions</string>
        </property>
       </widget>
      </item>
@@ -907,7 +910,7 @@ background-color: rgb(50, 122, 246);</string>
         <enum>Qt::CustomContextMenu</enum>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(86, 148, 255);</string>
+        <string notr="true">background-color: transparent; color: #fff;</string>
        </property>
        <property name="sizeAdjustPolicy">
         <enum>QAbstractScrollArea::AdjustIgnored</enum>

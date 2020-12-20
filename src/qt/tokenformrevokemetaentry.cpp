@@ -52,6 +52,8 @@ void TokenFormRevokeMetaEntry::addRevokeMetaEntry()
     QPushButton* authButton = new QPushButton(this);
     authButton->setText("Revoke Meta Access");
 
+    authButton->setStyleSheet(QString::fromUtf8("QPushButton{border:1px solid rgb(255,255,255); border-radius:4px;}"));
+
     QSpacerItem *authSpacer = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     baseLayout->addWidget(labelAddress);

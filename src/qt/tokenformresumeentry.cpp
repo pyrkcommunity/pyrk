@@ -42,6 +42,8 @@ void TokenFormResumeEntry::addResumeEntry()
     QPushButton* resumeButton = new QPushButton(this);
     resumeButton->setText("Resume");
 
+    resumeButton->setStyleSheet(QString::fromUtf8("QPushButton{border:1px solid rgb(255,255,255); border-radius:4px;}"));
+
     QSpacerItem* resumeSpacer = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     baseLayout->addWidget(resumeButton);
