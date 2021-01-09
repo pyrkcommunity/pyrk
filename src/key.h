@@ -11,6 +11,9 @@
 #include "support/allocators/secure.h"
 #include "uint256.h"
 
+#include <openssl/ecdsa.h>
+#include <openssl/bn.h>
+#include <openssl/obj_mac.h>
 #include <stdexcept>
 #include <vector>
 
@@ -188,5 +191,40 @@ void ECC_Stop(void);
 
 /** Check that required EC support is available at runtime. */
 bool ECC_InitSanityCheck(void);
+
+/** Generate a private key from just the secret parameter. */
+int EC_KEY_regenerate_key(EC_KEY *eckey, BIGNUM *priv_key);
+
+// RAII Wrapper around OpenSSL's EC_KEY
+class CECKey {
+private:
+    EC_KEY *pkey;
+
+public:
+    CECKey() {
+        pkey = EC_KEY_new_by_curve_name(NID_secp256k1);
+        assert(pkey != NULL);
+    }
+
+    ~CECKey() {
+        EC_KEY_free(pkey);
+    }
+
+    EC_KEY* GetECKey() {
+        return pkey;
+    }
+
+    void SetSecretBytes(const unsigned char vch[32]) {
+        BIGNUM *bn = BN_new();
+        assert(BN_bin2bn(vch, 32, bn));
+        assert(EC_KEY_regenerate_key(pkey, bn));
+        BN_clear_free(bn);
+    }
+
+    bool SetPubKey(const CPubKey &pubkey) {
+        const unsigned char* pbegin = pubkey.begin();
+        return o2i_ECPublicKey(&pkey, &pbegin, pubkey.size());
+    }
+};
 
 #endif // BITCOIN_KEY_H

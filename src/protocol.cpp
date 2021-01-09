@@ -74,6 +74,17 @@ const char *MNLISTDIFF="mnlistdiff";
 const char *QFCOMMITMENT="qfcommit";
 const char *QDCOMMITMENT="qdcommit";
 const char *QCONTRIB="qcontrib";
+// Secure message types
+const char *SMSGINV="smsgInv";
+const char *SMSGSHOW="smsgShow";
+const char *SMSGHAVE="smsgHave";
+const char *SMSGWANT="smsgWant";
+const char *SMSGMSG="smsgMsg";
+const char *SMSGMATCH="smsgMatch";
+const char *SMSGPING="smsgPing";
+const char *SMSGPONG="smsgPong";
+const char *SMSGDISABLED="smsgDisabled";
+const char *SMSGIGNORE="smsgIgnore";
 };
 
 static const char* ppszTypeName[] =
@@ -166,6 +177,19 @@ const static std::string allNetMessageTypes[] = {
     NetMsgType::QFCOMMITMENT,
     NetMsgType::QDCOMMITMENT,
     NetMsgType::QCONTRIB,
+#ifdef ENABLE_SMESSAGE
+    // Secure messaging
+    NetMsgType::SMSGINV,
+    NetMsgType::SMSGSHOW,
+    NetMsgType::SMSGHAVE,
+    NetMsgType::SMSGWANT,
+    NetMsgType::SMSGMSG,
+    NetMsgType::SMSGMATCH,
+    NetMsgType::SMSGPING,
+    NetMsgType::SMSGPONG,
+    NetMsgType::SMSGDISABLED,
+    NetMsgType::SMSGIGNORE,
+#endif
 };
 const static std::vector<std::string> allNetMessageTypesVec(allNetMessageTypes, allNetMessageTypes+ARRAYLEN(allNetMessageTypes));
 

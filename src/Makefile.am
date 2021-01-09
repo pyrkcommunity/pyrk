@@ -211,6 +211,12 @@ BITCOIN_CORE_H = \
   zmq/zmqnotificationinterface.h \
   zmq/zmqpublishnotifier.h
 
+if ENABLE_SMESSAGE
+BITCOIN_CORE_H += \
+  lz4/lz4.h \
+  smessage.h \
+  xxhash/xxhash.h
+endif
 
 obj/build.h: FORCE
 	@$(MKDIR_P) $(builddir)/obj
@@ -293,6 +299,13 @@ libdash_server_a_SOURCES = \
   validationinterface.cpp \
   versionbits.cpp \
   $(BITCOIN_CORE_H)
+
+if ENABLE_SMESSAGE
+libdash_server_a_SOURCES += \
+  lz4/lz4.c \
+  smessage.cpp \
+  xxhash/xxhash.c
+endif
 
 if ENABLE_ZMQ
 libdash_zmq_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(ZMQ_CFLAGS)

@@ -23,6 +23,9 @@
 #include "primitives/block.h"
 #include "primitives/transaction.h"
 #include "random.h"
+#ifdef ENABLE_SMESSAGE
+#include "smessage.h"
+#endif
 #include "tinyformat.h"
 #include "txmempool.h"
 #include "ui_interface.h"
@@ -2707,6 +2710,11 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         ProcessNewBlock(chainparams, pblock, forceProcessing, &fNewBlock);
         if (fNewBlock)
             pfrom->nLastBlockTime = GetTime();
+#ifdef ENABLE_SMESSAGE
+        if (fSecMsgEnabled) {
+            SecureMsgScanBlock(*pblock);
+        }
+#endif
     }
 
 
@@ -2951,6 +2959,12 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             governance.ProcessMessage(pfrom, strCommand, vRecv, connman);
             llmq::quorumBlockProcessor->ProcessMessage(pfrom, strCommand, vRecv, connman);
             llmq::quorumDummyDKG->ProcessMessage(pfrom, strCommand, vRecv, connman);
+
+#ifdef ENABLE_SMESSAGE
+            if (fSecMsgEnabled) {
+                SecureMsgReceiveData(pfrom, strCommand, vRecv, found, connman);
+            }
+#endif
         }
         else
         {
@@ -3636,6 +3650,11 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
         }
 
     }
+#ifdef ENABLE_SMESSAGE
+    if (fSecMsgEnabled) {
+        SecureMsgSendData(pto, connman);
+    }
+#endif
     return true;
 }
 

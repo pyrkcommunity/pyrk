@@ -33,6 +33,9 @@
 #include "script/standard.h"
 #include "script/sigcache.h"
 #include "scheduler.h"
+#ifdef ENABLE_SMESSAGE
+#include "smessage.h"
+#endif
 #include "timedata.h"
 #include "txdb.h"
 #include "txmempool.h"
@@ -368,6 +371,9 @@ void Shutdown()
     }
    // Shutdown part 2: Stop TOR thread and delete wallet instance
     StopTorControl();
+#ifdef ENABLE_SMESSAGE
+    SecureMsgShutdown();
+#endif
 #ifdef ENABLE_WALLET
     delete pwalletMain;
     pwalletMain = NULL;
@@ -1366,6 +1372,11 @@ bool AppInitParameterInteraction()
         return InitError("Difficulty and subsidy parameters may only be overridden on devnet.");
     }
 
+    fNoSmsg = GetBoolArg("-nosmsg", false);
+    if (!fNoSmsg) {
+        nLocalServices = ServiceFlags(nLocalServices | SMSG_RELAY);
+    }
+
     return true;
 }
 
@@ -2159,6 +2170,10 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
 
     // Set up curl environment
     curl_global_init(CURL_GLOBAL_ALL);
+
+#ifdef ENABLE_SMESSAGE
+    SecureMsgStart(fNoSmsg, GetBoolArg("-smsgscanchain", false));
+#endif
 
     // ********************************************************* Step 13: finished
 

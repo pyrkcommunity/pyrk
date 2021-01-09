@@ -21,6 +21,9 @@
 #include "primitives/transaction.h"
 #include "script/script.h"
 #include "script/sign.h"
+#ifdef ENABLE_SMESSAGE
+#include "smessage.h"
+#endif
 #include "timedata.h"
 #include "txmempool.h"
 #include "util.h"
@@ -457,6 +460,9 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase, bool fForMixingOnl
                     LogPrintf("Keypool replenished, re-initializing automatic backups.\n");
                     nWalletBackups = GetArg("-createwalletbackups", 10);
                 }
+#ifdef ENABLE_SMESSAGE
+                SecureMsgWalletUnlocked();
+#endif
                 return true;
             }
         }
@@ -4075,15 +4081,23 @@ DBErrors CWallet::ZapWalletTx(std::vector<CWalletTx>& vWtx)
 
 bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& strPurpose)
 {
+    bool fOwned{false};
     bool fUpdated = false;
     {
         LOCK(cs_wallet); // mapAddressBook
         std::map<CTxDestination, CAddressBookData>::iterator mi = mapAddressBook.find(address);
         fUpdated = mi != mapAddressBook.end();
         mapAddressBook[address].name = strName;
+        fOwned = ::IsMine(*this, address);
         if (!strPurpose.empty()) /* update purpose only if requested */
             mapAddressBook[address].purpose = strPurpose;
     }
+#ifdef ENABLE_SMESSAGE
+    if (fOwned) {
+        const CBitcoinAddress& caddress = address;
+        SecureMsgWalletKeyChanged(caddress.ToString(), (fUpdated ? CT_UPDATED : CT_NEW));
+    }
+#endif
     NotifyAddressBookChanged(this, address, strName, ::IsMine(*this, address) != ISMINE_NO,
                              strPurpose, (fUpdated ? CT_UPDATED : CT_NEW) );
     if (!fFileBacked)
