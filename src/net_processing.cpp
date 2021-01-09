@@ -884,7 +884,6 @@ void PeerLogicValidation::BlockChecked(const CBlock& block, const CValidationSta
     }
     if (it != mapBlockSource.end())
         mapBlockSource.erase(it);
-
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -2687,9 +2686,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         std::shared_ptr<CBlock> pblock = std::make_shared<CBlock>();
         vRecv >> *pblock;
 
-        CBlock block;
-        vRecv >> block;
-
         LogPrint("net", "received block %s peer=%d\n", pblock->GetHash().ToString(), pfrom->id);
 
         // Process all blocks from whitelisted peers, even if not requested,
@@ -2711,13 +2707,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         ProcessNewBlock(chainparams, pblock, forceProcessing, &fNewBlock);
         if (fNewBlock)
             pfrom->nLastBlockTime = GetTime();
-
-#ifdef ENABLE_SMESSAGE
-        if (fSecMsgEnabled)
-            SecureMsgScanBlock(block);
-#endif
-
-
     }
 
 
@@ -2939,12 +2928,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
 
     else {
         bool found = false;
-
-#ifdef ENABLE_SMESSAGE
-        if (fSecMsgEnabled)
-            SecureMsgReceiveData(pfrom, strCommand, vRecv, found);
-#endif
-
         const std::vector<std::string> &allMessages = getAllNetMessageTypes();
         BOOST_FOREACH(const std::string msg, allMessages) {
             if(msg == strCommand) {
@@ -2952,8 +2935,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
                 break;
             }
         }
-
-	LogPrint("net", "TESTING Unknown command \"%s\" from peer=%d\n", SanitizeString(strCommand), pfrom->id);
 
         if (found)
         {
@@ -3655,10 +3636,6 @@ bool SendMessages(CNode* pto, CConnman& connman, const std::atomic<bool>& interr
         }
 
     }
-#ifdef ENABLE_SMESSAGE
-    if (fSecMsgEnabled)
-        SecureMsgSendData(pto, pto->fWhitelisted);
-#endif
     return true;
 }
 

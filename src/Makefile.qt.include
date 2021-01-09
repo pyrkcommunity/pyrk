@@ -52,9 +52,7 @@ QT_FORMS_UI = \
   qt/forms/signverifymessagedialog.ui \
   qt/forms/tokenformentry.ui \
   qt/forms/tokenselectaddressdialog.ui \
-  qt/forms/transactiondescdialog.ui \
-  qt/forms/addcontactdialog.ui \
-  qt/forms/trezarmessage.ui
+  qt/forms/transactiondescdialog.ui
 
 QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \
@@ -114,9 +112,7 @@ QT_MOC_CPP = \
   qt/moc_utilitydialog.cpp \
   qt/moc_walletframe.cpp \
   qt/moc_walletmodel.cpp \
-  qt/moc_walletview.cpp \
-  qt/moc_addcontactdialog.cpp \
-  qt/moc_trezarmessage.cpp
+  qt/moc_walletview.cpp
 
 BITCOIN_MM = \
   qt/macdockiconhandler.mm \
@@ -205,9 +201,7 @@ BITCOIN_QT_H = \
   qt/walletmodel.h \
   qt/walletmodeltransaction.h \
   qt/walletview.h \
-  qt/winshutdownmonitor.h \
-  qt/addcontactdialog.h \
-  qt/trezarmessage.h
+  qt/winshutdownmonitor.h
 
 RES_ICONS = \
   qt/res/icons/bitcoin.ico \
@@ -337,9 +331,7 @@ BITCOIN_QT_WALLET_CPP = \
   qt/walletframe.cpp \
   qt/walletmodel.cpp \
   qt/walletmodeltransaction.cpp \
-  qt/walletview.cpp \
-  qt/addcontactdialog.cpp \
-  qt/trezarmessage.cpp
+  qt/walletview.cpp
 
 BITCOIN_QT_CPP = $(BITCOIN_QT_BASE_CPP)
 if TARGET_WINDOWS

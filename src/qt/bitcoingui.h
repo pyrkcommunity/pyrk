@@ -98,7 +98,6 @@ private:
     QAction *historyAction;
     QAction *masternodeAction;
     QAction *pyrkTokenAction;
-    QAction *trezarMessageAction;
     QAction *quitAction;
     QAction *sendCoinsAction;
     QAction *sendCoinsMenuAction;
@@ -227,8 +226,6 @@ private Q_SLOTS:
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
-    /** Switch to trezar message page */
-    void gotoTrezarMessage();
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");

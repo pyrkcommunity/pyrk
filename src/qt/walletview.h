@@ -21,7 +21,6 @@ class SendCoinsRecipient;
 class TransactionView;
 class WalletModel;
 class AddressBookPage;
-class TrezarMessage;
 
 QT_BEGIN_NAMESPACE
 class QLabel;
@@ -70,7 +69,6 @@ private:
     AddressBookPage *usedReceivingAddressesPage;
     MasternodeList *masternodeListPage;
     PyrkTokens *pyrkTokensPage;
-    TrezarMessage *trezarMessagePage;
 
     TransactionView *transactionView;
 
@@ -91,8 +89,6 @@ public Q_SLOTS:
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
-    /** Swich to Chat page */
-    void gotoTrezarMessage();
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");
