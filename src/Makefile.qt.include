@@ -54,6 +54,12 @@ QT_FORMS_UI = \
   qt/forms/tokenselectaddressdialog.ui \
   qt/forms/transactiondescdialog.ui
 
+if ENABLE_SMESSAGE
+QT_FORMS_UI += \
+  qt/forms/addcontactdialog.ui \
+  qt/forms/securemessage.ui
+endif
+
 QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \
   qt/moc_addresstablemodel.cpp \
@@ -113,6 +119,12 @@ QT_MOC_CPP = \
   qt/moc_walletframe.cpp \
   qt/moc_walletmodel.cpp \
   qt/moc_walletview.cpp
+
+if ENABLE_SMESSAGE
+QT_MOC_CPP += \
+  qt/moc_addcontactdialog.cpp \
+  qt/moc_securemessage.cpp
+endif
 
 BITCOIN_MM = \
   qt/macdockiconhandler.mm \
@@ -202,6 +214,12 @@ BITCOIN_QT_H = \
   qt/walletmodeltransaction.h \
   qt/walletview.h \
   qt/winshutdownmonitor.h
+
+if ENABLE_SMESSAGE
+BITCOIN_QT_H += \
+  qt/addcontactdialog.h \
+  qt/securemessage.h
+endif
 
 RES_ICONS = \
   qt/res/icons/bitcoin.ico \
@@ -332,6 +350,12 @@ BITCOIN_QT_WALLET_CPP = \
   qt/walletmodel.cpp \
   qt/walletmodeltransaction.cpp \
   qt/walletview.cpp
+
+if ENABLE_SMESSAGE
+BITCOIN_QT_WALLET_CPP += \
+  qt/addcontactdialog.cpp \
+  qt/securemessage.cpp
+endif
 
 BITCOIN_QT_CPP = $(BITCOIN_QT_BASE_CPP)
 if TARGET_WINDOWS
