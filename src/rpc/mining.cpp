@@ -259,6 +259,7 @@ UniValue getmininginfo(const JSONRPCRequest& request)
     obj.pushKV("difficulty_scrypt",  (double)GetDifficulty(nullptr, ALGO_SCRYPT));
     obj.pushKV("difficulty_x11",     (double)GetDifficulty(nullptr, ALGO_X11));
     obj.pushKV("difficulty_yespower",(double)GetDifficulty(nullptr, ALGO_YESPOWER));
+    obj.pushKV("difficulty_lyra2",   (double)GetDifficulty(nullptr, ALGO_LYRA2));
     obj.push_back(Pair("errors",           GetWarnings("statusbar")));
     obj.push_back(Pair("networkhashps",    getnetworkhashps(request)));
     obj.push_back(Pair("pooledtx",         (uint64_t)mempool.size()));
@@ -502,6 +503,8 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
             algo = ALGO_X11;
         else if (strAlgo == "yespower")
             algo = ALGO_YESPOWER;
+        else if (strAlgo == "lyra2" || strAlgo == "lyra2z330")
+            algo = ALGO_LYRA2;
     }
 
     if (strMode != "template")

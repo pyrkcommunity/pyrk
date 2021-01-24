@@ -126,8 +126,12 @@ arith_uint256 GetBlockProof(const CBlockIndex& block)
     arith_uint256 bnAvgTarget(1);
     
     int CURRENT_ALGOS;
-    
-    if (block.nHeight >= params.v2DiffChangeHeight)
+
+    if (block.nHeight >= params.AlgoChangeHeight)
+    {
+        CURRENT_ALGOS = NUM_ALGOSV3;
+    }
+    else if (block.nHeight >= params.v2DiffChangeHeight)
     {
         CURRENT_ALGOS = NUM_ALGOSV2;
     }

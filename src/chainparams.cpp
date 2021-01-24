@@ -605,7 +605,7 @@ public:
         consensus.nMaxAdjustUp = 8; // 8% adjustment up
         consensus.nMinActualTimespan = consensus.nAveragingTargetTimespan * (100 - consensus.nMaxAdjustUp) / 100;
         consensus.nMaxActualTimespan = consensus.nAveragingTargetTimespan * (100 + consensus.nMaxAdjustDown) / 100;
-        consensus.AlgoChangeHeight = std::numeric_limits<int>::max();
+        consensus.AlgoChangeHeight = 0;
         consensus.nLocalTargetAdjustment = 4; // target adjustment per algo
         consensus.nLocalDifficultyAdjustment = 4; // difficulty adjustment per algo
         consensus.fPowAllowMinDifficultyBlocks = true;

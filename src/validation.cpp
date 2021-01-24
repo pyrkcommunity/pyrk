@@ -1870,6 +1870,12 @@ int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Para
         else
             nVersion |= BLOCK_VERSION_YESPOWER;
         break;
+        case ALGO_LYRA2:
+        if (pindexPrev->nHeight < params.AlgoChangeHeight)
+            nVersion |= BLOCK_VERSION_SCRYPT;
+        else
+            nVersion |= BLOCK_VERSION_LYRA2;
+        break;
         default:
         break;
     }
@@ -1885,13 +1891,6 @@ bool GetBlockHash(uint256& hashRet, int nBlockHeight)
     if(nBlockHeight == -1) nBlockHeight = chainActive.Height();
     hashRet = chainActive[nBlockHeight]->GetBlockHash();
     return true;
-}
-
-bool isMultiAlgoVersion(int nVersion){
-     if((nVersion & 0xfffU) == 514 || (nVersion & 0xfffU) == 1026 || (nVersion & 0xfffU) == 1538 || (nVersion & 0xfffU) == 2052) {
-         return true;
-     }
-     return false;
 }
 
 /**
@@ -2505,7 +2504,7 @@ void static UpdateTip(CBlockIndex *pindexNew, const CChainParams& chainParams) {
         for (int i = 0; i < 100 && pindex != NULL; i++)
         {
             int32_t nExpectedVersion = ComputeBlockVersion(pindex->pprev, chainParams.GetConsensus(), pindex->GetAlgo(), true);
-            if (pindex->nVersion > VERSIONBITS_LAST_OLD_BLOCK_VERSION && (pindex->nVersion & ~nExpectedVersion) != 0 && !isMultiAlgoVersion(pindex->nVersion))
+            if (pindex->nVersion > VERSIONBITS_LAST_OLD_BLOCK_VERSION && (pindex->nVersion & ~nExpectedVersion) != 0)
                 ++nUpgraded;
             pindex = pindex->pprev;
         }
@@ -3361,6 +3360,10 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     // check of algo 3 is active
     if (block.GetAlgo() == 3 && nHeight < consensusParams.v2DiffChangeHeight)
         return state.Invalid(false, REJECT_INVALID, "invalid-algo", "this algorithm is not active");
+
+    // Check if algo 4 is active
+    if (block.GetAlgo() == 4 && nHeight < consensusParams.AlgoChangeHeight)
+        return state.Invalid(false, REJECT_INVALID, "invalid-algo", "LYRA2 algorithm is not active");
         
     return true;
 }

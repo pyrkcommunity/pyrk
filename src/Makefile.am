@@ -347,6 +347,9 @@ crypto_libdash_crypto_a_SOURCES = \
   crypto/ripemd160.cpp \
   crypto/scrypt.cpp \
   crypto/scrypt.h \
+  crypto/algos/Lyra2Z/Lyra2.c \
+  crypto/algos/Lyra2Z/Lyra2Z.c \
+  crypto/algos/Lyra2Z/Sponge.c \
   crypto/algos/yespower/yespower-sha256.c \
   crypto/algos/yespower/yespower-opt.c \
   crypto/algos/yespower/yespower.c \

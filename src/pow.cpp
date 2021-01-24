@@ -15,9 +15,7 @@
 
 unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader *pblock, const Consensus::Params& params, int algo) {
 
-    if (pindexLast == nullptr)
-        return GetNextWorkRequiredV1(pindexLast, params, algo);
-    else if (pindexLast->nHeight < params.v2DiffChangeHeight)
+    if (!pindexLast || pindexLast->nHeight < params.v2DiffChangeHeight)
         return GetNextWorkRequiredV1(pindexLast, params, algo);
     else if (pindexLast->nHeight < params.v3DiffChangeHeight)
         return GetNextWorkRequiredV2(pindexLast, params, algo);
@@ -168,9 +166,16 @@ unsigned int GetNextWorkRequiredV3(const CBlockIndex* pindexLast, const Consensu
     // find first block in averaging interval
     // Go back by what we want to be nAveragingInterval blocks per algo
     const CBlockIndex* pindexFirst = pindexLast;
-    for (int i = 0; pindexFirst && i < NUM_ALGOSV2 * params.nAveragingInterval; i++)
-    {
-        pindexFirst = pindexFirst->pprev;
+    if (pindexLast->nHeight < params.AlgoChangeHeight) {
+        for (int i = 0; pindexFirst && i < NUM_ALGOSV2 * params.nAveragingInterval; i++)
+        {
+            pindexFirst = pindexFirst->pprev;
+        }
+    } else {
+        for (int i = 0; pindexFirst && i < NUM_ALGOSV3 * params.nAveragingInterval; i++)
+        {
+            pindexFirst = pindexFirst->pprev;
+        }
     }
 
     const CBlockIndex* pindexPrevAlgo = GetLastBlockIndexForAlgo(pindexLast, params, algo);
@@ -197,7 +202,13 @@ unsigned int GetNextWorkRequiredV3(const CBlockIndex* pindexLast, const Consensu
     bnNew /= params.nAveragingTargetTimespanV2;
 
     //Per-algo retarget
-    int nAdjustments = pindexPrevAlgo->nHeight + NUM_ALGOSV2 - 1 - pindexLast->nHeight;
+    int nAdjustments{0};
+    if (pindexLast->nHeight < params.AlgoChangeHeight) {
+        nAdjustments = pindexPrevAlgo->nHeight + NUM_ALGOSV2 - 1 - pindexLast->nHeight;
+    } else {
+        nAdjustments = pindexPrevAlgo->nHeight + NUM_ALGOSV3 - 1 - pindexLast->nHeight;
+    }
+
     if (nAdjustments > 0)
     {
         for (int i = 0; i < nAdjustments; i++)
