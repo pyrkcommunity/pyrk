@@ -10,6 +10,9 @@
 #include "net.h"
 #include "netbase.h"
 #include "rpc/server.h"
+#ifdef ENABLE_SMESSAGE
+#include "smessage.h"
+#endif
 #include "timedata.h"
 #include "txmempool.h"
 #include "util.h"
@@ -27,6 +30,7 @@
 
 #include <boost/assign/list_of.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <univalue.h>
 
@@ -106,6 +110,7 @@ UniValue getinfo(const JSONRPCRequest& request)
     obj.pushKV("difficulty_scrypt",  (double)GetDifficulty(nullptr, ALGO_SCRYPT));
     obj.pushKV("difficulty_x11",     (double)GetDifficulty(nullptr, ALGO_X11));
     obj.pushKV("difficulty_yespower",(double)GetDifficulty(nullptr, ALGO_YESPOWER));
+    obj.pushKV("difficulty_lyra2",   (double)GetDifficulty(nullptr, ALGO_LYRA2));
     obj.push_back(Pair("testnet",       Params().NetworkIDString() == CBaseChainParams::TESTNET));
 #ifdef ENABLE_WALLET
     if (pwalletMain) {
@@ -1137,18 +1142,16 @@ UniValue echo(const JSONRPCRequest& request)
     return request.params;
 }
 
-
-/*
 #ifdef ENABLE_SMESSAGE
-UniValue smsgenable(const UniValue& params, bool fHelp)
+UniValue smsgenable(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() != 0)
-        throw runtime_error(
+    if (request.fHelp || request. params.size() != 0)
+        throw std::runtime_error(
             "smsgenable \n"
             "Enable secure messaging.");
 
     if (fSecMsgEnabled)
-        throw runtime_error("Secure messaging is already enabled.");
+        throw std::runtime_error("Secure messaging is already enabled.");
 
     UniValue result(UniValue::VOBJ);
     if (!SecureMsgEnable()) {
@@ -1159,14 +1162,14 @@ UniValue smsgenable(const UniValue& params, bool fHelp)
     return result;
 }
 
-UniValue smsgdisable(const UniValue& params, bool fHelp)
+UniValue smsgdisable(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() != 0)
-        throw runtime_error(
+    if (request.fHelp || request. params.size() != 0)
+        throw std::runtime_error(
             "smsgdisable \n"
             "Disable secure messaging.");
     if (!fSecMsgEnabled)
-        throw runtime_error("Secure messaging is already disabled.");
+        throw std::runtime_error("Secure messaging is already disabled.");
 
     UniValue result(UniValue::VOBJ);
     if (!SecureMsgDisable()) {
@@ -1177,16 +1180,16 @@ UniValue smsgdisable(const UniValue& params, bool fHelp)
     return result;
 }
 
-UniValue smsgoptions(const UniValue& params, bool fHelp)
+UniValue smsgoptions(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() > 3)
-        throw runtime_error(
+    if (request.fHelp || request. params.size() > 3)
+        throw std::runtime_error(
             "smsgoptions [list|set <optname> <value>]\n"
             "List and manage options.");
 
     std::string mode = "list";
-    if (params.size() > 0) {
-        mode = params[0].get_str();
+    if (request.params.size() > 0) {
+        mode = request.params[0].get_str();
     }
 
     UniValue result(UniValue::VOBJ);
@@ -1198,14 +1201,14 @@ UniValue smsgoptions(const UniValue& params, bool fHelp)
 
         result.push_back(Pair("result", "Success."));
     } else if (mode == "set") {
-        if (params.size() < 3) {
+        if (request.params.size() < 3) {
             result.push_back(Pair("result", "Too few parameters."));
             result.push_back(Pair("expected", "set <optname> <value>"));
             return result;
         }
 
-        std::string optname = params[1].get_str();
-        std::string value   = params[2].get_str();
+        std::string optname = request.params[1].get_str();
+        std::string value   = request.params[2].get_str();
 
         if (optname == "newAddressRecv") {
             if (value == "+" || value == "on"  || value == "true"  || value == "1") {
@@ -1239,21 +1242,21 @@ UniValue smsgoptions(const UniValue& params, bool fHelp)
     return result;
 }
 
-UniValue smsglocalkeys(const UniValue& params, bool fHelp)
+UniValue smsglocalkeys(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() > 3)
-        throw runtime_error(
+    if (request.fHelp || request. params.size() > 3)
+        throw std::runtime_error(
             "smsglocalkeys [whitelist|all|wallet|recv <+/-> <address>|anon <+/-> <address>]\n"
             "List and manage keys.");
 
     if (!fSecMsgEnabled)
-        throw runtime_error("Secure messaging is disabled.");
+        throw std::runtime_error("Secure messaging is disabled.");
 
     UniValue result(UniValue::VOBJ);
 
     std::string mode = "whitelist";
-    if (params.size() > 0)
-        mode = params[0].get_str();
+    if (request.params.size() > 0)
+        mode = request.params[0].get_str();
 
     char cbuf[256];
 
@@ -1299,15 +1302,15 @@ UniValue smsglocalkeys(const UniValue& params, bool fHelp)
         result.push_back(Pair("result", std::string(cbuf)));
 
     } else if (mode == "recv") {
-        if (params.size() < 3)
+        if (request.params.size() < 3)
         {
             result.push_back(Pair("result", "Too few parameters."));
             result.push_back(Pair("expected", "recv <+/-> <address>"));
             return result;
         }
 
-        std::string op      = params[1].get_str();
-        std::string addr    = params[2].get_str();
+        std::string op      = request.params[1].get_str();
+        std::string addr    = request.params[2].get_str();
 
         std::vector<SecMsgAddress>::iterator it;
         for (it = smsgAddresses.begin(); it != smsgAddresses.end(); ++it)
@@ -1340,14 +1343,14 @@ UniValue smsglocalkeys(const UniValue& params, bool fHelp)
         return result;
 
     } else if (mode == "anon") {
-        if (params.size() < 3) {
+        if (request.params.size() < 3) {
             result.push_back(Pair("result", "Too few parameters."));
             result.push_back(Pair("expected", "anon <+/-> <address>"));
             return result;
         }
 
-        std::string op      = params[1].get_str();
-        std::string addr    = params[2].get_str();
+        std::string op      = request.params[1].get_str();
+        std::string addr    = request.params[2].get_str();
 
         std::vector<SecMsgAddress>::iterator it;
         for (it = smsgAddresses.begin(); it != smsgAddresses.end(); ++it) {
@@ -1420,15 +1423,15 @@ UniValue smsglocalkeys(const UniValue& params, bool fHelp)
     return result;
 }
 
-UniValue smsgscanchain(const UniValue& params, bool fHelp)
+UniValue smsgscanchain(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() != 0)
-        throw runtime_error(
+    if (request.fHelp || request. params.size() != 0)
+        throw std::runtime_error(
             "smsgscanchain \n"
             "Look for public keys in the block chain.");
 
     if (!fSecMsgEnabled)
-        throw runtime_error("Secure messaging is disabled.");
+        throw std::runtime_error("Secure messaging is disabled.");
 
     UniValue result(UniValue::VOBJ);
     if (!SecureMsgScanBlockChain()) {
@@ -1439,18 +1442,18 @@ UniValue smsgscanchain(const UniValue& params, bool fHelp)
     return result;
 }
 
-UniValue smsgscanbuckets(const UniValue& params, bool fHelp)
+UniValue smsgscanbuckets(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() != 0)
-        throw runtime_error(
+    if (request.fHelp || request. params.size() != 0)
+        throw std::runtime_error(
             "smsgscanbuckets \n"
             "Force rescan of all messages in the bucket store.");
 
     if (!fSecMsgEnabled)
-        throw runtime_error("Secure messaging is disabled.");
+        throw std::runtime_error("Secure messaging is disabled.");
 
     if (pwalletMain->IsLocked())
-        throw runtime_error("Wallet is locked.");
+        throw std::runtime_error("Wallet is locked.");
 
     UniValue result(UniValue::VOBJ);
     if (!SecureMsgScanBuckets()) {
@@ -1461,18 +1464,18 @@ UniValue smsgscanbuckets(const UniValue& params, bool fHelp)
     return result;
 }
 
-UniValue smsgaddkey(const UniValue& params, bool fHelp)
+UniValue smsgaddkey(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() != 2)
-        throw runtime_error(
+    if (request.fHelp || request. params.size() != 2)
+        throw std::runtime_error(
             "smsgaddkey <address> <pubkey>\n"
             "Add address, pubkey pair to database.");
 
     if (!fSecMsgEnabled)
-        throw runtime_error("Secure messaging is disabled.");
+        throw std::runtime_error("Secure messaging is disabled.");
 
-    std::string addr = params[0].get_str();
-    std::string pubk = params[1].get_str();
+    std::string addr = request.params[0].get_str();
+    std::string pubk = request.params[1].get_str();
 
     UniValue result(UniValue::VOBJ);
     int rv = SecureMsgAddAddress(addr, pubk);
@@ -1494,19 +1497,19 @@ UniValue smsgaddkey(const UniValue& params, bool fHelp)
     return result;
 }
 
-UniValue smsggetpubkey(const UniValue& params, bool fHelp)
+UniValue smsggetpubkey(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() != 1)
-        throw runtime_error(
+    if (request.fHelp || request. params.size() != 1)
+        throw std::runtime_error(
             "smsggetpubkey <address>\n"
             "Return the base58 encoded compressed public key for an address.\n"
             "Tests localkeys first, then looks in public key db.\n");
 
     if (!fSecMsgEnabled)
-        throw runtime_error("Secure messaging is disabled.");
+        throw std::runtime_error("Secure messaging is disabled.");
 
 
-    std::string address   = params[0].get_str();
+    std::string address   = request.params[0].get_str();
     std::string publicKey;
 
     UniValue result(UniValue::VOBJ);
@@ -1571,19 +1574,19 @@ UniValue smsggetpubkey(const UniValue& params, bool fHelp)
     return result;
 }
 
-UniValue smsgsend(const UniValue& params, bool fHelp)
+UniValue smsgsend(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() != 3)
-        throw runtime_error(
+    if (request.fHelp || request. params.size() != 3)
+        throw std::runtime_error(
             "smsgsend <addrFrom> <addrTo> <message>\n"
             "Send an encrypted message from addrFrom to addrTo.");
 
     if (!fSecMsgEnabled)
-        throw runtime_error("Secure messaging is disabled.");
+        throw std::runtime_error("Secure messaging is disabled.");
 
-    std::string addrFrom  = params[0].get_str();
-    std::string addrTo    = params[1].get_str();
-    std::string msg       = params[2].get_str();
+    std::string addrFrom  = request.params[0].get_str();
+    std::string addrTo    = request.params[1].get_str();
+    std::string msg       = request.params[2].get_str();
 
     UniValue result(UniValue::VOBJ);
 
@@ -1598,19 +1601,19 @@ UniValue smsgsend(const UniValue& params, bool fHelp)
     return result;
 }
 
-UniValue smsgsendanon(const UniValue& params, bool fHelp)
+UniValue smsgsendanon(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() != 2)
-        throw runtime_error(
+    if (request.fHelp || request. params.size() != 2)
+        throw std::runtime_error(
             "smsgsendanon <addrTo> <message>\n"
             "Send an anonymous encrypted message to addrTo.");
 
     if (!fSecMsgEnabled)
-        throw runtime_error("Secure messaging is disabled.");
+        throw std::runtime_error("Secure messaging is disabled.");
 
     std::string addrFrom  = "anon";
-    std::string addrTo    = params[0].get_str();
-    std::string msg       = params[1].get_str();
+    std::string addrTo    = request.params[0].get_str();
+    std::string msg       = request.params[1].get_str();
 
     UniValue result(UniValue::VOBJ);
     std::string sError;
@@ -1624,22 +1627,22 @@ UniValue smsgsendanon(const UniValue& params, bool fHelp)
     return result;
 }
 
-UniValue smsginbox(const UniValue& params, bool fHelp)
+UniValue smsginbox(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() > 1) // defaults to read
-        throw runtime_error(
+    if (request.fHelp || request. params.size() > 1) // defaults to read
+        throw std::runtime_error(
             "smsginbox [all|unread]\n"
             "Decrypt and display all received messages.");
 
     if (!fSecMsgEnabled)
-        throw runtime_error("Secure messaging is disabled.");
+        throw std::runtime_error("Secure messaging is disabled.");
 
     if (pwalletMain->IsLocked())
-        throw runtime_error("Wallet is locked.");
+        throw std::runtime_error("Wallet is locked.");
 
     std::string mode = "unread";
-    if (params.size() > 0)
-        mode = params[0].get_str();
+    if (request.params.size() > 0)
+        mode = request.params[0].get_str();
 
     UniValue result(UniValue::VOBJ);
 
@@ -1653,7 +1656,7 @@ UniValue smsginbox(const UniValue& params, bool fHelp)
         SecMsgDB dbInbox;
 
         if (!dbInbox.Open("cr+"))
-            throw runtime_error("Could not open DB.");
+            throw std::runtime_error("Could not open DB.");
 
         uint32_t nMessages = 0;
         char cbuf[256];
@@ -1714,22 +1717,22 @@ UniValue smsginbox(const UniValue& params, bool fHelp)
     return result;
 }
 
-UniValue smsgoutbox(const UniValue& params, bool fHelp)
+UniValue smsgoutbox(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() > 1) // defaults to read
-        throw runtime_error(
+    if (request.fHelp || request. params.size() > 1) // defaults to read
+        throw std::runtime_error(
             "smsgoutbox [all]\n"
             "Decrypt and display all sent messages.");
 
     if (!fSecMsgEnabled)
-        throw runtime_error("Secure messaging is disabled.");
+        throw std::runtime_error("Secure messaging is disabled.");
 
     if (pwalletMain->IsLocked())
-        throw runtime_error("Wallet is locked.");
+        throw std::runtime_error("Wallet is locked.");
 
     std::string mode = "all";
-    if (params.size() > 0)
-        mode = params[0].get_str();
+    if (request.params.size() > 0)
+        mode = request.params[0].get_str();
 
     UniValue result(UniValue::VOBJ);
 
@@ -1743,7 +1746,7 @@ UniValue smsgoutbox(const UniValue& params, bool fHelp)
         SecMsgDB dbOutbox;
 
         if (!dbOutbox.Open("cr+"))
-            throw runtime_error("Could not open DB.");
+            throw std::runtime_error("Could not open DB.");
 
         uint32_t nMessages = 0;
         char cbuf[256];
@@ -1782,20 +1785,19 @@ UniValue smsgoutbox(const UniValue& params, bool fHelp)
     return result;
 }
 
-
-UniValue smsgbuckets(const UniValue& params, bool fHelp)
+UniValue smsgbuckets(const JSONRPCRequest& request)
 {
-    if (fHelp || params.size() > 1)
-        throw runtime_error(
+    if (request.fHelp || request. params.size() > 1)
+        throw std::runtime_error(
             "smsgbuckets [stats|dump]\n"
             "Display some statistics.");
 
     if (!fSecMsgEnabled)
-        throw runtime_error("Secure messaging is disabled.");
+        throw std::runtime_error("Secure messaging is disabled.");
 
     std::string mode = "stats";
-    if (params.size() > 0)
-        mode = params[0].get_str();
+    if (request.params.size() > 0)
+        mode = request.params[0].get_str();
 
     UniValue result(UniValue::VOBJ);
 
@@ -1831,7 +1833,6 @@ UniValue smsgbuckets(const UniValue& params, bool fHelp)
                 objM.push_back(Pair("last changed", getTimeString(it->second.timeChanged, cbuf, sizeof(cbuf))));
 
                 boost::filesystem::path fullPath = GetDataDir() / "smsgStore" / sFile;
-
 
                 if (!boost::filesystem::exists(fullPath)) {
                     // -- If there is a file for an empty bucket something is wrong.
@@ -1895,9 +1896,6 @@ UniValue smsgbuckets(const UniValue& params, bool fHelp)
     return result;
 }
 #endif
-*/
-
-
 
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         okSafeMode
@@ -1910,23 +1908,7 @@ static const CRPCCommand commands[] =
     { "util",               "verifymessage",          &verifymessage,          true,  {"address","signature","message"} },
     { "util",               "signmessagewithprivkey", &signmessagewithprivkey, true,  {"privkey","message"} },
     { "blockchain",         "getspentinfo",           &getspentinfo,           false, {"json"} },
-/*
-#ifdef ENABLE_SMESSAGE
-    { "smessage",           "smsgenable",             &smsgenable,             false, {} },
-    { "smessage",           "smsgdisable",            &smsgdisable,            false, {} },
-    { "smessage",           "smsglocalkeys",          &smsglocalkeys,          false, {} },
-    { "smessage",           "smsgoptions",            &smsgoptions,            false, {} },
-    { "smessage",           "smsgscanchain",          &smsgscanchain,          false, {} },
-    { "smessage",           "smsgscanbuckets",        &smsgscanbuckets,        false, {} },
-    { "smessage",           "smsgaddkey",             &smsgaddkey,             false, {} },
-    { "smessage",           "smsggetpubkey",          &smsggetpubkey,          false, {} },
-    { "smessage",           "smsgsend",               &smsgsend,               false, {} },
-    { "smessage",           "smsgsendanon",           &smsgsendanon,           false, {} },
-    { "smessage",           "smsginbox",              &smsginbox,              false, {} },
-    { "smessage",           "smsgoutbox",             &smsgoutbox,             false, {} },
-    { "smessage",           "smsgbuckets",            &smsgbuckets,            false, {} },
-#endif
-*/
+
     /* Address index */
     { "addressindex",       "getaddressmempool",      &getaddressmempool,      true,  {"addresses"}  },
     { "addressindex",       "getaddressutxos",        &getaddressutxos,        false, {"addresses"} },
@@ -1937,6 +1919,22 @@ static const CRPCCommand commands[] =
     /* Dash features */
     { "pyrk",               "mnsync",                 &mnsync,                 true,  {} },
     { "pyrk",               "spork",                  &spork,                  true,  {"value"} },
+
+#ifdef ENABLE_SMESSAGE
+    { "smessage",           "smsgenable",             &smsgenable,             false,  {} },
+    { "smessage",           "smsgdisable",            &smsgdisable,            false,  {} },
+    { "smessage",           "smsglocalkeys",          &smsglocalkeys,          false,  {} },
+    { "smessage",           "smsgoptions",            &smsgoptions,            false,  {} },
+    { "smessage",           "smsgscanchain",          &smsgscanchain,          false,  {} },
+    { "smessage",           "smsgscanbuckets",        &smsgscanbuckets,        false,  {} },
+    { "smessage",           "smsgaddkey",             &smsgaddkey,             false,  {} },
+    { "smessage",           "smsggetpubkey",          &smsggetpubkey,          false,  {} },
+    { "smessage",           "smsgsend",               &smsgsend,               false,  {} },
+    { "smessage",           "smsgsendanon",           &smsgsendanon,           false,  {} },
+    { "smessage",           "smsginbox",              &smsginbox,              false,  {} },
+    { "smessage",           "smsgoutbox",             &smsgoutbox,             false,  {} },
+    { "smessage",           "smsgbuckets",            &smsgbuckets,            false,  {} },
+#endif
 
     /* Not shown in help */
     { "hidden",             "setmocktime",            &setmocktime,            true,  {"timestamp"}},

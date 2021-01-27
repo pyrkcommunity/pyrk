@@ -1,4 +1,5 @@
-// Copyright (c) 2014 The bitcoinplus developers
+// Copyright (c) 2014-2020 The bitcoinplus developers
+// Copyright (c) 2020 Peter Bushnell
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 #ifndef SEC_MESSAGE_H
@@ -12,8 +13,6 @@
 #include "db.h"
 #include "wallet/wallet.h"
 #include "lz4/lz4.h"
-#include "net_processing.h"
-#include "validation.h"
 
 class CBitcoinAddress;
 
@@ -226,11 +225,6 @@ public:
 
     SecMsgCrypter()
     {
-        // Try to keep the key data out of swap (and be a bit over-careful to keep the IV that we don't even use out of swap)
-        // Note that this does nothing about suspend-to-disk (which will put all our key data on disk)
-        // Note as well that at no point in this program is any attempt made to prevent stealing of keys by reading the memory of the running process.
-        //LockedPoolManager::Instance().LockRange(&chKey[0], sizeof chKey);
-        //LockedPoolManager::Instance().LockRange(&chIV[0], sizeof chIV);
         fKeySet = false;
     }
 
@@ -239,9 +233,6 @@ public:
         memset(&chKey, 0, sizeof chKey);
         memset(&chIV, 0, sizeof chIV);
         fKeySet = false;
-
-        //LockedPoolManager::Instance().UnlockRange(&chKey[0], sizeof chKey);
-        //LockedPoolManager::Instance().UnlockRange(&chIV[0], sizeof chIV);
     }
 
     bool SetKey(const std::vector<uint8_t>& vchNewKey, uint8_t* chNewIV);
@@ -324,14 +315,14 @@ bool SecureMsgStart(bool fDontStart, bool fScanChain);
 bool SecureMsgShutdown();
 bool SecureMsgEnable();
 bool SecureMsgDisable();
-bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRecv, bool& found);
-bool SecureMsgSendData(CNode* pto, bool fSendTrickle);
+bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRecv, bool& found, CConnman &connman);
+bool SecureMsgSendData(CNode* pto, CConnman &connman);
 bool SecureMsgScanBlock(CBlock& block);
 bool ScanChainForPublicKeys(CBlockIndex* pindexStart);
 bool SecureMsgScanBlockChain();
 bool SecureMsgScanBuckets();
 int SecureMsgWalletUnlocked();
-int SecureMsgWalletKeyChanged(std::string sAddress, std::string sLabel, ChangeType mode);
+int SecureMsgWalletKeyChanged(std::string sAddress, ChangeType mode);
 int SecureMsgScanMessage(uint8_t *pHeader, uint8_t *pPayload, uint32_t nPayload, bool reportToGui);
 int SecureMsgGetStoredKey(CKeyID& ckid, CPubKey& cpkOut);
 int SecureMsgGetLocalKey(CKeyID& ckid, CPubKey& cpkOut);

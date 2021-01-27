@@ -207,6 +207,7 @@ public:
         consensus.nMaxActualTimespanV3 = consensus.nAveragingTargetTimespanV2 * (100 + consensus.nMaxAdjustDownV2) / 100;
         consensus.v2DiffChangeHeight = 100000;
         consensus.v3DiffChangeHeight = 100050;
+        consensus.AlgoChangeHeight = std::numeric_limits<int>::max();
         consensus.nLocalTargetAdjustment = 4; //target adjustment per algo
         consensus.nLocalDifficultyAdjustment = 4; //difficulty adjustment per algo
         consensus.fPowAllowMinDifficultyBlocks = false;
@@ -350,6 +351,7 @@ public:
         consensus.nMaxActualTimespanV3 = consensus.nAveragingTargetTimespanV2 * (100 + consensus.nMaxAdjustDownV2) / 100;
         consensus.v2DiffChangeHeight = 100000;
         consensus.v3DiffChangeHeight = 100050;
+        consensus.AlgoChangeHeight = std::numeric_limits<int>::max();
         consensus.nLocalTargetAdjustment = 4; //target adjustment per algo
         consensus.nLocalDifficultyAdjustment = 4; //difficulty adjustment per algo
         consensus.fPowAllowMinDifficultyBlocks = true;
@@ -475,6 +477,7 @@ public:
         consensus.nMinActualTimespanV2 = consensus.nAveragingTargetTimespan * (100 - consensus.nMaxAdjustUpV2) / 100;
         consensus.nMaxActualTimespanV2 = consensus.nAveragingTargetTimespan * (100 + consensus.nMaxAdjustDownV2) / 100;
         consensus.v2DiffChangeHeight = 100000;
+        consensus.AlgoChangeHeight = std::numeric_limits<int>::max();
         consensus.nLocalTargetAdjustment = 4; //target adjustment per algo
         consensus.nLocalDifficultyAdjustment = 4; //difficulty adjustment per algo
         consensus.fPowAllowMinDifficultyBlocks = true;
@@ -602,6 +605,7 @@ public:
         consensus.nMaxAdjustUp = 8; // 8% adjustment up
         consensus.nMinActualTimespan = consensus.nAveragingTargetTimespan * (100 - consensus.nMaxAdjustUp) / 100;
         consensus.nMaxActualTimespan = consensus.nAveragingTargetTimespan * (100 + consensus.nMaxAdjustDown) / 100;
+        consensus.AlgoChangeHeight = 0;
         consensus.nLocalTargetAdjustment = 4; // target adjustment per algo
         consensus.nLocalDifficultyAdjustment = 4; // difficulty adjustment per algo
         consensus.fPowAllowMinDifficultyBlocks = true;

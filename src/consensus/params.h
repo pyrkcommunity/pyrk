@@ -164,6 +164,7 @@ struct Params {
     int64_t nLocalDifficultyAdjustment;
     int v2DiffChangeHeight;
     int v3DiffChangeHeight;
+    int AlgoChangeHeight;
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
 

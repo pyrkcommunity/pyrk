@@ -33,7 +33,9 @@
 #include "script/standard.h"
 #include "script/sigcache.h"
 #include "scheduler.h"
+#ifdef ENABLE_SMESSAGE
 #include "smessage.h"
+#endif
 #include "timedata.h"
 #include "txdb.h"
 #include "txmempool.h"
@@ -239,9 +241,7 @@ void PrepareShutdown()
     StopREST();
     StopRPC();
     StopHTTPServer();
-#ifdef ENABLE_SMESSAGE
-    SecureMsgShutdown();
-#endif
+
     // fRPCInWarmup should be `false` if we completed the loading sequence
     // before a shutdown request was received
     std::string statusmessage;
@@ -371,6 +371,9 @@ void Shutdown()
     }
    // Shutdown part 2: Stop TOR thread and delete wallet instance
     StopTorControl();
+#ifdef ENABLE_SMESSAGE
+    SecureMsgShutdown();
+#endif
 #ifdef ENABLE_WALLET
     delete pwalletMain;
     pwalletMain = NULL;
@@ -654,9 +657,6 @@ std::string HelpMessage(HelpMessageMode mode)
 
     strUsage += HelpMessageOpt("-tokenapiurl=<n>", strprintf(_("The token API server to use (default: %d)"), "https://tokenapi.pyrk.org/api/"));
 
-    strUsage += HelpMessageGroup(_("Secure messaging options:"));
-    strUsage += HelpMessageOpt("-nosmsg", _("Disable secure messaging."));
-    strUsage += HelpMessageOpt("-debugsmsg", _("Log extra debug messages."));
 
     return strUsage;
 }
@@ -1372,6 +1372,11 @@ bool AppInitParameterInteraction()
         return InitError("Difficulty and subsidy parameters may only be overridden on devnet.");
     }
 
+    fNoSmsg = GetBoolArg("-nosmsg", false);
+    if (!fNoSmsg) {
+        nLocalServices = ServiceFlags(nLocalServices | SMSG_RELAY);
+    }
+
     return true;
 }
 
@@ -1611,6 +1616,8 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         miningAlgo = ALGO_X11;
     else if (strAlgo == "yespower")
         miningAlgo = ALGO_YESPOWER;
+    else if (strAlgo == "lyra2" || strAlgo == "lyra2z330")
+        miningAlgo = ALGO_LYRA2;
     else
         miningAlgo = ALGO_SCRYPT;
 
@@ -1923,10 +1930,6 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
         }
     }
 
-    fNoSmsg = GetBoolArg("-nosmsg", false);
-    if (!fNoSmsg)
-        nLocalServices = ServiceFlags(nLocalServices | SMSG_RELAY);
-
     // ********************************************************* Step 10: import blocks
 
     if (!CheckDiskSpace())
@@ -2167,12 +2170,12 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
     if (!connman.Start(scheduler, strNodeError, connOptions))
         return InitError(strNodeError);
 
+    // Set up curl environment
+    curl_global_init(CURL_GLOBAL_ALL);
+
 #ifdef ENABLE_SMESSAGE
     SecureMsgStart(fNoSmsg, GetBoolArg("-smsgscanchain", false));
 #endif
-
-    // Set up curl environment
-    curl_global_init(CURL_GLOBAL_ALL);
 
     // ********************************************************* Step 13: finished
 

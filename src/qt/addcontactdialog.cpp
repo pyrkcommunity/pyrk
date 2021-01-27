@@ -1,4 +1,5 @@
-// Copyright (c) 2011-2015 The Bitcoin Core developers
+// Copyright (c) 2017-2020 Trezarcoin developers
+// Copyright (c) 2020 Peter Bushnell
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,7 +11,7 @@
 #include "platformstyle.h"
 #include "qvalidatedlineedit.h"
 #include "smessage.h"
-#include "trezarmessage.h"
+#include "securemessage.h"
 #include "walletmodel.h"
 
 #include <QLineEdit>
@@ -18,11 +19,11 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 
-AddContactDialog::AddContactDialog(const PlatformStyle *platformStyle, TrezarMessage* trezarMessage, QWidget *parent) :
+AddContactDialog::AddContactDialog(const PlatformStyle *platformStyle, SecureMessageGUI* secureMessage, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AddContactDialog),
     model(0),
-    trezarMessage(trezarMessage),
+    secureMessage(secureMessage),
     platformStyle(platformStyle)
 {
     ui->setupUi(this);
@@ -92,8 +93,8 @@ void AddContactDialog::accept()
                 tr("Alias creation failed."));
         }
 
-        // Let TrezarMessage know about the new or updated entry
-        trezarMessage->addEntry(QString::fromStdString(address), QString::fromStdString(alias));
+        // Let SecureMessageGUI know about the new or updated entry
+        secureMessage->addEntry(QString::fromStdString(address), QString::fromStdString(alias));
     }
 
     QDialog::accept();
@@ -142,12 +143,10 @@ void AddContactDialog::textChanged()
     acceptable = !ui->input_Alias->text().isEmpty() && addressValid && pubKeyValid && addressMatchPubKey;
     if (acceptable) {
         ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(acceptable);
-        ui->buttonBox->button(QDialogButtonBox::Ok)->setStyleSheet("background:#2d374f;"); 
     }
     else
     {
         ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
-        ui->buttonBox->button(QDialogButtonBox::Ok)->setStyleSheet("background:#808080;");
     }
 }
 

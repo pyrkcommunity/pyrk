@@ -1345,6 +1345,7 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
     difficulties.push_back(Pair("scrypt", (double)GetDifficulty(NULL, ALGO_SCRYPT)));
     difficulties.push_back(Pair("x11", (double)GetDifficulty(NULL, ALGO_X11)));
     difficulties.push_back(Pair("yespower", (double)GetDifficulty(NULL, ALGO_YESPOWER)));
+    difficulties.push_back(Pair("lyra2", (double)GetDifficulty(NULL, ALGO_LYRA2)));
     obj.pushKV("difficulties",             difficulties);
     obj.push_back(Pair("softforks",             softforks));
     obj.push_back(Pair("bip9_softforks", bip9_softforks));

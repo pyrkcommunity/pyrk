@@ -577,8 +577,10 @@ bool CGovernanceObject::IsValidLocally(std::string& strError, bool& fMissingMast
                 LOCK(cs_main);
                 if (chainActive.Height() < Params().GetConsensus().nCollateralChangeHeight) {
                     strError = "Masternode UTXO should have 1000 PYRK, missing masternode=" + strOutpoint + "\n";
-                } else {
+                } else if (chainActive.Height() < Params().GetConsensus().AlgoChangeHeight) {
                     strError = "Masternode UTXO should have 2500 PYRK, missing masternode=" + strOutpoint + "\n";
+                } else {
+                    strError = "Masternode UTXO should have 5000 PYRK, missing masternode=" + strOutpoint + "\n";
                 }
             } else if (err == CMasternode::COLLATERAL_INVALID_PUBKEY) {
                 fMissingMasternode = true;

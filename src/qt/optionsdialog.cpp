@@ -90,16 +90,7 @@ OptionsDialog::OptionsDialog(QWidget *parent, bool enableWallet) :
         digits.setNum(index);
         ui->digits->addItem(digits, digits);
     }
-    
-    /* Theme selector */
-    //ui->theme->addItem(QString("DASH-light"), QVariant("light"));
-    //ui->theme->addItem(QString("DASH-light-hires"), QVariant("light-hires"));
-    //ui->theme->addItem(QString("DASH-light-retro"), QVariant("light-retro"));
-    //ui->theme->addItem(QString("DASH-light-hires-retro"), QVariant("light-hires-retro"));
-    ui->theme->addItem(QString("PYRK-blue"), QVariant("drkblue"));
-    //ui->theme->addItem(QString("DASH-Crownium"), QVariant("crownium"));
-    //ui->theme->addItem(QString("DASH-traditional"), QVariant("trad"));
-    
+
     /* Language selector */
     QDir translations(":translations");
 
@@ -195,7 +186,6 @@ void OptionsDialog::setModel(OptionsModel *_model)
     connect(ui->connectSocksTor, SIGNAL(clicked(bool)), this, SLOT(showRestartWarning()));
     /* Display */
     connect(ui->digits, SIGNAL(valueChanged()), this, SLOT(showRestartWarning()));
-    connect(ui->theme, SIGNAL(valueChanged()), this, SLOT(showRestartWarning()));
     connect(ui->lang, SIGNAL(valueChanged()), this, SLOT(showRestartWarning()));
     connect(ui->thirdPartyTxUrls, SIGNAL(textChanged(const QString &)), this, SLOT(showRestartWarning()));
 }
@@ -239,7 +229,6 @@ void OptionsDialog::setMapper()
 
     /* Display */
     mapper->addMapping(ui->digits, OptionsModel::Digits);
-    mapper->addMapping(ui->theme, OptionsModel::Theme);
     mapper->addMapping(ui->lang, OptionsModel::Language);
     mapper->addMapping(ui->unit, OptionsModel::DisplayUnit);
     mapper->addMapping(ui->thirdPartyTxUrls, OptionsModel::ThirdPartyTxUrls);

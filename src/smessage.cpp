@@ -1,4 +1,5 @@
-// Copyright (c) 2014 The bitcoinplus developers
+// Copyright (c) 2014-2020 The bitcoinplus developers
+// Copyright (c) 2020 Peter Bushnell
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -51,18 +52,15 @@ Notes:
 #include "base58.h"
 #include "db.h"
 #include "init.h"
-
+#include "netmessagemaker.h"
+#include "net_processing.h"
 #include "policy/policy.h"
 #include "random.cpp"
 #include "txdb.h"
 #include "util.h"
-#include "net_processing.h"
 #include "validation.h"
 
-#include "lz4/lz4.c"
-
 #include "xxhash/xxhash.h"
-#include "xxhash/xxhash.c"
 
 boost::thread_group threadGroupSmsg;
 
@@ -767,25 +765,22 @@ void ThreadSecureMsg()
             int64_t ignoreUntil = GetTime() + SMSG_TIME_IGNORE;
 
             // -- look through the nodes for the peer that locked this bucket
+            g_connman->ForEachNodeContinueIf(CConnman::AllNodes, [&](CNode* pnode) {
+                if (pnode->id != nPeerId)
+                    return true;
 
-            {
-                LOCK(cs_vNodes);
-                BOOST_FOREACH(CNode* pnode, vNodes)
-                {
-                    if (pnode->id != nPeerId)
-                        continue;
-                    LOCK2(pnode->cs_vSend, pnode->smsgData.cs_smsg_net);
-                    pnode->smsgData.ignoreUntil = ignoreUntil;
+                LOCK2(pnode->cs_vSend, pnode->smsgData.cs_smsg_net);
+                pnode->smsgData.ignoreUntil = ignoreUntil;
 
-                    // -- alert peer that they are being ignored
-                    std::vector<uint8_t> vchData;
-                    vchData.resize(8);
-                    memcpy(&vchData[0], &ignoreUntil, 8);
-                    pnode->PushSMessage("smsgIgnore", vchData);
+                // -- alert peer that they are being ignored
+                std::vector<uint8_t> vchData;
+                vchData.resize(8);
+                memcpy(&vchData[0], &ignoreUntil, 8);
+                CNetMsgMaker msgMaker(pnode->GetSendVersion());
+                g_connman->PushMessage(pnode, msgMaker.Make(NetMsgType::SMSGIGNORE, vchData));
 
-                    break;
-                }
-            } // cs_vNodes
+                return false;
+            });
         }
         MilliSleep(SMSG_THREAD_DELAY * 1000); //  // check every SMSG_THREAD_DELAY seconds
     }
@@ -1291,14 +1286,11 @@ bool SecureMsgEnable()
     threadGroupSmsg.create_thread(boost::bind(&TraceThread<void (*)()>, "smsg-pow", &ThreadSecureMsgPow));
 
     // -- ping each peer, don't know which have messaging enabled
-    {
-        LOCK(cs_vNodes);
-        BOOST_FOREACH(CNode* pnode, vNodes)
-        {
-            pnode->PushSMessage("smsgPing");
-            pnode->PushSMessage("smsgPong"); // Send pong as have missed initial ping sent by peer when it connected
-        }
-    }
+    g_connman->ForEachNode(CConnman::AllNodes, [](CNode* pnode) {
+        CNetMsgMaker msgMaker(pnode->GetSendVersion());
+        g_connman->PushMessage(pnode, msgMaker.Make(NetMsgType::SMSGPING));
+        g_connman->PushMessage(pnode, msgMaker.Make(NetMsgType::SMSGPONG));
+    });
 
     LogPrintf("Secure messaging enabled.\n");
     return true;
@@ -1331,18 +1323,16 @@ bool SecureMsgDisable()
     }
 
     // -- tell each smsg enabled peer that this node is disabling
-    {
-        LOCK(cs_vNodes);
-        BOOST_FOREACH(CNode* pnode, vNodes)
-        {
-            if (!pnode->smsgData.fEnabled)
-                continue;
+    g_connman->ForEachNode(CConnman::AllNodes, [](CNode* pnode) {
+        if (!pnode->smsgData.fEnabled)
+            return;
 
-            LOCK2(pnode->cs_vSend, pnode->smsgData.cs_smsg_net);
-            pnode->PushSMessage("smsgDisabled");
-            pnode->smsgData.fEnabled = false;
-        }
-    }
+        LOCK2(pnode->cs_vSend, pnode->smsgData.cs_smsg_net);
+
+        CNetMsgMaker msgMaker(pnode->GetSendVersion());
+        g_connman->PushMessage(pnode, msgMaker.Make(NetMsgType::SMSGDISABLED));
+        pnode->smsgData.fEnabled = false;
+    });
 
     if (SecureMsgWriteIni() != 0)
         LogPrintf("Failed to save smsg.ini\n");
@@ -1361,14 +1351,16 @@ bool SecureMsgDisable()
     return true;
 }
 
-bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRecv, bool& found)
+bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRecv, bool& found, CConnman& connman)
 {
     /*
         Called from ProcessMessage
         Runs in ThreadMessageHandler2
     */
 
-    if (strCommand == "smsgInv")
+    const CNetMsgMaker msgMaker(pfrom->GetSendVersion());
+
+    if (strCommand == NetMsgType::SMSGINV)
     {
         found = true;
         std::vector<uint8_t> vchData;
@@ -1376,6 +1368,8 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
 
         if (vchData.size() < 4)
         {
+            LOCK(cs_main);
+
             Misbehaving(pfrom->GetId(), 1);
             return false; // not enough data received to be a valid smsgInv
         }
@@ -1396,6 +1390,8 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
         // -- Check no of buckets:
         if (nInvBuckets > (SMSG_RETENTION / SMSG_BUCKET_LEN) + 1) // +1 for some leeway
         {
+            LOCK(cs_main);
+
             LogPrintf("Peer sent more bucket headers than possible %u, %u.\n", nInvBuckets, (SMSG_RETENTION / SMSG_BUCKET_LEN));
             Misbehaving(pfrom->GetId(), 1);
             return false;
@@ -1403,6 +1399,8 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
 
         if (vchData.size() < 4 + nInvBuckets*16)
         {
+            LOCK(cs_main);
+
             LogPrintf("Remote node did not send enough data.\n");
             Misbehaving(pfrom->GetId(), 1);
             return false;
@@ -1427,13 +1425,16 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
             // Check time valid:
             if (time < now - SMSG_RETENTION)
             {
-                if (time < now - SMSG_RETENTION - SMSG_TIME_LEEWAY)
+                if (time < now - SMSG_RETENTION - SMSG_TIME_LEEWAY) {
+                    LOCK(cs_main);
                     Misbehaving(pfrom->GetId(), 1);
+                }
                 continue;
             }
 
             if (time > now + SMSG_TIME_LEEWAY)
             {
+                LOCK(cs_main);
                 Misbehaving(pfrom->GetId(), 1);
                 continue;
             }
@@ -1461,19 +1462,18 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
         }
 
         // TODO: should include hash?
-
         memcpy(&vchDataOut[0], &nShowBuckets, 4);
         if (vchDataOut.size() > 4) {
-            pfrom->PushSMessage("smsgShow", vchDataOut);
+            connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SMSGSHOW, vchDataOut));
         } else if (nLocked < 1) { // Don't report buckets as matched if any are locked
             // -- peer has no buckets we want, don't send them again until something changes
             //    peer will still request buckets from this node if needed (< ncontent)
             vchDataOut.resize(8);
             memcpy(&vchDataOut[0], &now, 8);
-            pfrom->PushSMessage("smsgMatch", vchDataOut);
+            connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SMSGMATCH, vchDataOut));
         }
 
-    } else if (strCommand == "smsgShow") {
+    } else if (strCommand == NetMsgType::SMSGSHOW) {
         found = true;
         std::vector<uint8_t> vchData;
         vRecv >> vchData;
@@ -1520,10 +1520,10 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
                     p += 16;
                 }
             }
-            pfrom->PushSMessage("smsgHave", vchDataOut);
+            connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SMSGHAVE, vchDataOut));
         }
 
-    } else if (strCommand == "smsgHave") {
+    } else if (strCommand == NetMsgType::SMSGHAVE) {
         found = true;
         // -- peer has these messages in bucket
         std::vector<uint8_t> vchData;
@@ -1544,6 +1544,7 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
 
         if (time > now + SMSG_TIME_LEEWAY)
         {
+            LOCK(cs_main);
             Misbehaving(pfrom->GetId(), 1);
             return false;
         }
@@ -1591,10 +1592,10 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
                 smsgBuckets[time].nLockCount   = 3; // lock this bucket for at most 3 * SMSG_THREAD_DELAY seconds, unset when peer sends smsgMsg
                 smsgBuckets[time].nLockPeerId  = pfrom->smsgData.nPeerId;
             }
-            pfrom->PushSMessage("smsgWant", vchDataOut);
+            connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SMSGWANT, vchDataOut));
         }
 
-    } else if (strCommand == "smsgWant") {
+    } else if (strCommand == NetMsgType::SMSGWANT) {
         found = true;
         std::vector<uint8_t> vchData;
         vRecv >> vchData;
@@ -1654,22 +1655,23 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
         {
             memcpy(&vchBunch[0], &nBunch, 4);
             memcpy(&vchBunch[4], &time, 8);
-            pfrom->PushSMessage("smsgMsg", vchBunch);
+            connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SMSGMSG, vchBunch));
         }
 
-    } else if (strCommand == "smsgMsg") {
+    } else if (strCommand == NetMsgType::SMSGMSG) {
         found = true;
         std::vector<uint8_t> vchData;
         vRecv >> vchData;
 
         SecureMsgReceive(pfrom, vchData);
 
-    } else if (strCommand == "smsgMatch") {
+    } else if (strCommand == NetMsgType::SMSGMATCH) {
         found = true;
         std::vector<uint8_t> vchData;
         vRecv >> vchData;
 
         if (vchData.size() < 8) {
+            LOCK(cs_main);
             Misbehaving(pfrom->GetId(), 1);
             return false;
         }
@@ -1688,19 +1690,19 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
             pfrom->smsgData.lastMatched = time;
         }
 
-    } else if (strCommand == "smsgPing") {
+    } else if (strCommand == NetMsgType::SMSGPING) {
         found = true;
         // -- smsgPing is the initial message, send reply
-        pfrom->PushSMessage("smsgPong");
+        connman.PushMessage(pfrom, msgMaker.Make(NetMsgType::SMSGPONG));
 
-    } else if (strCommand == "smsgPong") {
+    } else if (strCommand == NetMsgType::SMSGPONG) {
         found = true;
         {
             LOCK(pfrom->smsgData.cs_smsg_net);
             pfrom->smsgData.fEnabled = true;
         }
 
-    } else if (strCommand == "smsgDisabled") {
+    } else if (strCommand == NetMsgType::SMSGDISABLED) {
         found = true;
         // -- peer has disabled secure messaging.
         {
@@ -1708,7 +1710,7 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
             pfrom->smsgData.fEnabled = false;
         }
 
-    } else if (strCommand == "smsgIgnore") {
+    } else if (strCommand == NetMsgType::SMSGIGNORE) {
         found = true;
         // -- peer is reporting that it will ignore this node until time.
         //    Ignore peer too
@@ -1717,6 +1719,7 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
 
         if (vchData.size() < 8)
         {
+            LOCK(cs_main);
             Misbehaving(pfrom->GetId(), 1);
             return false;
         }
@@ -1734,7 +1737,7 @@ bool SecureMsgReceiveData(CNode* pfrom, std::string strCommand, CDataStream& vRe
     return true;
 }
 
-bool SecureMsgSendData(CNode* pto, bool fSendTrickle)
+bool SecureMsgSendData(CNode* pto, CConnman &connman)
 {
     /*
         Called from ProcessMessage
@@ -1742,6 +1745,8 @@ bool SecureMsgSendData(CNode* pto, bool fSendTrickle)
     */
 
     LOCK(pto->smsgData.cs_smsg_net);
+
+    const CNetMsgMaker msgMaker(pto->GetSendVersion());
 
     int64_t now = GetTime();
 
@@ -1751,7 +1756,7 @@ bool SecureMsgSendData(CNode* pto, bool fSendTrickle)
         pto->smsgData.nPeerId = nPeerIdCounter++;
 
         // -- Send smsgPing once, do nothing until receive 1st smsgPong (then set fEnabled)
-        pto->PushSMessage("smsgPing");
+        connman.PushMessage(pto, msgMaker.Make(NetMsgType::SMSGPING));
         pto->smsgData.lastSeen = GetTime();
         return true;
     } else {
@@ -1810,7 +1815,7 @@ bool SecureMsgSendData(CNode* pto, bool fSendTrickle)
             if (vchData.size() > 4)
             {
                 memcpy(&vchData[0], &nBucketsShown, 4);
-                pto->PushSMessage("smsgInv", vchData);
+                connman.PushMessage(pto, msgMaker.Make(NetMsgType::SMSGINV, vchData));
             }
         }
     }
@@ -1938,46 +1943,15 @@ static bool ScanBlock(CBlock& block, SecMsgDB& addrpkdb, uint32_t& nTransactions
 
     opcodetype opcode;
     std::vector<unsigned char> vch;
-    //bool witnessEnabled = IsWitnessEnabled(chainActive.Tip(), Params().GetConsensus());
     std::string reason;
 
-    //BOOST_FOREACH(CTransaction& tx, block.vtx)
-    for (size_t ii = 1; ii < block.vtx.size(); ii++)
+    for (const auto tx : block.vtx)
     {
-        const CTransaction& tx = *block.vtx[ii];
         // - harvest public keys from coinstake txns
-        //if (tx.IsCoinStake())
-	if (tx.IsCoinBase())
-        {
-            const CTxOut& txout = tx.vout[1];
-            CScript::const_iterator pc = txout.scriptPubKey.begin();
-            while (pc < txout.scriptPubKey.end())
+        if (IsStandardTx(*tx, reason)) {
+            for (uint32_t i = 0; i < tx->vin.size(); i++)
             {
-                if (!txout.scriptPubKey.GetOp(pc, opcode, vch))
-                    break;
-
-                if (vch.size() == 33) {
-                    CPubKey pubKey(vch);
-
-                    if (!pubKey.IsValid() || !pubKey.IsCompressed()) {
-                        LogPrintf("Public key is invalid %s.\n", HexStr(pubKey).c_str());
-                        continue;
-                    }
-
-                    CKeyID addrKey = pubKey.GetID();
-                    switch (SecureMsgInsertAddress(addrKey, pubKey, addrpkdb))
-                    {
-                        case 0: nPubkeys++; break;      // added key
-                        case 4: nDuplicates++; break;   // duplicate key
-                    }
-                    break;
-                }
-            }
-            nInputs++;
-        } else if (IsStandardTx(tx, reason)) { //, witnessEnabled)) {
-            for (uint32_t i = 0; i < tx.vin.size(); i++)
-            {
-                const CScript *script = &tx.vin[i].scriptSig;
+                const CScript *script = &tx->vin[i].scriptSig;
                 CScript::const_iterator pc = script->begin();
                 CScript::const_iterator pend = script->end();
 
@@ -2389,7 +2363,7 @@ int SecureMsgWalletUnlocked()
     return 0;
 }
 
-int SecureMsgWalletKeyChanged(std::string sAddress, std::string sLabel, ChangeType mode)
+int SecureMsgWalletKeyChanged(std::string sAddress, ChangeType mode)
 {
     if (!fSecMsgEnabled)
         return 0;
@@ -2726,7 +2700,10 @@ int SecureMsgReceive(CNode* pfrom, std::vector<uint8_t>& vchData)
     if (nBunch == 0 || nBunch > 500)
     {
         LogPrintf("Error: Invalid no. messages received in bunch %u, for bucket %" PRId64 ".\n", nBunch, bktTime);
-        Misbehaving(pfrom->GetId(), 1);
+        {
+            LOCK(cs_main);
+            Misbehaving(pfrom->GetId(), 1);
+        }
 
         {
             LOCK(cs_smsg);
@@ -2756,9 +2733,11 @@ int SecureMsgReceive(CNode* pfrom, std::vector<uint8_t>& vchData)
             // message dropped
             if (rv == 2) // invalid proof of work
             {
+                LOCK(cs_main);
                 Misbehaving(pfrom->GetId(), 10);
             } else
             {
+                LOCK(cs_main);
                 Misbehaving(pfrom->GetId(), 1);
             };
             continue;
@@ -2897,7 +2876,7 @@ int SecureMsgStore(uint8_t *pHeader, uint8_t *pPayload, uint32_t nPayload, bool 
     std::set<SecMsgToken>::iterator it;
     it = tokenSet.find(token);
     if (it != tokenSet.end()) {
-        LogPrintf("Already have message.\n");
+        // LogPrintf("Already have message.\n");
         return 1;
     }
 
@@ -3573,7 +3552,7 @@ int SecureMsgDecrypt(bool fTestOnly, std::string& address, uint8_t *pHeader, uin
     }
     if (!pwalletMain->GetKey(ckidDest, keyDest))
     {
-        LogPrintf("Could not get private key for addressDest.\n");
+        // LogPrintf("Could not get private key for addressDest.\n");
         return 3;
     }
 
@@ -3763,7 +3742,7 @@ int SecureMsgDecrypt(bool fTestOnly, std::string& address, uint8_t *pHeader, uin
                 LogPrintf("Sender public key added to db.\n");
                 break;
             case 4:
-                LogPrintf("Sender public key already in db.\n");
+                // LogPrintf("Sender public key already in db.\n");
                 break;
             default:
                 LogPrintf("Error adding sender public key to db.\n");

@@ -137,7 +137,6 @@ BITCOIN_CORE_H = \
   key.h \
   keepass.h \
   keystore.h \
-  lz4/lz4.h \
   dbwrapper.h \
   limitedmap.h \
   llmq/quorums_commitment.h \
@@ -207,7 +206,6 @@ BITCOIN_CORE_H = \
   wallet/wallet.h \
   wallet/walletdb.h \
   warnings.h \
-  xxhash/xxhash.h \
   zmq/zmqabstractnotifier.h \
   zmq/zmqconfig.h\
   zmq/zmqnotificationinterface.h \
@@ -215,7 +213,9 @@ BITCOIN_CORE_H = \
 
 if ENABLE_SMESSAGE
 BITCOIN_CORE_H += \
-  smessage.h
+  lz4/lz4.h \
+  smessage.h \
+  xxhash/xxhash.h
 endif
 
 obj/build.h: FORCE
@@ -248,7 +248,6 @@ libdash_server_a_SOURCES = \
   init.cpp \
   instantx.cpp \
   dbwrapper.cpp \
-  lz4/lz4.c \
   governance.cpp \
   governance-classes.cpp \
   governance-object.cpp \
@@ -299,12 +298,13 @@ libdash_server_a_SOURCES = \
   validation.cpp \
   validationinterface.cpp \
   versionbits.cpp \
-  xxhash/xxhash.c \
   $(BITCOIN_CORE_H)
 
 if ENABLE_SMESSAGE
 libdash_server_a_SOURCES += \
-  smessage.cpp
+  lz4/lz4.c \
+  smessage.cpp \
+  xxhash/xxhash.c
 endif
 
 if ENABLE_ZMQ
@@ -347,6 +347,9 @@ crypto_libdash_crypto_a_SOURCES = \
   crypto/ripemd160.cpp \
   crypto/scrypt.cpp \
   crypto/scrypt.h \
+  crypto/algos/Lyra2Z/Lyra2.c \
+  crypto/algos/Lyra2Z/Lyra2Z.c \
+  crypto/algos/Lyra2Z/Sponge.c \
   crypto/algos/yespower/yespower-sha256.c \
   crypto/algos/yespower/yespower-opt.c \
   crypto/algos/yespower/yespower.c \

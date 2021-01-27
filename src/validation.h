@@ -549,8 +549,6 @@ extern VersionBitsCache versionbitscache;
  */
 int32_t ComputeBlockVersion(const CBlockIndex* pindexPrev, const Consensus::Params& params, int algo, bool fCheckMasternodesUpgraded = false);
 
-bool isMultiAlgoVersion(int nVersion);
-
 /**
  * Return true if hash can be found in chainActive at nBlockHeight height.
  * Fills hashRet with found hash, if no nBlockHeight is specified - chainActive.Height() is used.

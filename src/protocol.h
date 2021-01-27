@@ -273,6 +273,18 @@ extern const char *MNLISTDIFF;
 extern const char *QFCOMMITMENT;
 extern const char *QDCOMMITMENT;
 extern const char *QCONTRIB;
+
+// Secure message types
+extern const char *SMSGINV;
+extern const char *SMSGSHOW;
+extern const char *SMSGHAVE;
+extern const char *SMSGWANT;
+extern const char *SMSGMSG;
+extern const char *SMSGMATCH;
+extern const char *SMSGPING;
+extern const char *SMSGPONG;
+extern const char *SMSGDISABLED;
+extern const char *SMSGIGNORE;
 };
 
 /* Get a vector of all valid message types (see above) */
@@ -297,6 +309,8 @@ enum ServiceFlags : uint64_t {
     // NODE_XTHIN means the node supports Xtreme Thinblocks
     // If this is turned off then the node will not service nor make xthin requests
     NODE_XTHIN = (1 << 4),
+    // Supports Secure Message
+    SMSG_RELAY = (1 << 5),
 
     // Bits 24-31 are reserved for temporary experiments. Just pick a bit that
     // isn't getting used, or one not being used much, and notify the
@@ -305,9 +319,6 @@ enum ServiceFlags : uint64_t {
     // collisions and other cases where nodes may be advertising a service they
     // do not actually support. Other service bits should be allocated via the
     // BIP process.
-
-    // Supports Secure Message
-    SMSG_RELAY = (1 << 5),
 };
 
 /** A CService with information about it as peer */

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TrezarMessage</class>
- <widget class="QWidget" name="TrezarMessage">
+ <class>SecureMessageGUI</class>
+ <widget class="QWidget" name="SecureMessageGUI">
   <property name="enabled">
    <bool>true</bool>
   </property>
@@ -18,9 +18,6 @@
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
-  </property>
-  <property name="styleSheet">
-   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
@@ -51,31 +48,14 @@
      </property>
      <item>
       <widget class="QWidget" name="widget_2" native="true">
-       <property name="styleSheet">
-        <string notr="true">background-color:transparent;
-</string>
-       </property>
        <layout class="QGridLayout" name="gridLayout_6">
         <item row="0" column="0">
-         <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1,4">
+         <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,4">
           <property name="spacing">
            <number>0</number>
           </property>
           <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="WALLET_TITLE">
+           <layout class="QVBoxLayout" name="verticalLayout_5">
             <property name="spacing">
              <number>0</number>
             </property>
@@ -90,31 +70,23 @@
             </property>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <property name="spacing">
+               <number>3</number>
+              </property>
+              <property name="bottomMargin">
+               <number>3</number>
+              </property>
               <item>
-               <spacer name="horizontalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+               <widget class="QPushButton" name="choose_address">
+                <property name="text">
+                 <string>Sending Address</string>
                 </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Fixed</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
+               </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label">
-                <property name="styleSheet">
-                 <string notr="true">color:#b9dbe8;
-font-size: 20px;
-</string>
-                </property>
+               <widget class="QPushButton" name="get_address">
                 <property name="text">
-                 <string>Pyrk Secure Chat</string>
+                 <string>Share Address</string>
                 </property>
                </widget>
               </item>
@@ -126,65 +98,7 @@ font-size: 20px;
                 <property name="sizeHint" stdset="0">
                  <size>
                   <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButtonGetAddress">
-                <property name="styleSheet">
-                 <string notr="true">QPushButton::pressed{
-  background-color: #232c41;
-  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1) inset,
-  0px 1px 4px 0px rgba(0, 0, 0, 0.1) inset !important;
-}
-QPushButton{
-background:#2d374f;
-padding:12px;
-border-radius:6px;
-color:#fff;
-margin:8px
-}</string>
-                </property>
-                <property name="text">
-                 <string>My Address</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButtonAddContact">
-                <property name="styleSheet">
-                 <string notr="true">QPushButton::pressed{
-  background-color: #232c41;
-  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1) inset,
-  0px 1px 4px 0px rgba(0, 0, 0, 0.1) inset !important;
-}
-QPushButton{
-background:#2d374f;
-padding:12px;
-border-radius:6px;
-color:#fff;
-margin:8px
-}</string>
-                </property>
-                <property name="text">
-                 <string>Add Contact</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_3">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::Fixed</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>10</width>
-                  <height>20</height>
+                  <height>0</height>
                  </size>
                 </property>
                </spacer>
@@ -204,43 +118,40 @@ margin:8px
             <item row="0" column="0">
              <layout class="QVBoxLayout" name="verticalLayout">
               <property name="spacing">
-               <number>0</number>
+               <number>6</number>
               </property>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,0,2">
+               <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0">
                 <property name="spacing">
-                 <number>0</number>
+                 <number>6</number>
                 </property>
-                <item>
-                 <spacer name="horizontalSpacer_5">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeType">
-                   <enum>QSizePolicy::Fixed</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>5</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout_4">
                   <property name="spacing">
                    <number>0</number>
                   </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
                   <item>
                    <widget class="QListWidget" name="user_list">
-                    <property name="styleSheet">
-                     <string notr="true">background:#232c41;
-padding:2px;
-border-radius:10px;</string>
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
                     </property>
-                    <property name="editTriggers">
-                     <set>QAbstractItemView::NoEditTriggers</set>
+                    <property name="minimumSize">
+                     <size>
+                      <width>300</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="contextMenuPolicy">
+                     <enum>Qt::CustomContextMenu</enum>
+                    </property>
+                    <property name="dragEnabled">
+                     <bool>true</bool>
                     </property>
                     <property name="sortingEnabled">
                      <bool>true</bool>
@@ -248,38 +159,19 @@ border-radius:10px;</string>
                    </widget>
                   </item>
                   <item>
-                   <spacer name="verticalSpacer_2">
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
+                   <widget class="QPushButton" name="add_contact">
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton{background: lightgray;padding: 6px;border-radius:0px;border: 1px solid gray;}QPushButton:pressed{background-color:#b0b0b0;}</string>
                     </property>
-                    <property name="sizeType">
-                     <enum>QSizePolicy::Fixed</enum>
+                    <property name="text">
+                     <string>Add New Contact</string>
                     </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>20</width>
-                      <height>4</height>
-                     </size>
+                    <property name="flat">
+                     <bool>true</bool>
                     </property>
-                   </spacer>
+                   </widget>
                   </item>
                  </layout>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_7">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeType">
-                   <enum>QSizePolicy::Fixed</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>8</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
                 </item>
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -287,28 +179,65 @@ border-radius:10px;</string>
                    <number>0</number>
                   </property>
                   <item>
-                   <spacer name="verticalSpacer_3">
-                    <property name="orientation">
-                     <enum>Qt::Vertical</enum>
+                   <widget class="QWidget" name="conversation_controls_widget" native="true">
+                    <property name="styleSheet">
+                     <string notr="true">QPushButton{background: lightgray;padding: 9px;border-radius:0px;border: 1px solid gray;}QPushButton:pressed{background-color:#b0b0b0;}</string>
                     </property>
-                    <property name="sizeType">
-                     <enum>QSizePolicy::Fixed</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>20</width>
-                      <height>5</height>
-                     </size>
-                    </property>
-                   </spacer>
+                    <layout class="QHBoxLayout" name="conversation_controls">
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item>
+                      <widget class="QPushButton" name="clear_conversation">
+                       <property name="styleSheet">
+                        <string notr="true"/>
+                       </property>
+                       <property name="text">
+                        <string>Clear Conversation</string>
+                       </property>
+                       <property name="flat">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="remove_contact">
+                       <property name="styleSheet">
+                        <string notr="true">color: red;</string>
+                       </property>
+                       <property name="text">
+                        <string>Remove Contact</string>
+                       </property>
+                       <property name="flat">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
                   </item>
                   <item>
                    <widget class="QListWidget" name="message_widget">
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
                     <property name="frameShape">
-                     <enum>QFrame::NoFrame</enum>
+                     <enum>QFrame::StyledPanel</enum>
                     </property>
                     <property name="lineWidth">
-                     <number>0</number>
+                     <number>1</number>
                     </property>
                     <property name="verticalScrollBarPolicy">
                      <enum>Qt::ScrollBarAlwaysOn</enum>
@@ -336,22 +265,24 @@ border-radius:10px;</string>
                      <number>0</number>
                     </property>
                     <property name="topMargin">
-                     <number>0</number>
+                     <number>6</number>
                     </property>
                     <item>
-                     <widget class="QLineEdit" name="input_text">
+                     <widget class="QPlainTextEdit" name="input_text">
                       <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
                         <horstretch>0</horstretch>
-                        <verstretch>39</verstretch>
+                        <verstretch>0</verstretch>
                        </sizepolicy>
                       </property>
-                      <property name="styleSheet">
-                       <string notr="true">background:#2d374f;
-padding:8px;
-border-radius:5px;
-color:#fff;
-margin:5px</string>
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>60</height>
+                       </size>
+                      </property>
+                      <property name="horizontalScrollBarPolicy">
+                       <enum>Qt::ScrollBarAlwaysOff</enum>
                       </property>
                      </widget>
                     </item>
@@ -366,7 +297,7 @@ margin:5px</string>
                       <property name="minimumSize">
                        <size>
                         <width>0</width>
-                        <height>0</height>
+                        <height>60</height>
                        </size>
                       </property>
                       <property name="maximumSize">
@@ -376,18 +307,7 @@ margin:5px</string>
                        </size>
                       </property>
                       <property name="styleSheet">
-                       <string notr="true">QPushButton::pressed{
-  background-color: #232c41;
-  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1) inset,
-  0px 1px 4px 0px rgba(0, 0, 0, 0.1) inset !important;
-}
-QPushButton{
-background:#2d374f;
-padding:8px;
-border-radius:5px;
-color:#fff;
-margin:5px
-}</string>
+                       <string notr="true"/>
                       </property>
                       <property name="text">
                        <string>Send</string>

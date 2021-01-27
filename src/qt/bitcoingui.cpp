@@ -98,7 +98,6 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     historyAction(0),
     masternodeAction(0),
     pyrkTokenAction(0),
-    trezarMessageAction(0),
     quitAction(0),
     sendCoinsAction(0),
     sendCoinsMenuAction(0),
@@ -119,6 +118,7 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     openAction(0),
     showHelpMessageAction(0),
     showPrivateSendHelpAction(0),
+    secureMessageAction(0),
     trayIcon(0),
     trayIconMenu(0),
     dockIconMenu(0),
@@ -343,6 +343,15 @@ void BitcoinGUI::createActions()
     tabGroup->addAction(historyAction);
 
 #ifdef ENABLE_WALLET
+#ifdef ENABLE_SMESSAGE
+    secureMessageAction = new QAction(platformStyle->SingleColorIcon(":/icons/send"), tr("&Message"), this);
+    secureMessageAction->setStatusTip(tr("Send Messages"));
+    secureMessageAction->setToolTip(secureMessageAction->statusTip());
+    secureMessageAction->setCheckable(true);
+    secureMessageAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
+    tabGroup->addAction(secureMessageAction);
+#endif // ENABLE_SMESSAGE
+
     QSettings settings;
     if (!fLiteMode && settings.value("fShowMasternodesTab").toBool()) {
         masternodeAction = new QAction(QIcon(":/icons/" + theme + "/masternodes"), tr("&Masternodes"), this);
@@ -372,23 +381,6 @@ void BitcoinGUI::createActions()
 
     connect(pyrkTokenAction, SIGNAL(triggered()), this, SLOT(gotoPyrkTokenPage()));
 
-
-
-    trezarMessageAction = new QAction(QIcon(":/icons/" + theme + "/send"), tr("&Secure Chat"), this);
-    trezarMessageAction->setStatusTip(tr("Secure Chat Messenger"));
-    trezarMessageAction->setToolTip(trezarMessageAction->statusTip());
-    trezarMessageAction->setCheckable(true);
-#ifdef Q_OS_MAC
-    trezarMessageAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_7));
-#else
-    trezarMessageAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_7));
-#endif
-    tabGroup->addAction(trezarMessageAction);
-
-    connect(trezarMessageAction, SIGNAL(triggered()), this, SLOT(gotoTrezarMessage()));
-
-
-
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -403,6 +395,10 @@ void BitcoinGUI::createActions()
     connect(receiveCoinsMenuAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
+#ifdef ENABLE_SMESSAGE
+    connect(secureMessageAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
+    connect(secureMessageAction, SIGNAL(triggered()), this, SLOT(gotoSecureMessage()));
+#endif // ENABLE_SMESSAGE
 #endif // ENABLE_WALLET
 
     quitAction = new QAction(QIcon(":/icons/" + theme + "/quit"), tr("E&xit"), this);
@@ -601,7 +597,9 @@ void BitcoinGUI::createToolBars()
             toolbar->addAction(masternodeAction);
         }
         toolbar->addAction(pyrkTokenAction);
-	toolbar->addAction(trezarMessageAction);
+#ifdef ENABLE_SMESSAGE
+        toolbar->addAction(secureMessageAction);
+#endif // ENABLE_SMESSAGE
         toolbar->setMovable(false); // remove unused icon in upper left corner
         overviewAction->setChecked(true);
 
@@ -752,8 +750,10 @@ void BitcoinGUI::setWalletActionsEnabled(bool enabled)
     }
 #ifdef ENABLE_WALLET
     pyrkTokenAction->setEnabled(enabled);
+#ifdef ENABLE_SMESSAGE
+    secureMessageAction->setEnabled(enabled);
+#endif // ENABLE_SMESSAGE
 #endif // ENABLE_WALLET
-    trezarMessageAction->setEnabled(enabled);
     encryptWalletAction->setEnabled(enabled);
     backupWalletAction->setEnabled(enabled);
     changePassphraseAction->setEnabled(enabled);
@@ -935,12 +935,6 @@ void BitcoinGUI::gotoPyrkTokenPage()
     if (walletFrame) walletFrame->gotoPyrkTokenPage();
 }
 
-void BitcoinGUI::gotoTrezarMessage()
-{
-    trezarMessageAction->setChecked(true);
-    if (walletFrame) walletFrame->gotoTrezarMessage();
-}
-
 void BitcoinGUI::gotoReceiveCoinsPage()
 {
     receiveCoinsAction->setChecked(true);
@@ -961,6 +955,12 @@ void BitcoinGUI::gotoSignMessageTab(QString addr)
 void BitcoinGUI::gotoVerifyMessageTab(QString addr)
 {
     if (walletFrame) walletFrame->gotoVerifyMessageTab(addr);
+}
+
+void BitcoinGUI::gotoSecureMessage()
+{
+    secureMessageAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoSecureMessage();
 }
 #endif // ENABLE_WALLET
 

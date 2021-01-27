@@ -102,7 +102,7 @@ AC_ARG_ENABLE([smessage],
   [AS_HELP_STRING([--disable-smessage],
   [disable smessage (enabled by default)])],
   [enable_smessage=$enableval],
-  [enable_smessage=yes]) 
+  [enable_smessage=yes])
 
 AC_ARG_WITH([miniupnpc],
   [AS_HELP_STRING([--with-miniupnpc],
@@ -1204,7 +1204,6 @@ esac
 echo 
 echo "Options used to compile and link:"
 echo "  with wallet   = $enable_wallet"
-echo "  with smessage   = $enable_smessage"
 echo "  with gui / qt = $bitcoin_enable_qt"
 if test x$bitcoin_enable_qt != xno; then
     echo "    qt version  = $bitcoin_qt_got_major_vers"

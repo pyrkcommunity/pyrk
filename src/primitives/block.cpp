@@ -12,6 +12,7 @@
 #include "crypto/common.h"
 #include "crypto/scrypt.h"
 #include "crypto/algos/yespower/yespower.h"
+#include "crypto/algos/Lyra2Z/Lyra2.h"
 
 uint256 CBlockHeader::GetHash() const
 {
@@ -30,7 +31,8 @@ int CBlockHeader::GetAlgo() const
             return ALGO_X11;
         case BLOCK_VERSION_YESPOWER:
             return ALGO_YESPOWER;
-            
+        case BLOCK_VERSION_LYRA2:
+            return ALGO_LYRA2;
     }
     return ALGO_UNKNOWN;
 }
@@ -58,6 +60,12 @@ uint256 CBlockHeader::GetPoWAlgoHash() const
             uint256 thash;
             yespower_hash(BEGIN(nVersion), BEGIN(thash));
             return thash;
+        }
+        case ALGO_LYRA2:
+        {
+            uint256 powHash;
+            LYRA2(BEGIN(powHash), 32, BEGIN(nVersion), 80, BEGIN(nVersion), 80, 2, 330, 256);
+            return powHash;
         }
         case ALGO_UNKNOWN:
             return ArithToUint256(~arith_uint256(0));
@@ -96,6 +104,8 @@ std::string GetAlgoName(int Algo)
             return std::string("x11");
         case ALGO_YESPOWER:
             return std::string("yespower");
+        case ALGO_LYRA2:
+            return std::string("lyra2");
     }
     return std::string("unknown");
 }

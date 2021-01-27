@@ -21,6 +21,9 @@
 #include "primitives/transaction.h"
 #include "script/script.h"
 #include "script/sign.h"
+#ifdef ENABLE_SMESSAGE
+#include "smessage.h"
+#endif
 #include "timedata.h"
 #include "txmempool.h"
 #include "util.h"
@@ -457,12 +460,12 @@ bool CWallet::Unlock(const SecureString& strWalletPassphrase, bool fForMixingOnl
                     LogPrintf("Keypool replenished, re-initializing automatic backups.\n");
                     nWalletBackups = GetArg("-createwalletbackups", 10);
                 }
+#ifdef ENABLE_SMESSAGE
+                SecureMsgWalletUnlocked();
+#endif
                 return true;
             }
         }
-#ifdef ENABLE_SMESSAGE
-        SecureMsgWalletUnlocked();
-#endif
     }
     return false;
 }
@@ -2622,11 +2625,28 @@ void CWallet::AvailableCoins(std::vector<COutput>& vCoins, bool fOnlyConfirmed, 
                     found = !CPrivateSend::IsDenominatedAmount(pcoin->tx->vout[i].nValue);
                 } else if(nCoinType == ONLY_COLLATERAL) {
                     int masternode_collateral = 1000;
-                    if (chainActive.Height() >= Params().GetConsensus().nCollateralChangeHeight)
+                    if (chainActive.Height() >= Params().GetConsensus().nCollateralChangeHeight &&
+                            chainActive.Height() < Params().GetConsensus().AlgoChangeHeight) {
                         masternode_collateral = 2500;
+                    } else if (chainActive.Height() >= Params().GetConsensus().AlgoChangeHeight) {
+                        masternode_collateral = 5000;
+                    }
                     found = pcoin->tx->vout[i].nValue == masternode_collateral*COIN;
-                    if (!found && chainActive.Height() >= Params().GetConsensus().nCollateralChangeHeight - 20000)
-                        found = pcoin->tx->vout[i].nValue == 2500*COIN;
+
+                    // Allow for 2,500 and 5,000 20k grace periods
+                    if (!found) {
+                        if (chainActive.Height() >= Params().GetConsensus().nCollateralChangeHeight - 20000 &&
+                                chainActive.Height() < Params().GetConsensus().nCollateralChangeHeight)
+                        {
+                            found = pcoin->tx->vout[i].nValue == 2500*COIN;
+                        }
+                        else if (chainActive.Height() >= Params().GetConsensus().AlgoChangeHeight - 20000 &&
+                                   chainActive.Height() < Params().GetConsensus().AlgoChangeHeight)
+                        {
+                            found = pcoin->tx->vout[i].nValue == 5000*COIN;
+                        }
+                    }
+
                 } else if(nCoinType == ONLY_PRIVATESEND_COLLATERAL) {
                     found = CPrivateSend::IsCollateralAmount(pcoin->tx->vout[i].nValue);
                 } else {
@@ -3129,8 +3149,12 @@ bool CWallet::SelectCoinsGroupedByAddresses(std::vector<CompactTallyItem>& vecTa
                 // ignore collaterals
                 if(CPrivateSend::IsCollateralAmount(wtx.tx->vout[i].nValue)) continue;
                 int masternode_collateral = 1000;
-                if (chainActive.Height() >= Params().GetConsensus().nCollateralChangeHeight)
+                if (chainActive.Height() >= Params().GetConsensus().nCollateralChangeHeight &&
+                        chainActive.Height() < Params().GetConsensus().AlgoChangeHeight) {
                     masternode_collateral = 2500;
+                } else if (chainActive.Height() >= Params().GetConsensus().AlgoChangeHeight) {
+                    masternode_collateral = 5000;
+                }
                 if(fMasternodeMode && wtx.tx->vout[i].nValue == masternode_collateral*COIN) continue;
                 // ignore outputs that are 10 times smaller then the smallest denomination
                 // otherwise they will just lead to higher fee / lower priority
@@ -3205,8 +3229,12 @@ bool CWallet::SelectPrivateCoins(CAmount nValueMin, CAmount nValueMax, std::vect
             nHeight = chainActive.Height();
         }
 
-        if (nHeight >= Params().GetConsensus().nCollateralChangeHeight)
+        if (nHeight >= Params().GetConsensus().nCollateralChangeHeight &&
+                nHeight < Params().GetConsensus().AlgoChangeHeight) {
             masternode_collateral = 2500;
+        } else if (nHeight >= Params().GetConsensus().AlgoChangeHeight) {
+            masternode_collateral = 5000;
+        }
 
         if(fMasternodeMode && out.tx->tx->vout[out.i].nValue == masternode_collateral*COIN) continue; //masternode input
 
@@ -4078,7 +4106,7 @@ DBErrors CWallet::ZapWalletTx(std::vector<CWalletTx>& vWtx)
 
 bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& strName, const std::string& strPurpose)
 {
-    bool fOwned;
+    bool fOwned{false};
     bool fUpdated = false;
     {
         LOCK(cs_wallet); // mapAddressBook
@@ -4089,15 +4117,13 @@ bool CWallet::SetAddressBook(const CTxDestination& address, const std::string& s
         if (!strPurpose.empty()) /* update purpose only if requested */
             mapAddressBook[address].purpose = strPurpose;
     }
-
 #ifdef ENABLE_SMESSAGE
     if (fOwned) {
         const CBitcoinAddress& caddress = address;
-        SecureMsgWalletKeyChanged(caddress.ToString(), strName, (fUpdated ? CT_UPDATED : CT_NEW));
+        SecureMsgWalletKeyChanged(caddress.ToString(), (fUpdated ? CT_UPDATED : CT_NEW));
     }
 #endif
-
-    NotifyAddressBookChanged(this, address, strName, fOwned != ISMINE_NO,
+    NotifyAddressBookChanged(this, address, strName, ::IsMine(*this, address) != ISMINE_NO,
                              strPurpose, (fUpdated ? CT_UPDATED : CT_NEW) );
     if (!fFileBacked)
         return false;
@@ -5468,4 +5494,3 @@ bool CMerkleTx::AcceptToMemoryPool(const CAmount& nAbsurdFee, CValidationState& 
 {
     return ::AcceptToMemoryPool(mempool, state, tx, true, NULL, false, nAbsurdFee);
 }
-

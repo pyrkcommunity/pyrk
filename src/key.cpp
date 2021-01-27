@@ -322,6 +322,7 @@ void ECC_Stop() {
     }
 }
 
+
 // Generate a private key from just the secret parameter
 int EC_KEY_regenerate_key(EC_KEY *eckey, BIGNUM *priv_key)
 {

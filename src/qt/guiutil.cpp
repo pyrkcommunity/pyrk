@@ -936,16 +936,10 @@ QString loadStyleSheet()
 {
     QString styleSheet;
     QSettings settings;
-    QString cssName;
-    QString theme = settings.value("theme", "").toString();
+    QString cssName{":/css/drkblue"};
 
-    if(!theme.isEmpty()){
-        cssName = QString(":/css/") + theme;
-    }
-    else {
-        cssName = QString(":/css/light");
-        settings.setValue("theme", "drkblue");
-    }
+    // Overwrite any previously saved value
+    settings.setValue("theme", "drkblue");
 
     QFile qFile(cssName);
     if (qFile.open(QFile::ReadOnly)) {

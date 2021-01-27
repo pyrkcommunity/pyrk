@@ -51,7 +51,7 @@ void RandAddSeed()
     memory_cleanse((void*)&nCounter, sizeof(nCounter));
 }
 
-void RandAddSeedPerfmon()
+static void RandAddSeedPerfmon()
 {
     RandAddSeed();
 
