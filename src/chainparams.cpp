@@ -207,7 +207,7 @@ public:
         consensus.nMaxActualTimespanV3 = consensus.nAveragingTargetTimespanV2 * (100 + consensus.nMaxAdjustDownV2) / 100;
         consensus.v2DiffChangeHeight = 100000;
         consensus.v3DiffChangeHeight = 100050;
-        consensus.AlgoChangeHeight = 265000;
+        consensus.AlgoChangeHeight = 285000;
         consensus.nLocalTargetAdjustment = 4; //target adjustment per algo
         consensus.nLocalDifficultyAdjustment = 4; //difficulty adjustment per algo
         consensus.fPowAllowMinDifficultyBlocks = false;
