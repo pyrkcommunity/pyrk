@@ -2687,9 +2687,6 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         std::shared_ptr<CBlock> pblock = std::make_shared<CBlock>();
         vRecv >> *pblock;
 
-        CBlock block;
-        vRecv >> block;
-
         LogPrint("net", "received block %s peer=%d\n", pblock->GetHash().ToString(), pfrom->id);
 
         // Process all blocks from whitelisted peers, even if not requested,
@@ -2714,7 +2711,7 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
 
 #ifdef ENABLE_SMESSAGE
         if (fSecMsgEnabled)
-            SecureMsgScanBlock(block);
+            SecureMsgScanBlock(*pblock);
 #endif
 
 
