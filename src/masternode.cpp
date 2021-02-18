@@ -125,42 +125,9 @@ CMasternode::CollateralStatus CMasternode::CheckCollateral(const COutPoint& outp
         return COLLATERAL_UTXO_NOT_FOUND;
     }
 
-    int masternode_collateral_v1 = 1000;
-    int masternode_collateral_v2 = 2500;
-    int masternode_collateral_v3 = 5000;
-
-    // 20k grace period. Note that this grace period was never capped here, this is a bug! To not upset
-    // the network in case this is being exploited a hard cap is added at the next hard fork grace period.
-    if (chainActive.Height() >= Params().GetConsensus().nCollateralChangeHeight - 20000 &&
-            chainActive.Height() < Params().GetConsensus().AlgoChangeHeight - 20000) // Cap was missing here. Now set to next grace period.
-    {
-        // Grace Period
-        if(coin.out.nValue != masternode_collateral_v1 * COIN && coin.out.nValue != masternode_collateral_v2 * COIN) {
-            return COLLATERAL_INVALID_AMOUNT;
-        }
-    }
-    else if (chainActive.Height() >= Params().GetConsensus().AlgoChangeHeight - 20000 &&
-             chainActive.Height() < Params().GetConsensus().AlgoChangeHeight) // Grace period should be capped at end of next hard fork.
-    {
-        // Grace Period
-        if(coin.out.nValue != masternode_collateral_v2 * COIN && coin.out.nValue != masternode_collateral_v3 * COIN) {
-            return COLLATERAL_INVALID_AMOUNT;
-        }
-    }
-    else
-    {
-        int masternode_collateral = masternode_collateral_v1;
-        if (chainActive.Height() >= Params().GetConsensus().nCollateralChangeHeight &&
-                chainActive.Height() < Params().GetConsensus().AlgoChangeHeight) {
-            masternode_collateral = masternode_collateral_v2;
-        } else if (chainActive.Height() >= Params().GetConsensus().AlgoChangeHeight) {
-            masternode_collateral = masternode_collateral_v3;
-        }
-
-        if(coin.out.nValue != masternode_collateral * COIN) {
-            return COLLATERAL_INVALID_AMOUNT;
-        }
-    }
+    if(coin.out.nValue != 1000 * COIN) {
+        return COLLATERAL_INVALID_AMOUNT;
+     }
 
     if(keyID.IsNull() || coin.out.scriptPubKey != GetScriptForDestination(keyID)) {
         return COLLATERAL_INVALID_PUBKEY;
@@ -610,14 +577,7 @@ bool CMasternodeBroadcast::CheckOutpoint(int& nDos)
     }
 
     if (err == COLLATERAL_INVALID_AMOUNT) {
-        if (chainActive.Height() < Params().GetConsensus().nCollateralChangeHeight) {
-            LogPrint("masternode", "CMasternodeBroadcast::CheckOutpoint -- Masternode UTXO should have 1000 PYRK, masternode=%s\n", outpoint.ToStringShort());
-        } else
-        if (chainActive.Height() < Params().GetConsensus().AlgoChangeHeight) {
-            LogPrint("masternode", "CMasternodeBroadcast::CheckOutpoint -- Masternode UTXO should have 2500 PYRK, masternode=%s\n", outpoint.ToStringShort());
-        } else {
-            LogPrint("masternode", "CMasternodeBroadcast::CheckOutpoint -- Masternode UTXO should have 5000 PYRK, masternode=%s\n", outpoint.ToStringShort());
-        }
+        LogPrint("masternode", "CMasternodeBroadcast::CheckOutpoint -- Masternode UTXO should have 1000 DASH, masternode=%s\n", outpoint.ToStringShort());
         nDos = 33;
         return false;
     }
