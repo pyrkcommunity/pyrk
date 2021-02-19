@@ -9,6 +9,7 @@
 #include "base58.h"
 #include "chainparams.h"
 #include "clientversion.h"
+#include "collateral.h"
 #include "core_io.h"
 #include "hash.h"
 #include "messagesigner.h"
@@ -137,7 +138,7 @@ bool CheckProRegTx(const CTransaction& tx, const CBlockIndex* pindexPrev, CValid
 
     if (!ptx.collateralOutpoint.hash.IsNull()) {
         Coin coin;
-        if (!GetUTXOCoin(ptx.collateralOutpoint, coin) || coin.out.nValue != 1000 * COIN) {
+        if (!GetUTXOCoin(ptx.collateralOutpoint, coin) || !validateCollateral(ptx.collateralOutpoint)) {
             return state.DoS(10, false, REJECT_INVALID, "bad-protx-collateral");
         }
 
@@ -156,10 +157,9 @@ bool CheckProRegTx(const CTransaction& tx, const CBlockIndex* pindexPrev, CValid
         if (ptx.collateralOutpoint.n >= tx.vout.size()) {
             return state.DoS(10, false, REJECT_INVALID, "bad-protx-collateral-index");
         }
-        if (tx.vout[ptx.collateralOutpoint.n].nValue != 1000 * COIN) {
+        if (!validateCollateral(ptx.collateralOutpoint)) {
             return state.DoS(10, false, REJECT_INVALID, "bad-protx-collateral");
         }
-
         if (!ExtractDestination(tx.vout[ptx.collateralOutpoint.n].scriptPubKey, collateralTxDest)) {
             return state.DoS(10, false, REJECT_INVALID, "bad-protx-collateral-dest");
         }

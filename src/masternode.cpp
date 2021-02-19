@@ -5,6 +5,7 @@
 #include "activemasternode.h"
 #include "base58.h"
 #include "clientversion.h"
+#include "collateral.h"
 #include "init.h"
 #include "netbase.h"
 #include "masternode.h"
@@ -125,7 +126,9 @@ CMasternode::CollateralStatus CMasternode::CheckCollateral(const COutPoint& outp
         return COLLATERAL_UTXO_NOT_FOUND;
     }
 
-    if(coin.out.nValue != 1000 * COIN) {
+    //! has some issue with const here.. odd
+    COutPoint outbind(outpoint.hash, outpoint.n);
+    if(!validateCollateral(outbind)) {
         return COLLATERAL_INVALID_AMOUNT;
      }
 

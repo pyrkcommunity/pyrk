@@ -3,6 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "base58.h"
+#include "collateral.h"
 #include "consensus/validation.h"
 #include "core_io.h"
 #include "init.h"
@@ -404,7 +405,7 @@ UniValue protx_register(const JSONRPCRequest& request)
 
     size_t paramIdx = 1;
 
-    CAmount collateralAmount = 1000 * COIN;
+    CAmount collateralAmount = 5000 * COIN; //! from here, just use 5000 (please)
 
     CMutableTransaction tx;
     tx.nVersion = 3;

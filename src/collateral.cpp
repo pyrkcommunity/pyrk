@@ -63,6 +63,7 @@ bool validateCollateral(COutPoint& collateral, const CBlockIndex* pindex)
         }
 
         // if we got here, grab a beer
+        LogPrintf("got to the end (debug: collateral(%s) amount(%llu) spent(%d))\n", collateral.ToString(), collatValue, coin.IsSpent());
         return false;
     }
 }
