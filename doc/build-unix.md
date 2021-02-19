@@ -80,7 +80,8 @@ mkdir build
 cd build
 cmake ../
 make --j4
-sudo make install```
+sudo make install
+```
 
 Options when installing required Boost library files:
 
