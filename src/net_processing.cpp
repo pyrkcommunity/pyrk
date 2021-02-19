@@ -1470,12 +1470,14 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
             return false;
         }
 
-        if (nVersion < nMinPeerProtoVersion)
+        //! make the protocol version ban dynamic
+        const int nMinPeerVersion = pindexBestHeader->nHeight > 270000 ? PROTOCOL_VERSION : MIN_PEER_PROTO_VERSION;
+        if (nVersion < nMinPeerVersion)
         {
             // disconnect from peers older than this proto version
             LogPrintf("peer=%d using obsolete version %i; disconnecting\n", pfrom->id, nVersion);
             connman.PushMessage(pfrom, CNetMsgMaker(INIT_PROTO_VERSION).Make(NetMsgType::REJECT, strCommand, REJECT_OBSOLETE,
-                               strprintf("Version must be %d or greater", nMinPeerProtoVersion)));
+                               strprintf("Version must be %d or greater", nMinPeerVersion)));
             pfrom->fDisconnect = true;
             return false;
         }
