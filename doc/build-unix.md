@@ -75,12 +75,12 @@ Install BLS signatures:
 
 Download: https://github.com/codablock/bls-signatures/archive/v20181101.zip
 
-cd v20181101
+```cd v20181101
 mkdir build
 cd build
 cmake ../
 make --j4
-sudo make install
+sudo make install```
 
 Options when installing required Boost library files:
 
