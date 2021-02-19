@@ -573,10 +573,14 @@ bool CDeterministicMNManager::BuildNewListFromBlock(const CBlock& block, const C
             }
 
             Coin coin;
-            if (!proTx.collateralOutpoint.hash.IsNull() && (!GetUTXOCoin(dmn->collateralOutpoint, coin) || (coin.out.nValue != 2500 * COIN && coin.out.nValue != 5000 * COIN))) {
+            if (!proTx.collateralOutpoint.hash.IsNull() && !GetUTXOCoin(dmn->collateralOutpoint, coin)) {
                 // should actually never get to this point as CheckProRegTx should have handled this case.
                 // We do this additional check nevertheless to be 100% sure
                 return _state.DoS(100, false, REJECT_INVALID, "bad-protx-collateral");
+            }
+
+            if (coin.out.nValue != 2500 * COIN && coin.out.nValue != 5000 * COIN) {
+                return _state.DoS(100, error("BuildNewListFromBlock(): invalid amount: %d", coin.out.nValue), REJECT_INVALID, "bad-protx-collateral");
             }
 
             auto replacedDmn = newList.GetMNByCollateral(dmn->collateralOutpoint);
@@ -869,7 +873,7 @@ bool CDeterministicMNManager::IsProTxWithCollateral(const CTransactionRef& tx, u
     if (proTx.collateralOutpoint.n >= tx->vout.size() || proTx.collateralOutpoint.n != n) {
         return false;
     }
-    if (tx->vout[n].nValue != 2500 * COIN) {
+    if (tx->vout[n].nValue != 2500 * COIN && tx->vout[n].nValue != 5000 * COIN) {
         return false;
     }
     return true;
