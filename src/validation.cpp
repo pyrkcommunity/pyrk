@@ -1009,73 +1009,57 @@ NOTE:   unlike bitcoin we are using PREVIOUS block height here,
         might be a good idea to change this to use prev bits
         but current height to avoid confusion.
 */
-CAmount GetBlockSubsidy(int nPrevBits, int nPrevHeight, const Consensus::Params& consensusParams, bool fSuperblockPartOnly)
+CAmount GetBlockSubsidy(int nHeight, bool fSuperblockPartOnly)
 {
-    double dDiff;
-    CAmount nSubsidyBase;
+    int halvings = nHeight / Params().GetConsensus().nSubsidyHalvingInterval;
 
-    if (nPrevHeight <= 4500 && Params().NetworkIDString() == CBaseChainParams::MAIN) {
-        /* a bug which caused diff to not be correctly calculated */
-        dDiff = (double)0x0000ffff / (double)(nPrevBits & 0x00ffffff);
-    } else {
-        dDiff = ConvertBitsToDouble(nPrevBits);
+    CAmount nSubsidy = 100 * COIN;
+
+    double reductionPercent = 1.0000;
+    double multiplyValue = 1.0000;
+
+    for (int i = 0; i < halvings; ++i) {
+
+        reductionPercent = reductionPercent * 0.5;
+
+        // We halve the previous reduction percent each time until we reach the minimum of 0.0375
+        if (reductionPercent < 0.0375) {
+            reductionPercent = 0.0375;
+        }
+
+        multiplyValue = 1 - reductionPercent;
+
+        nSubsidy = nSubsidy * multiplyValue;
+
+        // Reduce by 20%
+        //nSubsidy = (nSubsidy * 4) / 5;
     }
 
-    if (nPrevHeight < 5465) {
-        // Early ages...
-        // 1111/((x+1)^2)
-        nSubsidyBase = (1111.0 / (pow((dDiff+1.0),2.0)));
-        if(nSubsidyBase > 500) nSubsidyBase = 500;
-        else if(nSubsidyBase < 1) nSubsidyBase = 1;
-    } else if (nPrevHeight < 17000 || (dDiff <= 75 && nPrevHeight < 24000)) {
-        // CPU mining era
-        // 11111/(((x+51)/6)^2)
-        nSubsidyBase = (11111.0 / (pow((dDiff+51.0)/6.0,2.0)));
-        if(nSubsidyBase > 500) nSubsidyBase = 500;
-        else if(nSubsidyBase < 25) nSubsidyBase = 25;
-    } else {
-        // GPU/ASIC mining era
-        // 2222222/(((x+2600)/9)^2)
-        nSubsidyBase = (2222222.0 / (pow((dDiff+2600.0)/9.0,2.0)));
-        if(nSubsidyBase > 25) nSubsidyBase = 25;
-        else if(nSubsidyBase < 5) nSubsidyBase = 5;
+    // Superblock payment
+    CAmount nSuperblockPart = 0;
+
+    if (nHeight >= Params().GetConsensus().nSuperblockStartBlock) {
+        // Superblocks payment 10% after superblock start
+        nSuperblockPart = nSubsidy / 10;
     }
 
-    CAmount nSubsidy = nSubsidyBase * COIN;
-
-    // yearly decline of production by ~7.1% per year, projected ~18M coins max by year 2050+.
-    for (int i = consensusParams.nSubsidyHalvingInterval; i <= nPrevHeight; i += consensusParams.nSubsidyHalvingInterval) {
-        nSubsidy -= nSubsidy/14;
-    }
-
-    // this is only active on devnets
-    if (nPrevHeight < consensusParams.nHighSubsidyBlocks) {
-        nSubsidy *= consensusParams.nHighSubsidyFactor;
-    }
-
-    // Hard fork to reduce the block reward by 10 extra percent (allowing budget/superblocks)
-    CAmount nSuperblockPart = (nPrevHeight > consensusParams.nBudgetPaymentsStartBlock) ? nSubsidy/10 : 0;
-
+    // Return superblock payment or block subsidy less superblock amount
     return fSuperblockPartOnly ? nSuperblockPart : nSubsidy - nSuperblockPart;
 }
 
 CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
 {
-    CAmount ret = blockValue/5; // start at 20%
+    CAmount ret = 0;
 
-    int nMNPIBlock = Params().GetConsensus().nMasternodePaymentsIncreaseBlock;
-    int nMNPIPeriod = Params().GetConsensus().nMasternodePaymentsIncreasePeriod;
-
-                                                                      // mainnet:
-    if(nHeight > nMNPIBlock)                  ret += blockValue / 20; // 158000 - 25.0% - 2014-10-24
-    if(nHeight > nMNPIBlock+(nMNPIPeriod* 1)) ret += blockValue / 20; // 175280 - 30.0% - 2014-11-25
-    if(nHeight > nMNPIBlock+(nMNPIPeriod* 2)) ret += blockValue / 20; // 192560 - 35.0% - 2014-12-26
-    if(nHeight > nMNPIBlock+(nMNPIPeriod* 3)) ret += blockValue / 40; // 209840 - 37.5% - 2015-01-26
-    if(nHeight > nMNPIBlock+(nMNPIPeriod* 4)) ret += blockValue / 40; // 227120 - 40.0% - 2015-02-27
-    if(nHeight > nMNPIBlock+(nMNPIPeriod* 5)) ret += blockValue / 40; // 244400 - 42.5% - 2015-03-30
-    if(nHeight > nMNPIBlock+(nMNPIPeriod* 6)) ret += blockValue / 40; // 261680 - 45.0% - 2015-05-01
-    if(nHeight > nMNPIBlock+(nMNPIPeriod* 7)) ret += blockValue / 40; // 278960 - 47.5% - 2015-06-01
-    if(nHeight > nMNPIBlock+(nMNPIPeriod* 9)) ret += blockValue / 40; // 313520 - 50.0% - 2015-08-03
+    if (nHeight >= Params().GetConsensus().nMasternodePaymentsStartBlock && nHeight < Params().GetConsensus().nSuperblockStartBlock) {
+        ret = blockValue / 5; // 20%
+    } else if (nHeight >= Params().GetConsensus().nSuperblockStartBlock && nHeight < 100000) {
+        // Still 20% but 10% has been reserved for superblocks so work from 90% of the block subsidy
+        ret = (blockValue / 9) * 2;
+    } else if (nHeight >= 100000) {
+        // Now 30% working from 90% of the full block subsidy
+        ret = (blockValue / 9) * 3; // 30%
+    }
 
     return ret;
 }
@@ -2169,7 +2153,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     // DASH : MODIFIED TO CHECK MASTERNODE PAYMENTS AND SUPERBLOCKS
 
     // TODO: resync data (both ways?) and try to reprocess this block later.
-    CAmount blockReward = nFees + GetBlockSubsidy(pindex->pprev->nBits, pindex->pprev->nHeight, chainparams.GetConsensus());
+    CAmount blockReward = nFees + GetBlockSubsidy(pindex->nHeight);
     std::string strError = "";
 
     int64_t nTime5_2 = GetTimeMicros(); nTimeSubsidy += nTime5_2 - nTime5_1;
@@ -3327,6 +3311,14 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
        (block.nVersion < 4 && nHeight >= consensusParams.BIP65Height))
             return state.Invalid(false, REJECT_OBSOLETE, strprintf("bad-version(0x%08x)", block.nVersion),
                                  strprintf("rejected nVersion=0x%08x block", block.nVersion));
+
+    // check of algo 3 is active
+    if (block.GetAlgo() == 3 && nHeight < consensusParams.v2DiffChangeHeight)
+        return state.Invalid(false, REJECT_INVALID, "invalid-algo", "this algorithm is not active");
+
+    // Check if algo 4 is active
+    if (block.GetAlgo() == 4 && nHeight < consensusParams.AlgoChangeHeight)
+        return state.Invalid(false, REJECT_INVALID, "invalid-algo", "LYRA2 algorithm is not active");
 
     return true;
 }
