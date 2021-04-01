@@ -164,9 +164,27 @@ struct Params {
     bool fPowNoRetargeting;
     int64_t nPowTargetSpacing;
     int64_t nPowTargetTimespan;
-    int nPowKGWHeight;
-    int nPowDGWHeight;
     int64_t DifficultyAdjustmentInterval() const { return nPowTargetTimespan / nPowTargetSpacing; }
+    int64_t nAveragingInterval;
+    int64_t multiAlgoTargetSpacing;
+    int64_t multiAlgoTargetSpacingV2;
+    int64_t nAveragingTargetTimespan;
+    int64_t nAveragingTargetTimespanV2;
+    int64_t nMaxAdjustDown;
+    int64_t nMaxAdjustUp;
+    int64_t nMaxAdjustDownV2;
+    int64_t nMaxAdjustUpV2;
+    int64_t nMinActualTimespan;
+    int64_t nMaxActualTimespan;
+    int64_t nMinActualTimespanV2;
+    int64_t nMaxActualTimespanV2;
+    int64_t nMinActualTimespanV3;
+    int64_t nMaxActualTimespanV3;
+    int64_t nLocalTargetAdjustment;
+    int64_t nLocalDifficultyAdjustment;
+    int v2DiffChangeHeight;
+    int v3DiffChangeHeight;
+    int AlgoChangeHeight;
     uint256 nMinimumChainWork;
     uint256 defaultAssumeValid;
 

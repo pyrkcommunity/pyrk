@@ -381,7 +381,7 @@ libdash_wallet_a_SOURCES = \
 
 # crypto primitives library
 crypto_libdash_crypto_base_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_CONFIG_INCLUDES) $(PIC_FLAGS)
-crypto_libdash_crypto_base_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS)
+crypto_libdash_crypto_base_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS) $(SSL_CFLAGS)
 crypto_libdash_crypto_base_a_SOURCES = \
   crypto/aes.cpp \
   crypto/aes.h \
@@ -397,6 +397,14 @@ crypto_libdash_crypto_base_a_SOURCES = \
   crypto/poly1305.h \
   crypto/poly1305.cpp \
   crypto/ripemd160.cpp \
+  crypto/scrypt.cpp \
+  crypto/scrypt.h \
+  crypto/algos/Lyra2Z/Lyra2.c \
+  crypto/algos/Lyra2Z/Lyra2Z.c \
+  crypto/algos/Lyra2Z/Sponge.c \
+  crypto/algos/yespower/yespower-sha256.c \
+  crypto/algos/yespower/yespower-opt.c \
+  crypto/algos/yespower/yespower.c \
   crypto/aes_helper.c \
   crypto/ripemd160.h \
   crypto/sha1.cpp \
@@ -637,7 +645,7 @@ if GLIBC_BACK_COMPAT
 endif
 
 libdashconsensus_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined $(RELDFLAGS)
-libdashconsensus_la_LIBADD = $(LIBSECP256K1) $(BLS_LIBS)
+libdashconsensus_la_LIBADD = $(LIBSECP256K1) $(BLS_LIBS) $(CRYPTO_LIBS)
 libdashconsensus_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(builddir)/obj -I$(srcdir)/secp256k1/include -DBUILD_BITCOIN_INTERNAL
 libdashconsensus_la_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 

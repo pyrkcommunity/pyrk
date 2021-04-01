@@ -111,7 +111,12 @@ UniValue getinfo(const JSONRPCRequest& request)
     if(g_connman)
         obj.push_back(Pair("connections",   (int)g_connman->GetNodeCount(CConnman::CONNECTIONS_ALL)));
     obj.push_back(Pair("proxy",         (proxy.IsValid() ? proxy.proxy.ToStringIPPort() : std::string())));
-    obj.push_back(Pair("difficulty",    (double)GetDifficulty()));
+    obj.pushKV("pow_algo_id",        miningAlgo);
+    obj.pushKV("pow_algo",           GetAlgoName(miningAlgo));
+    obj.pushKV("difficulty",         (double)GetDifficulty(nullptr, miningAlgo));
+    obj.pushKV("difficulty_sha256d", (double)GetDifficulty(nullptr, ALGO_SHA256D));
+    obj.pushKV("difficulty_scrypt",  (double)GetDifficulty(nullptr, ALGO_SCRYPT));
+    obj.pushKV("difficulty_x11",     (double)GetDifficulty(nullptr, ALGO_X11));
     obj.push_back(Pair("testnet",       Params().NetworkIDString() == CBaseChainParams::TESTNET));
 #ifdef ENABLE_WALLET
     if (pwallet) {

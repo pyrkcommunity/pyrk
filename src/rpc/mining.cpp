@@ -131,7 +131,7 @@ UniValue generateBlocks(std::shared_ptr<CReserveScript> coinbaseScript, int nGen
     UniValue blockHashes(UniValue::VARR);
     while (nHeight < nHeightEnd)
     {
-        std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(Params()).CreateNewBlock(coinbaseScript->reserveScript));
+        std::unique_ptr<CBlockTemplate> pblocktemplate(BlockAssembler(Params()).CreateNewBlock(coinbaseScript->reserveScript, miningAlgo));
         if (!pblocktemplate.get())
             throw JSONRPCError(RPC_INTERNAL_ERROR, "Couldn't create new block");
         CBlock *pblock = &pblocktemplate->block;
@@ -139,7 +139,7 @@ UniValue generateBlocks(std::shared_ptr<CReserveScript> coinbaseScript, int nGen
             LOCK(cs_main);
             IncrementExtraNonce(pblock, chainActive.Tip(), nExtraNonce);
         }
-        while (nMaxTries > 0 && pblock->nNonce < nInnerLoopCount && !CheckProofOfWork(pblock->GetHash(), pblock->nBits, Params().GetConsensus())) {
+        while (nMaxTries > 0 && pblock->nNonce < nInnerLoopCount && !CheckProofOfWork(pblock->GetPoWAlgoHash(), pblock->nBits, Params().GetConsensus())) {
             ++pblock->nNonce;
             --nMaxTries;
         }
@@ -227,7 +227,12 @@ UniValue getmininginfo(const JSONRPCRequest& request)
     obj.push_back(Pair("blocks",           (int)chainActive.Height()));
     obj.push_back(Pair("currentblocksize", (uint64_t)nLastBlockSize));
     obj.push_back(Pair("currentblocktx",   (uint64_t)nLastBlockTx));
-    obj.push_back(Pair("difficulty",       (double)GetDifficulty()));
+    obj.pushKV("pow_algo_id",        miningAlgo);
+    obj.pushKV("pow_algo",           GetAlgoName(miningAlgo));
+    obj.pushKV("difficulty",         (double)GetDifficulty(nullptr, miningAlgo));
+    obj.pushKV("difficulty_sha256d", (double)GetDifficulty(nullptr, ALGO_SHA256D));
+    obj.pushKV("difficulty_scrypt",  (double)GetDifficulty(nullptr, ALGO_SCRYPT));
+    obj.pushKV("difficulty_x11",     (double)GetDifficulty(nullptr, ALGO_X11));
     obj.push_back(Pair("errors",           GetWarnings("statusbar")));
     obj.push_back(Pair("networkhashps",    getnetworkhashps(request)));
     obj.push_back(Pair("pooledtx",         (uint64_t)mempool.size()));
@@ -318,6 +323,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
             "           ,...\n"
             "       ]\n"
             "     }\n"
+            "2. algo    (string, optional) The mining algorithm to use for this pow hash, 'sha256d', 'scrypt', 'x11'\n"
             "\n"
 
             "\nResult:\n"
@@ -455,6 +461,17 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
         }
     }
 
+    int algo = miningAlgo;
+    if (!request.params[1].isNull()) {
+        std::string strAlgo = request.params[1].get_str();
+        if (strAlgo == "sha" || strAlgo == "sha256" || strAlgo == "sha256d")
+            algo = ALGO_SHA256D;
+        else if (strAlgo == "scrypt")
+            algo = ALGO_SCRYPT;
+        else if (strAlgo == "x11")
+            algo = ALGO_X11;
+    }
+
     if (strMode != "template")
         throw JSONRPCError(RPC_INVALID_PARAMETER, "Invalid mode");
 
@@ -543,7 +560,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
 
         // Create new block
         CScript scriptDummy = CScript() << OP_TRUE;
-        pblocktemplate = BlockAssembler(Params()).CreateNewBlock(scriptDummy);
+        pblocktemplate = BlockAssembler(Params()).CreateNewBlock(scriptDummy, algo);
         if (!pblocktemplate)
             throw JSONRPCError(RPC_OUT_OF_MEMORY, "Out of memory");
 
@@ -554,7 +571,7 @@ UniValue getblocktemplate(const JSONRPCRequest& request)
     const Consensus::Params& consensusParams = Params().GetConsensus();
 
     // Update nTime
-    UpdateTime(pblock, consensusParams, pindexPrev);
+    UpdateTime(pblock, consensusParams, pindexPrev, algo);
     pblock->nNonce = 0;
 
     UniValue aCaps(UniValue::VARR); aCaps.push_back("proposal");
