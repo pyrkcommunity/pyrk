@@ -43,12 +43,15 @@ QT_FORMS_UI = \
   qt/forms/openuridialog.ui \
   qt/forms/optionsdialog.ui \
   qt/forms/overviewpage.ui \
+  qt/forms/pyrktokens.ui \
   qt/forms/receivecoinsdialog.ui \
   qt/forms/receiverequestdialog.ui \
   qt/forms/debugwindow.ui \
   qt/forms/sendcoinsdialog.ui \
   qt/forms/sendcoinsentry.ui \
   qt/forms/signverifymessagedialog.ui \
+  qt/forms/tokenformentry.ui \
+  qt/forms/tokenselectaddressdialog.ui \
   qt/forms/transactiondescdialog.ui
 
 if ENABLE_SMESSAGE
@@ -85,6 +88,7 @@ QT_MOC_CPP = \
   qt/moc_overviewpage.cpp \
   qt/moc_peertablemodel.cpp \
   qt/moc_paymentserver.cpp \
+  qt/moc_pyrktokens.cpp \
   qt/moc_qrdialog.cpp \
   qt/moc_qvalidatedlineedit.cpp \
   qt/moc_qvaluecombobox.cpp \
@@ -96,6 +100,16 @@ QT_MOC_CPP = \
   qt/moc_sendcoinsentry.cpp \
   qt/moc_signverifymessagedialog.cpp \
   qt/moc_splashscreen.cpp \
+  qt/moc_tokenformaddmetaentry.cpp \
+  qt/moc_tokenformauthmetaentry.cpp \
+  qt/moc_tokenformburnentry.cpp \
+  qt/moc_tokenformcreateentry.cpp \
+  qt/moc_tokenformnewownerentry.cpp \
+  qt/moc_tokenformpauseentry.cpp \
+  qt/moc_tokenformresumeentry.cpp \
+  qt/moc_tokenformrevokemetaentry.cpp \
+  qt/moc_tokenformsendentry.cpp \
+  qt/moc_tokenselectaddressdialog.cpp \
   qt/moc_trafficgraphwidget.cpp \
   qt/moc_transactiondesc.cpp \
   qt/moc_transactiondescdialog.cpp \
@@ -168,6 +182,7 @@ BITCOIN_QT_H = \
   qt/paymentserver.h \
   qt/peertablemodel.h \
   qt/platformstyle.h \
+  qt/pyrktokens.h \
   qt/qrdialog.h \
   qt/qvalidatedlineedit.h \
   qt/qvaluecombobox.h \
@@ -179,6 +194,17 @@ BITCOIN_QT_H = \
   qt/sendcoinsentry.h \
   qt/signverifymessagedialog.h \
   qt/splashscreen.h \
+  qt/tokenformaddmetaentry.h \
+  qt/tokenformauthmetaentry.h \
+  qt/tokenformburnentry.h \
+  qt/tokenformcreateentry.h \
+  qt/tokenformnewownerentry.h \
+  qt/tokenformpauseentry.h \
+  qt/tokenformresumeentry.h \
+  qt/tokenformrevokemetaentry.h \
+  qt/tokenformsendentry.h \
+  qt/tokenselectaddressdialog.h \
+  qt/tokenutil.h \
   qt/trafficgraphdata.h \
   qt/trafficgraphwidget.h \
   qt/transactiondesc.h \
@@ -294,6 +320,7 @@ BITCOIN_QT_WALLET_CPP = \
   qt/overviewpage.cpp \
   qt/paymentrequestplus.cpp \
   qt/paymentserver.cpp \
+  qt/pyrktokens.cpp \
   qt/qrdialog.cpp \
   qt/receivecoinsdialog.cpp \
   qt/receiverequestdialog.cpp \
@@ -301,6 +328,17 @@ BITCOIN_QT_WALLET_CPP = \
   qt/sendcoinsdialog.cpp \
   qt/sendcoinsentry.cpp \
   qt/signverifymessagedialog.cpp \
+  qt/tokenformaddmetaentry.cpp \
+  qt/tokenformauthmetaentry.cpp \
+  qt/tokenformburnentry.cpp \
+  qt/tokenformcreateentry.cpp \
+  qt/tokenformnewownerentry.cpp \
+  qt/tokenformpauseentry.cpp \
+  qt/tokenformresumeentry.cpp \
+  qt/tokenformrevokemetaentry.cpp \
+  qt/tokenformsendentry.cpp \
+  qt/tokenselectaddressdialog.cpp \
+  qt/tokenutil.cpp \
   qt/transactiondesc.cpp \
   qt/transactiondescdialog.cpp \
   qt/transactionfilterproxy.cpp \

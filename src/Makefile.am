@@ -393,7 +393,7 @@ libdash_wallet_a_SOURCES = \
   $(BITCOIN_CORE_H)
 
 # crypto primitives library
-crypto_libdash_crypto_base_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_CONFIG_INCLUDES) $(PIC_FLAGS)
+crypto_libdash_crypto_base_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_CONFIG_INCLUDES) $(PIC_FLAGS) $(SSL_CFLAGS)
 crypto_libdash_crypto_base_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS) $(PIC_FLAGS) $(SSL_CFLAGS)
 crypto_libdash_crypto_base_a_SOURCES = \
   crypto/aes.cpp \

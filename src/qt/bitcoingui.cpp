@@ -99,6 +99,7 @@ BitcoinGUI::BitcoinGUI(const PlatformStyle *_platformStyle, const NetworkStyle *
     overviewAction(0),
     historyAction(0),
     masternodeAction(0),
+    pyrkTokenAction(0),
     quitAction(0),
     sendCoinsAction(0),
     sendCoinsMenuAction(0),
@@ -395,6 +396,19 @@ void BitcoinGUI::createActions()
         connect(masternodeAction, SIGNAL(triggered()), this, SLOT(gotoMasternodePage()));
     }
 
+    pyrkTokenAction = new QAction(QIcon(":/icons/send"), tr("&Pyrk Tokens"), this);
+    pyrkTokenAction->setStatusTip(tr("Pyrk Tokens"));
+    pyrkTokenAction->setToolTip(pyrkTokenAction->statusTip());
+    pyrkTokenAction->setCheckable(true);
+#ifdef Q_OS_MAC
+    pyrkTokenAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_6));
+#else
+    pyrkTokenAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
+#endif
+    tabGroup->addAction(pyrkTokenAction);
+
+    connect(pyrkTokenAction, SIGNAL(triggered()), this, SLOT(gotoPyrkTokenPage()));
+
     // These showNormalIfMinimized are needed because Send Coins and Receive Coins
     // can be triggered from the tray menu, and need to show the GUI to be useful.
     connect(overviewAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -606,6 +620,7 @@ void BitcoinGUI::createToolBars()
         {
             toolbar->addAction(masternodeAction);
         }
+        toolbar->addAction(pyrkTokenAction);
 #ifdef ENABLE_SMESSAGE
         toolbar->addAction(secureMessageAction);
 #endif // ENABLE_SMESSAGE
@@ -767,6 +782,9 @@ void BitcoinGUI::setWalletActionsEnabled(bool enabled)
     if (!fLiteMode && settings.value("fShowMasternodesTab").toBool() && masternodeAction) {
         masternodeAction->setEnabled(enabled);
     }
+#ifdef ENABLE_WALLET
+    pyrkTokenAction->setEnabled(enabled);
+#endif // ENABLE_WALLET
 #ifdef ENABLE_SMESSAGE
     secureMessageAction->setEnabled(enabled);
 #endif // ENABLE_SMESSAGE
@@ -937,6 +955,12 @@ void BitcoinGUI::gotoMasternodePage()
         masternodeAction->setChecked(true);
         if (walletFrame) walletFrame->gotoMasternodePage();
     }
+}
+
+void BitcoinGUI::gotoPyrkTokenPage()
+{
+    pyrkTokenAction->setChecked(true);
+    if (walletFrame) walletFrame->gotoPyrkTokenPage();
 }
 
 void BitcoinGUI::gotoReceiveCoinsPage()

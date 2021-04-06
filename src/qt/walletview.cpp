@@ -9,9 +9,11 @@
 #include "bitcoingui.h"
 #include "clientmodel.h"
 #include "guiutil.h"
+#include "masternodelist.h"
 #include "optionsmodel.h"
 #include "overviewpage.h"
 #include "platformstyle.h"
+#include "pyrktokens.h"
 #include "receivecoinsdialog.h"
 #include "securemessage.h"
 #include "sendcoinsdialog.h"
@@ -92,6 +94,11 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
         addWidget(masternodeListPage);
     }
 
+#ifdef ENABLE_WALLET
+    pyrkTokensPage = new PyrkTokens(platformStyle);
+    addWidget(pyrkTokensPage);
+#endif // ENABLE_WALLET
+
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
     connect(overviewPage, SIGNAL(outOfSyncWarningClicked()), this, SLOT(requestedSyncWarningInfo()));
@@ -165,6 +172,7 @@ void WalletView::setWalletModel(WalletModel *_walletModel)
     if (!fLiteMode && settings.value("fShowMasternodesTab").toBool()) {
         masternodeListPage->setWalletModel(_walletModel);
     }
+    pyrkTokensPage->setWalletModel(_walletModel);
     receiveCoinsPage->setModel(_walletModel);
     sendCoinsPage->setModel(_walletModel);
 #ifdef ENABLE_SMESSAGE
@@ -249,6 +257,13 @@ void WalletView::gotoMasternodePage()
     if (!fLiteMode && settings.value("fShowMasternodesTab").toBool()) {
         setCurrentWidget(masternodeListPage);
     }
+}
+
+void WalletView::gotoPyrkTokenPage()
+{
+#ifdef ENABLE_WALLET
+    setCurrentWidget(pyrkTokensPage);
+#endif // ENABLE_WALLET
 }
 
 void WalletView::gotoReceiveCoinsPage()
