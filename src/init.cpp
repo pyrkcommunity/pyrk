@@ -36,6 +36,9 @@
 #include "script/standard.h"
 #include "script/sigcache.h"
 #include "scheduler.h"
+#ifdef ENABLE_SMESSAGE
+#include "smessage.h"
+#endif
 #include "timedata.h"
 #include "txdb.h"
 #include "txmempool.h"
@@ -368,6 +371,9 @@ void Shutdown()
     }
    // Shutdown part 2: Stop TOR thread and delete wallet instance
     StopTorControl();
+#ifdef ENABLE_SMESSAGE
+    SecureMsgShutdown();
+#endif
 #ifdef ENABLE_WALLET
     for (CWalletRef pwallet : vpwallets) {
         delete pwallet;
@@ -1454,6 +1460,11 @@ bool AppInitParameterInteraction()
         InitWarning(_("-masternode option is deprecated and ignored, specifying -masternodeblsprivkey is enough to start this node as a masternode."));
     }
 
+    fNoSmsg = gArgs.GetBoolArg("-nosmsg", false);
+    if (!fNoSmsg) {
+        nLocalServices = ServiceFlags(nLocalServices | SMSG_RELAY);
+    }
+
     return true;
 }
 
@@ -2265,6 +2276,10 @@ bool AppInitMain(boost::thread_group& threadGroup, CScheduler& scheduler)
     if (!connman.Start(scheduler, connOptions)) {
         return false;
     }
+
+#ifdef ENABLE_SMESSAGE
+    SecureMsgStart(fNoSmsg, gArgs.GetBoolArg("-smsgscanchain", false));
+#endif
 
     // ********************************************************* Step 13: finished
 

@@ -72,6 +72,17 @@ const char *QSIGREC="qsigrec";
 const char *CLSIG="clsig";
 const char *ISLOCK="islock";
 const char *MNAUTH="mnauth";
+// Secure message types
+const char *SMSGINV="smsgInv";
+const char *SMSGSHOW="smsgShow";
+const char *SMSGHAVE="smsgHave";
+const char *SMSGWANT="smsgWant";
+const char *SMSGMSG="smsgMsg";
+const char *SMSGMATCH="smsgMatch";
+const char *SMSGPING="smsgPing";
+const char *SMSGPONG="smsgPong";
+const char *SMSGDISABLED="smsgDisabled";
+const char *SMSGIGNORE="smsgIgnore";
 }; // namespace NetMsgType
 
 /** All known message types. Keep this in the same order as the list of
@@ -138,6 +149,19 @@ const static std::string allNetMessageTypes[] = {
     NetMsgType::CLSIG,
     NetMsgType::ISLOCK,
     NetMsgType::MNAUTH,
+#ifdef ENABLE_SMESSAGE
+    // Secure messaging
+    NetMsgType::SMSGINV,
+    NetMsgType::SMSGSHOW,
+    NetMsgType::SMSGHAVE,
+    NetMsgType::SMSGWANT,
+    NetMsgType::SMSGMSG,
+    NetMsgType::SMSGMATCH,
+    NetMsgType::SMSGPING,
+    NetMsgType::SMSGPONG,
+    NetMsgType::SMSGDISABLED,
+    NetMsgType::SMSGIGNORE,
+#endif
 };
 const static std::vector<std::string> allNetMessageTypesVec(allNetMessageTypes, allNetMessageTypes+ARRAYLEN(allNetMessageTypes));
 

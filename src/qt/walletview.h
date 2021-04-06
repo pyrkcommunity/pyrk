@@ -20,6 +20,7 @@ class SendCoinsRecipient;
 class TransactionView;
 class WalletModel;
 class AddressBookPage;
+class SecureMessageGUI;
 
 QT_BEGIN_NAMESPACE
 class QLabel;
@@ -67,6 +68,7 @@ private:
     AddressBookPage *usedSendingAddressesPage;
     AddressBookPage *usedReceivingAddressesPage;
     MasternodeList *masternodeListPage;
+    SecureMessageGUI *secureMessagePage;
 
     TransactionView *transactionView;
 
@@ -85,6 +87,9 @@ public Q_SLOTS:
     void gotoReceiveCoinsPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
+
+    /** Switch to SecureMessage */
+    void gotoSecureMessage();
 
     /** Show Sign/Verify Message dialog and switch to sign message tab */
     void gotoSignMessageTab(QString addr = "");

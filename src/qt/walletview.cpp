@@ -13,6 +13,7 @@
 #include "overviewpage.h"
 #include "platformstyle.h"
 #include "receivecoinsdialog.h"
+#include "securemessage.h"
 #include "sendcoinsdialog.h"
 #include "signverifymessagedialog.h"
 #include "transactionrecord.h"
@@ -80,6 +81,11 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
     addWidget(receiveCoinsPage);
     addWidget(sendCoinsPage);
 
+#ifdef ENABLE_SMESSAGE
+    secureMessagePage = new SecureMessageGUI(platformStyle);
+    addWidget(secureMessagePage);
+#endif // ENABLE_SMESSAGE
+
     QSettings settings;
     if (!fLiteMode && settings.value("fShowMasternodesTab").toBool()) {
         masternodeListPage = new MasternodeList(platformStyle);
@@ -104,6 +110,11 @@ WalletView::WalletView(const PlatformStyle *_platformStyle, QWidget *parent):
 
     // Pass through messages from transactionView
     connect(transactionView, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
+
+#ifdef ENABLE_SMESSAGE
+    // Pass through messages from secureMessagePage
+    connect(secureMessagePage, SIGNAL(message(QString,QString,unsigned int)), this, SIGNAL(message(QString,QString,unsigned int)));
+#endif // ENABLE_SMESSAGE
 }
 
 WalletView::~WalletView()
@@ -156,6 +167,9 @@ void WalletView::setWalletModel(WalletModel *_walletModel)
     }
     receiveCoinsPage->setModel(_walletModel);
     sendCoinsPage->setModel(_walletModel);
+#ifdef ENABLE_SMESSAGE
+    secureMessagePage->setWalletModel(walletModel);
+#endif // ENABLE_SMESSAGE
     usedReceivingAddressesPage->setModel(_walletModel->getAddressTableModel());
     usedSendingAddressesPage->setModel(_walletModel->getAddressTableModel());
 
@@ -220,6 +234,13 @@ void WalletView::gotoOverviewPage()
 void WalletView::gotoHistoryPage()
 {
     setCurrentWidget(transactionsPage);
+}
+
+void WalletView::gotoSecureMessage()
+{
+#ifdef ENABLE_SMESSAGE
+    setCurrentWidget(secureMessagePage);
+#endif // ENABLE_SMESSAGE
 }
 
 void WalletView::gotoMasternodePage()

@@ -37,6 +37,7 @@
 #include <vector>
 
 typedef CWallet* CWalletRef;
+CWallet* GetMainWallet();
 extern std::vector<CWalletRef> vpwallets;
 
 /**

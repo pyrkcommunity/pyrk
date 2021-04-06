@@ -650,6 +650,7 @@ CAddress GetLocalAddress(const CNetAddr *paddrPeer, ServiceFlags nLocalServices)
 extern bool fDiscover;
 extern bool fListen;
 extern bool fRelayTxes;
+extern bool fNoSmsg;
 
 extern unordered_limitedmap<uint256, int64_t, StaticSaltedHasher> mapAlreadyAskedFor;
 
@@ -745,6 +746,29 @@ public:
     int readData(const char *pch, unsigned int nBytes);
 };
 
+class SecMsgNode
+{
+public:
+    SecMsgNode()
+    {
+        lastSeen        = 0;
+        lastMatched     = 0;
+        ignoreUntil     = 0;
+        nWakeCounter    = 0;
+        nPeerId         = 0;
+        fEnabled        = false;
+    }
+
+    ~SecMsgNode() {}
+
+    CCriticalSection            cs_smsg_net;
+    int64_t                     lastSeen;
+    int64_t                     lastMatched;
+    int64_t                     ignoreUntil;
+    uint32_t                    nWakeCounter;
+    uint32_t                    nPeerId;
+    bool                        fEnabled;
+};
 
 /** Information about a peer */
 class CNode
@@ -873,6 +897,8 @@ public:
     std::atomic<int64_t> nMinPingUsecTime;
     // Whether a ping is requested.
     std::atomic<bool> fPingQueued;
+
+    SecMsgNode smsgData;
 
     // If true, we will send him PrivateSend queue messages
     std::atomic<bool> fSendDSQueue{false};

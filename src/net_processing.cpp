@@ -43,6 +43,10 @@
 #endif // ENABLE_WALLET
 #include "privatesend/privatesend-server.h"
 
+#ifdef ENABLE_SMESSAGE
+#include "smessage.h"
+#endif
+
 #include "evo/deterministicmns.h"
 #include "evo/mnauth.h"
 #include "evo/simplifiedmns.h"
@@ -2946,6 +2950,11 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         ProcessNewBlock(chainparams, pblock, forceProcessing, &fNewBlock);
         if (fNewBlock) {
             pfrom->nLastBlockTime = GetTime();
+#ifdef ENABLE_SMESSAGE
+        if (fSecMsgEnabled) {
+            SecureMsgScanBlock(*pblock);
+        }
+#endif
         } else {
             LOCK(cs_main);
             mapBlockSource.erase(pblock->GetHash());
@@ -3192,6 +3201,11 @@ bool static ProcessMessage(CNode* pfrom, const std::string& strCommand, CDataStr
         llmq::quorumSigningManager->ProcessMessage(pfrom, strCommand, vRecv, *connman);
         llmq::chainLocksHandler->ProcessMessage(pfrom, strCommand, vRecv, *connman);
         llmq::quorumInstantSendManager->ProcessMessage(pfrom, strCommand, vRecv, *connman);
+#ifdef ENABLE_SMESSAGE
+        if (fSecMsgEnabled) {
+            SecureMsgReceiveData(pfrom, strCommand, vRecv, found, *connman);
+        }
+#endif
         return true;
     }
 
@@ -4039,6 +4053,11 @@ bool PeerLogicValidation::SendMessages(CNode* pto, std::atomic<bool>& interruptM
         }
 
     }
+#ifdef ENABLE_SMESSAGE
+    if (fSecMsgEnabled) {
+        SecureMsgSendData(pto, *connman);
+    }
+#endif
     return true;
 }
 
