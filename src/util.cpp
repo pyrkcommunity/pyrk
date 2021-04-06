@@ -107,8 +107,8 @@ bool fLiteMode = false;
 */
 int nWalletBackups = 10;
 
-const char * const BITCOIN_CONF_FILENAME = "dash.conf";
-const char * const BITCOIN_PID_FILENAME = "dashd.pid";
+const char * const BITCOIN_CONF_FILENAME = "pyrk.conf";
+const char * const BITCOIN_PID_FILENAME = "pyrkd.pid";
 
 int miningAlgo = 0;
 
@@ -619,13 +619,13 @@ void PrintExceptionContinue(const std::exception_ptr pex, const char* pszThread)
 
 fs::path GetDefaultDataDir()
 {
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\DashCore
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\DashCore
-    // Mac: ~/Library/Application Support/DashCore
-    // Unix: ~/.dashcore
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Pyrk
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Pyrk
+    // Mac: ~/Library/Application Support/Pyrk
+    // Unix: ~/.pyrk
 #ifdef WIN32
     // Windows
-    return GetSpecialFolderPath(CSIDL_APPDATA) / "DashCore";
+    return GetSpecialFolderPath(CSIDL_APPDATA) / "Pyrk";
 #else
     fs::path pathRet;
     char* pszHome = getenv("HOME");
@@ -635,10 +635,10 @@ fs::path GetDefaultDataDir()
         pathRet = fs::path(pszHome);
 #ifdef MAC_OSX
     // Mac
-    return pathRet / "Library/Application Support/DashCore";
+    return pathRet / "Library/Application Support/Pyrk";
 #else
     // Unix
-    return pathRet / ".dashcore";
+    return pathRet / ".pyrk";
 #endif
 #endif
 }
