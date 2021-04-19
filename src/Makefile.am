@@ -131,6 +131,7 @@ BITCOIN_CORE_H = \
   checkqueue.h \
   clientversion.h \
   coins.h \
+  collateral.h \
   compat.h \
   compat/byteswap.h \
   compat/endian.h \
@@ -285,6 +286,7 @@ libdash_server_a_SOURCES = \
   blockencodings.cpp \
   chain.cpp \
   checkpoints.cpp \
+  collateral.cpp \
   consensus/tx_verify.cpp \
   dsnotificationinterface.cpp \
   evo/cbtx.cpp \
