@@ -61,7 +61,7 @@
 #include <boost/thread.hpp>
 
 #if defined(NDEBUG)
-# error "Dash Core cannot be compiled without assertions."
+# error "Pyrk cannot be compiled without assertions."
 #endif
 
 /**
@@ -1004,41 +1004,40 @@ double ConvertBitsToDouble(unsigned int nBits)
     return dDiff;
 }
 
-/*
-NOTE:   unlike bitcoin we are using PREVIOUS block height here,
-        might be a good idea to change this to use prev bits
-        but current height to avoid confusion.
-*/
 CAmount GetBlockSubsidy(int nHeight, bool fSuperblockPartOnly)
 {
     int halvings = nHeight / Params().GetConsensus().nSubsidyHalvingInterval;
 
     CAmount nSubsidy = 100 * COIN;
 
-    double reductionPercent = 1.0000;
-    double multiplyValue = 1.0000;
+	double reductionPercent = 1.0000;
+	double multiplyValue = 1.0000;
+	
+    for(int i = 0; i < halvings; ++i)
+    {
 
-    for (int i = 0; i < halvings; ++i) {
-
-        reductionPercent = reductionPercent * 0.5;
-
-        // We halve the previous reduction percent each time until we reach the minimum of 0.0375
-        if (reductionPercent < 0.0375) {
-            reductionPercent = 0.0375;
-        }
-
-        multiplyValue = 1 - reductionPercent;
-
-        nSubsidy = nSubsidy * multiplyValue;
-
+    	reductionPercent = reductionPercent * 0.5;
+    	
+    	// We halve the previous reduction percent each time until we reach the minimum of 0.0375
+    	if (reductionPercent < 0.0375)
+    	{
+    		reductionPercent = 0.0375;
+    	}
+    	
+    	multiplyValue = 1 - reductionPercent;
+    	
+    	nSubsidy = nSubsidy * multiplyValue;
+    
         // Reduce by 20%
         //nSubsidy = (nSubsidy * 4) / 5;
+
     }
 
     // Superblock payment
     CAmount nSuperblockPart = 0;
 
-    if (nHeight >= Params().GetConsensus().nSuperblockStartBlock) {
+    if (nHeight >= Params().GetConsensus().nSuperblockStartBlock)
+    {
         // Superblocks payment 10% after superblock start
         nSuperblockPart = nSubsidy / 10;
     }
@@ -1051,12 +1050,17 @@ CAmount GetMasternodePayment(int nHeight, CAmount blockValue)
 {
     CAmount ret = 0;
 
-    if (nHeight >= Params().GetConsensus().nMasternodePaymentsStartBlock && nHeight < Params().GetConsensus().nSuperblockStartBlock) {
+    if (nHeight >= Params().GetConsensus().nMasternodePaymentsStartBlock && nHeight < Params().GetConsensus().nSuperblockStartBlock)
+    {
         ret = blockValue / 5; // 20%
-    } else if (nHeight >= Params().GetConsensus().nSuperblockStartBlock && nHeight < 100000) {
+    }
+    else if (nHeight >= Params().GetConsensus().nSuperblockStartBlock && nHeight < 100000)
+    {
         // Still 20% but 10% has been reserved for superblocks so work from 90% of the block subsidy
         ret = (blockValue / 9) * 2;
-    } else if (nHeight >= 100000) {
+    }
+    else if (nHeight >= 100000)
+    {
         // Now 30% working from 90% of the full block subsidy
         ret = (blockValue / 9) * 3; // 30%
     }
@@ -1924,7 +1928,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
         }
     }
 
-    /// DASH: Check superblock start
+    /// PYRK: Check superblock start
 
     // make sure old budget is the real one
     if (pindex->nHeight == chainparams.GetConsensus().nSuperblockStartBlock &&
@@ -1933,7 +1937,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
             return state.DoS(100, error("ConnectBlock(): invalid superblock start"),
                              REJECT_INVALID, "bad-sb-start");
 
-    /// END DASH
+    /// END PYRK
 
     // Start enforcing BIP68 (sequence locks) and BIP112 (CHECKSEQUENCEVERIFY) using versionbits logic.
     int nLockTimeFlags = 0;
@@ -2113,7 +2117,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     LogPrint(BCLog::BENCHMARK, "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs]\n", nInputs - 1, 0.001 * (nTime4 - nTime2), nInputs <= 1 ? 0 : 0.001 * (nTime4 - nTime2) / (nInputs-1), nTimeVerify * 0.000001);
 
 
-    // DASH
+    // PYRK
 
     // It's possible that we simply don't have enough data and this could fail
     // (i.e. block itself could be a correct one and we need to store it),
@@ -2121,7 +2125,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     // the peer who sent us this block is missing some data and wasn't able
     // to recognize that block is actually invalid.
 
-    // DASH : CHECK TRANSACTIONS FOR INSTANTSEND
+    // PYRK : CHECK TRANSACTIONS FOR INSTANTSEND
 
     if (sporkManager.IsSporkActive(SPORK_3_INSTANTSEND_BLOCK_FILTERING)) {
         // Require other nodes to comply, send them some data in case they are missing it.
@@ -2139,18 +2143,18 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
                 // The node which relayed this should switch to correct chain.
                 // TODO: relay instantsend data/proof.
                 LOCK(cs_main);
-                return state.DoS(10, error("ConnectBlock(DASH): transaction %s conflicts with transaction lock %s", tx->GetHash().ToString(), conflictLock->txid.ToString()),
+                return state.DoS(10, error("ConnectBlock(PYRK): transaction %s conflicts with transaction lock %s", tx->GetHash().ToString(), conflictLock->txid.ToString()),
                                  REJECT_INVALID, "conflict-tx-lock");
             }
         }
     } else {
-        LogPrintf("ConnectBlock(DASH): spork is off, skipping transaction locking checks\n");
+        LogPrintf("ConnectBlock(PYRK): spork is off, skipping transaction locking checks\n");
     }
 
     int64_t nTime5_1 = GetTimeMicros(); nTimeISFilter += nTime5_1 - nTime4;
     LogPrint(BCLog::BENCHMARK, "      - IS filter: %.2fms [%.2fs]\n", 0.001 * (nTime5_1 - nTime4), nTimeISFilter * 0.000001);
 
-    // DASH : MODIFIED TO CHECK MASTERNODE PAYMENTS AND SUPERBLOCKS
+    // PYRK : MODIFIED TO CHECK MASTERNODE PAYMENTS AND SUPERBLOCKS
 
     // TODO: resync data (both ways?) and try to reprocess this block later.
     CAmount blockReward = nFees + GetBlockSubsidy(pindex->nHeight);
@@ -2160,14 +2164,14 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     LogPrint(BCLog::BENCHMARK, "      - GetBlockSubsidy: %.2fms [%.2fs]\n", 0.001 * (nTime5_2 - nTime5_1), nTimeSubsidy * 0.000001);
 
     if (!IsBlockValueValid(block, pindex->nHeight, blockReward, strError)) {
-        return state.DoS(0, error("ConnectBlock(DASH): %s", strError), REJECT_INVALID, "bad-cb-amount");
+        return state.DoS(0, error("ConnectBlock(PYRK): %s", strError), REJECT_INVALID, "bad-cb-amount");
     }
 
     int64_t nTime5_3 = GetTimeMicros(); nTimeValueValid += nTime5_3 - nTime5_2;
     LogPrint(BCLog::BENCHMARK, "      - IsBlockValueValid: %.2fms [%.2fs]\n", 0.001 * (nTime5_3 - nTime5_2), nTimeValueValid * 0.000001);
 
     if (!IsBlockPayeeValid(*block.vtx[0], pindex->nHeight, blockReward)) {
-        return state.DoS(0, error("ConnectBlock(DASH): couldn't find masternode or superblock payments"),
+        return state.DoS(0, error("ConnectBlock(PYRK): couldn't find masternode or superblock payments"),
                                 REJECT_INVALID, "bad-cb-payee");
     }
 
@@ -2175,7 +2179,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     LogPrint(BCLog::BENCHMARK, "      - IsBlockPayeeValid: %.2fms [%.2fs]\n", 0.001 * (nTime5_4 - nTime5_3), nTimePayeeValid * 0.000001);
 
     if (!ProcessSpecialTxsInBlock(block, pindex, state, fJustCheck, fScriptChecks)) {
-        return error("ConnectBlock(DASH): ProcessSpecialTxsInBlock for block %s failed with %s",
+        return error("ConnectBlock(PYRK): ProcessSpecialTxsInBlock for block %s failed with %s",
                      pindex->GetBlockHash().ToString(), FormatStateMessage(state));
     }
 
@@ -2185,7 +2189,7 @@ static bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockInd
     int64_t nTime5 = GetTimeMicros(); nTimeDashSpecific += nTime5 - nTime4;
     LogPrint(BCLog::BENCHMARK, "    - Dash specific: %.2fms [%.2fs]\n", 0.001 * (nTime5 - nTime4), nTimeDashSpecific * 0.000001);
 
-    // END DASH
+    // END PYRK
 
     if (fJustCheck)
         return true;

@@ -9,7 +9,7 @@
 #define UNUSED
 #endif
 static const char UNUSED *dash_strings[] = {
-QT_TRANSLATE_NOOP("pyrk-core", "Dash Core"),
+QT_TRANSLATE_NOOP("pyrk-core", "Pyrk"),
 QT_TRANSLATE_NOOP("pyrk-core", "The %s developers"),
 QT_TRANSLATE_NOOP("pyrk-core", ""
 "%s file contains all private keys from this wallet. Do not share it with "
@@ -452,7 +452,7 @@ QT_TRANSLATE_NOOP("pyrk-core", "Invalid script detected."),
 QT_TRANSLATE_NOOP("pyrk-core", "Invalid spork address specified with -sporkaddr"),
 QT_TRANSLATE_NOOP("pyrk-core", "KeePassHttp id for the established association"),
 QT_TRANSLATE_NOOP("pyrk-core", "KeePassHttp key for AES encrypted communication with KeePass"),
-QT_TRANSLATE_NOOP("pyrk-core", "Keep N DASH mixed (%u-%u, default: %u)"),
+QT_TRANSLATE_NOOP("pyrk-core", "Keep N PYRK mixed (%u-%u, default: %u)"),
 QT_TRANSLATE_NOOP("pyrk-core", "Keep at most <n> unconnectable transactions in memory (default: %u)"),
 QT_TRANSLATE_NOOP("pyrk-core", "Keep the transaction memory pool below <n> megabytes (default: %u)"),
 QT_TRANSLATE_NOOP("pyrk-core", "Keypool ran out, please call keypoolrefill first"),

@@ -1602,7 +1602,7 @@ void ThreadMapPort()
             }
         }
 
-        std::string strDesc = "Dash Core " + FormatFullVersion();
+        std::string strDesc = "Pyrk " + FormatFullVersion();
 
         try {
             while (true) {
