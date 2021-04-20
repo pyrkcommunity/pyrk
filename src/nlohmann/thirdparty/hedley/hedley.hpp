@@ -696,7 +696,6 @@
 #      define JSON_HEDLEY_DIAGNOSTIC_DISABLE_CPP98_COMPAT_WRAP_(xpr) \
     JSON_HEDLEY_DIAGNOSTIC_PUSH \
     _Pragma("clang diagnostic ignored \"-Wc++98-compat\"") \
-    xpr \
     JSON_HEDLEY_DIAGNOSTIC_POP
 #    endif
 #  endif
