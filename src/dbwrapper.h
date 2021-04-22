@@ -390,11 +390,6 @@ public:
         pdb->CompactRange(&slKey1, &slKey2);
     }
 
-    void CompactFull() const
-    {
-        pdb->CompactRange(nullptr, nullptr);
-    }
-
 };
 
 template<typename CDBTransaction>

@@ -133,17 +133,13 @@ void CMNAuth::NotifyMasternodeListChanged(bool undo, const CDeterministicMNList&
         if (pnode->verifiedProRegTxHash.IsNull()) {
             return;
         }
-        auto verifiedDmn = oldMNList.GetMN(pnode->verifiedProRegTxHash);
-        if (!verifiedDmn) {
-            return;
-        }
         bool doRemove = false;
-        if (diff.removedMns.count(verifiedDmn->internalId)) {
+        if (diff.removedMns.count(pnode->verifiedProRegTxHash)) {
             doRemove = true;
         } else {
-            auto it = diff.updatedMNs.find(verifiedDmn->internalId);
+            auto it = diff.updatedMNs.find(pnode->verifiedProRegTxHash);
             if (it != diff.updatedMNs.end()) {
-                if ((it->second.fields & CDeterministicMNStateDiff::Field_pubKeyOperator) && it->second.state.pubKeyOperator.GetHash() != pnode->verifiedPubKeyHash) {
+                if (it->second->pubKeyOperator.GetHash() != pnode->verifiedPubKeyHash) {
                     doRemove = true;
                 }
             }
